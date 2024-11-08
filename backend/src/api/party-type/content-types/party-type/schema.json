@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "party_types",
+  "info": {
+    "singularName": "party-type",
+    "pluralName": "party-types",
+    "displayName": "PartyType",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "backgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "party_types"
+    },
+    "caption": {
+      "type": "string",
+      "required": false,
+      "unique": false
+    }
+  }
+}
