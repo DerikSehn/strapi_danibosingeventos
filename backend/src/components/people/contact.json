@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_people_contacts",
+  "info": {
+    "displayName": "Contact"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string",
+      "regex": "/^\\d+$/",
+      "unique": true,
+      "default": "phoneNumber",
+      "required": true,
+      "maxLength": 11,
+      "minLength": 11
+    },
+    "address": {
+      "type": "text"
+    },
+    "email": {
+      "type": "string"
+    },
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}

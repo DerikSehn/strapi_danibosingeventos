@@ -18,20 +18,12 @@
     "description": {
       "type": "text"
     },
-    "heroImage": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files"
+    "blocks": {
+      "type": "dynamiczone",
+      "components": [
+        "section.hero-section",
+        "section.features-section"
       ]
-    },
-    "ctaLink": {
-      "type": "string"
-    },
-    "ctaText": {
-      "type": "string"
     }
   }
 }

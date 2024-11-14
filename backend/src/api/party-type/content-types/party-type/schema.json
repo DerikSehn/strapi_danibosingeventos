@@ -39,6 +39,18 @@
       "type": "string",
       "required": false,
       "unique": false
+    },
+    "budgets": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::budget.budget",
+      "mappedBy": "party_type"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "duration": {
+      "type": "integer"
     }
   }
 }

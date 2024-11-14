@@ -1,4 +1,4 @@
-import { getStrapiMedia } from '@/lib/utils';
+import { cn, getStrapiMedia } from '@/lib/utils';
 import Image from 'next/image';
 
 
@@ -28,7 +28,7 @@ export function StrapiImage({
       alt={alt}
       height={height}
       width={width}
-      className={className}
+      className={cn(className)}
       {...rest}
     />
   ) : null;

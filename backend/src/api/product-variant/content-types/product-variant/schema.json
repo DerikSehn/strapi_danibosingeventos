@@ -35,6 +35,12 @@
       "relation": "manyToOne",
       "target": "api::product.product",
       "inversedBy": "product_variants"
+    },
+    "budgets": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::budget.budget",
+      "mappedBy": "product_variants"
     }
   }
 }

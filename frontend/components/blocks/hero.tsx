@@ -1,60 +1,97 @@
+"use client";
 import { Link } from "next-view-transitions";
 import { StrapiImage } from "../strapi-image";
 import { Button } from "../ui/button";
+import { motion, useScroll, useTransform } from "framer-motion";
+import MotionEntrance from "../motion/motion-entrance";
+import React, { useRef } from "react";
+import MotionGlowingHeading from "../motion/motion-glowing-heading";
+import MotionGrowingButton from "../motion/motion-growing-button";
+import MotionBackgroundZoom from "../motion/motion-background-zoom";
 
-
-interface HeroProps {
+type ButtonProps = {
+    href: string;
     title: string;
-    description: string;
-    ctaLink: string;
-    ctaText: string;
-    heroImage: {
-        url: string;
-    }
+    variation: string;
 }
 
-export default function Hero({ title, description, ctaLink, ctaText, heroImage }: HeroProps) {
+interface HeroProps {
+    backgroundImage: {
+        documentId: string;
+        url: string;
+        name: string;
+    };
+    button: ButtonProps[];
+    description: string;
+    heroImage: {
+        documentId: string;
+        url: string;
+        name: string;
+    }[];
+    title: string;
+}
 
+export default function Hero({ backgroundImage, button, description, heroImage, title }: HeroProps) {
 
     return (
-        <section className="relative z-10 w-full py-12 md:py-24 lg:py-32 xl:py-48 min-h-screen"
-            style={{
-                backgroundColor: 'hsla(29,100%,99%,1)',
-                backgroundImage: 'radial-gradient(at 29% 37%, hsla(44,61%,88%,1) 0px, transparent 50%),radial-gradient(at 58% 58%, hsla(120,8%,91%,1) 0px, transparent 50%),radial-gradient(at 44% 20%, hsla(103,26%,74%,1) 0px, transparent 50%),radial-gradient(at 50% 4%, hsla(31,81%,70%,1) 0px, transparent 50%),radial-gradient(at 92% 90%, hsla(12,56%,79%,1) 0px, transparent 50%),radial-gradient(at 38% 62%, hsla(138,23%,86%,1) 0px, transparent 50%),radial-gradient(at 93% 52%, hsla(174,72%,75%,1) 0px, transparent 50%)'
-            }}>
-            <span className="absolute bottom-0 w-full bg-gradient-to-t from-white from-20% h-[15%] z-20" />
-            <div className="container px-4 md:px-6 mx-auto">
+        <section className="relative z-10 w-full py-12 md:py-48 min-h-screen flex flex-col justify-center bg-neutral-700 overflow-hidden">
+            <MotionBackgroundZoom src={backgroundImage.url} alt="Hero" />
+            <div className="container px-4 md:px-6 mx-auto relative z-10">
                 <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
                     <div className="flex flex-col justify-center space-y-4">
                         <div className="space-y-2">
-                            <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+                            <MotionGlowingHeading>
                                 {title}
-                            </h1>
-                            <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                            </MotionGlowingHeading>
+                            <p className="max-w-[600px] md:text-xl text-white">
                                 {description}
                             </p>
                         </div>
                         <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                            <Link href={ctaLink}>
-                                <Button size="lg">{ctaText}</Button>
-                            </Link>
-                            <Link href={'/about'}>
-                                <Button size="lg" variant="outline">
-                                    Saiba mais
-                                </Button>
-                            </Link>
+                            {button.map(renderButtons)}
                         </div>
                     </div>
-                    <StrapiImage
-                        alt="Hero"
-                        className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
-                        height={550}
-                        src={heroImage.url}
-                        width={550}
-                    />
+                    <figure className="relative min-h-[550px] min-w-[550px]">
+                        <MotionEntrance className="bottom-0 size-40">
+                            <StrapiImage
+                                alt="Hero"
+                                height={550}
+                                width={550}
+                                className="select-none object-cover aspect-square rounded-full"
+                                src={heroImage[0].url}
+                            />
+                        </MotionEntrance>
+                        <MotionEntrance className="size-96 right-10 top-32">
+                            <StrapiImage
+                                alt="Hero"
+                                height={550}
+                                width={550}
+                                className="select-none object-cover aspect-square rounded-full"
+                                src={heroImage[1].url}
+                            />
+                        </MotionEntrance>
+                        <MotionEntrance className="size-40 left-20 top-0">
+                            <StrapiImage
+                                alt="Hero"
+                                height={550}
+                                width={550}
+                                className="select-none object-cover aspect-square rounded-full"
+                                src={heroImage[2].url}
+                            />
+                        </MotionEntrance>
+                    </figure>
                 </div>
             </div>
-        </section>
+        </section >
     );
 }
 
+function renderButtons(btn: ButtonProps, index: number) {
+
+    const Component = () => React.createElement((btn.variation === 'default' ? MotionGrowingButton : Button), { variant: btn.variation, size: 'lg', className: "font-food text-3xl bg-primary-700" }, btn.title);
+    return (
+        <Link key={index} href={btn.href}>
+            <Component />
+        </Link>
+    );
+}

@@ -25,3 +25,26 @@ export function getStrapiMedia(url: string | null) {
   if (url.startsWith('http') || url.startsWith('//')) return url;
   return `${getStrapiURL()}${url}`;
 }
+
+
+
+export function generateWhatsAppLink({
+  countryCode = '55',
+  phoneNumber,
+  message,
+}: {
+  countryCode?: string;
+  phoneNumber: string;
+  message: string;
+}) {
+  // Remove caracteres não numéricos do código do país e do número de telefone
+  const cleanedCountryCode = countryCode?.replace(/\D/g, '');
+  const cleanedPhoneNumber = phoneNumber?.replace(/\D/g, '');
+
+  // Codifica a mensagem para o formato de URL
+  const encodedMessage = encodeURIComponent(message);
+
+  // Gera o link do WhatsApp
+  const whatsappLink = `https://wa.me/${cleanedCountryCode}${cleanedPhoneNumber}?text=${encodedMessage}`;
+  return whatsappLink;
+}

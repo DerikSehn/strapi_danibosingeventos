@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "budgets",
+  "info": {
+    "singularName": "budget",
+    "pluralName": "budgets",
+    "displayName": "Budget",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "contactName": {
+      "type": "string"
+    },
+    "contactPhone": {
+      "type": "string"
+    },
+    "eventDetails": {
+      "type": "text"
+    },
+    "eventDuration": {
+      "type": "integer"
+    },
+    "extraHours": {
+      "type": "integer"
+    },
+    "numberOfPeople": {
+      "type": "integer"
+    },
+    "party_type": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::party-type.party-type",
+      "inversedBy": "budgets"
+    },
+    "product_variants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product-variant.product-variant",
+      "inversedBy": "budgets"
+    },
+    "totalPrice": {
+      "type": "decimal"
+    },
+    "numberOfWaiters": {
+      "type": "integer"
+    },
+    "eventDate": {
+      "type": "datetime",
+      "required": false,
+      "unique": true
+    }
+  }
+}

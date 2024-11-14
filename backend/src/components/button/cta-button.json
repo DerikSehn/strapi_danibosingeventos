@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_button_cta_buttons",
+  "info": {
+    "displayName": "CtaButton",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "href": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "variation": {
+      "type": "enumeration",
+      "enum": [
+        "primary",
+        "secondary",
+        "outlined",
+        "ghost",
+        "default"
+      ],
+      "default": "primary",
+      "required": false
+    }
+  }
+}

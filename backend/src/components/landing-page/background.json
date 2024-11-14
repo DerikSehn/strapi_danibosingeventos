@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_landing_page_backgrounds",
+  "info": {
+    "displayName": "Background"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "alt": {
+      "type": "string"
+    },
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}

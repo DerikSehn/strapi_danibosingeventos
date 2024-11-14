@@ -1,11 +1,13 @@
-import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { ChevronLeft, ShoppingCart } from "lucide-react";
+import { useState } from "react";
 import { ApiCategoryCategory, ApiPartyTypePartyType } from "types/generated/contentTypes";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import Link from "next/link";
-import { createAndSendBudget } from "@/app/actions";
+import SummaryCard from "./summary-card";
+import MealPlanDetails from "./details";
+import OrderForm from "./order-form";
+import { calculateBudget } from "app/actions";
+import { useFormState } from "react-use-form-state";
+import { cn } from "@/lib/utils";
 
+// Função para validar a seleção de categorias e produtos
 const validateSelection = (categories: (ApiCategoryCategory['attributes'])[]) => {
     return categories.every(category =>
         category.products.every(product =>
@@ -13,11 +15,28 @@ const validateSelection = (categories: (ApiCategoryCategory['attributes'])[]) =>
     );
 };
 
-export default function MealPlanSummary({ partyType, selectedItems = {} }: { partyType: ApiPartyTypePartyType['attributes'], selectedItems: Record<string, any[]> }) {
+interface MealPlanSummaryProps {
+    partyType: ApiPartyTypePartyType['attributes'];
+    selectedItems: Record<string, any[]>;
+}
+
+export default function MealPlanSummary({ partyType, selectedItems = {} }: MealPlanSummaryProps) {
+    const [step, setStep] = useState(1);
+    const [formState, { text, number }] = useFormState({
+        numberOfPeople: 20,
+        eventDuration: 4,
+        eventDetails: "",
+        contactName: "",
+        contactPhone: ""
+    });
+
+    // Filtra os itens selecionados
     const selectedMeals = Object.values(selectedItems).filter(Boolean);
 
+    // Calcula o preço total dos itens selecionados
     const totalPrice = selectedMeals.reduce((total, meal) => total + meal.price, 0);
 
+    // Estrutura os tipos de festa selecionados
     const selectedPartyTypeStructure = partyType.categories.map(category => ({
         ...category,
         products: category.products.map(product => ({
@@ -26,13 +45,21 @@ export default function MealPlanSummary({ partyType, selectedItems = {} }: { par
         }))
     }));
 
+    // Verifica se a seleção é válida
     const isValid = validateSelection(selectedPartyTypeStructure);
 
     console.log({ selectedPartyTypeStructure });
 
+    // Função para lidar com o envio do pedido
     const handleOrder = async () => {
         try {
-            const data = await createAndSendBudget(partyType, selectedItems);
+            const data = await calculateBudget({
+                partyTypeId: partyType.documentId,
+                selectedItemIds: selectedMeals.map(meal => meal.documentId),
+                numberOfPeople: formState.values.numberOfPeople,
+                eventDuration: formState.values.eventDuration,
+                eventDetails: formState.values.eventDetails
+            });
 
             if (data.success) {
                 alert('Orçamento enviado com sucesso!');
@@ -44,47 +71,30 @@ export default function MealPlanSummary({ partyType, selectedItems = {} }: { par
         }
     };
 
+    // Função para avançar para o próximo passo
+    const handleNextStep = () => {
+        setStep(step + 1);
+
+    };
+
     return (
-        <Card className="sticky top-24 rounded-t-sm ">
-            <CardHeader className="hidden md:block">
-                <CardTitle className="flex items-center">
-                    <ShoppingCart className="mr-2" />
-                    Resumo
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <ScrollArea className="hidden md:block h-[calc(100vh-300px)] overflow-auto">
-                    {selectedPartyTypeStructure.map(category => (
-                        <div key={category.id} className="mb-4">
-                            <h3 className="text-lg font-semibold">{category.title}</h3>
-                            {category.products.map(product => (
-                                <div key={product.id} className="ml-4 mt-2">
-                                    <h4 className="text-base font-semibold">{product.title}</h4>
-                                    <ul className="list-disc ml-4">
-                                        {product.product_variants.map(pv => (
-                                            <li key={pv.id}>{pv.title}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                </ScrollArea>
-
-                <div className="mt-6 md:space-y-2 relative z-10  grid md:block grid-cols-2 bg-[#fff]">
-
-                    <Button
-                        className="w-full"
-                        onClick={handleOrder}
-                        disabled={!isValid}
-                    >
-                        Finalizar pedido
-                    </Button>
-                    <Link href={'/'} className="w-full flex items-center justify-center space-x-2 p-1 rounded-lg border hover:bg-muted">
-                        <ChevronLeft className="mr-2 h-4 w-4" /> Voltar
-                    </Link>
-                </div>
-            </CardContent>
-        </Card>
+        <SummaryCard >
+            {step === 1 && (
+                <MealPlanDetails
+                    selectedPartyTypeStructure={selectedPartyTypeStructure}
+                    isValid={isValid}
+                    handleNextStep={handleNextStep}
+                />
+            )}
+            {step === 2 && (
+                <OrderForm
+                    formState={formState}
+                    text={text}
+                    number={number}
+                    handleOrder={handleOrder}
+                    handleBack={() => setStep(step - 1)}
+                />
+            )}
+        </SummaryCard>
     );
 }

@@ -1,42 +1,37 @@
 'use server';
+import { mutatePublicData } from 'data/services/mutate-public-data';
+import nodemailer from 'nodemailer';
+import qs from 'qs';
+import { ApiBudgetBudget } from 'types/generated/contentTypes';
 
-import axios from 'axios';
+interface BudgetCalculationData {
+  partyTypeId: number;
+  selectedItemIds: number[];
+  numberOfPeople: number;
+  eventDuration: number;
+  eventDetails: string;
+}
 
-export async function createAndSendBudget(partyType, selectedItems) {
+export async function calculateBudget(
+  data: BudgetCalculationData,
+): Promise<ApiBudgetBudget['attributes']> {
   try {
-    // Montar o orçamento
-    const budget = {
-      partyType: partyType.name,
-      items: Object.entries(selectedItems).map(([id, item]) => ({
-        id,
-        title: item.title,
-        price: item.price,
-      })),
-      totalPrice: Object.values(selectedItems).reduce(
-        (total, item) => total + item.price,
-        0,
-      ),
-    };
-
-    // Enviar para o endpoint Strapi
-    const response = await axios.post(
-      'http://seu-strapi-url/api/budgets',
+    const calculatedBudget = await mutatePublicData(
+      'POST',
+      '/api/budget/calculate',
       {
-        data: budget,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          // Adicione aqui o token de autenticação se necessário
-          // 'Authorization': `Bearer ${seu_token_jwt}`
+        data: {
+          partyType: data.partyTypeId,
+          selectedItems: data.selectedItemIds,
+          numberOfPeople: data.numberOfPeople,
+          eventDuration: data.eventDuration,
+          eventDetails: data.eventDetails,
         },
       },
     );
-
-    console.log('Orçamento enviado com sucesso:', response.data);
-    return { success: true, data: response.data };
+    return calculatedBudget;
   } catch (error) {
-    console.error('Erro ao enviar orçamento:', error);
-    return { success: false, error: error.message };
+    console.error('Erro ao calcular o orçamento:', error);
+    throw error;
   }
 }

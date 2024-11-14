@@ -70,3 +70,19 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@font-face {
+  font-family: 'londrina';
+  src: url('../public/fonts/londrina/LondrinaSketch-Regular.ttf')
+    format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'staatliches';
+  src: url('../public/fonts/staatliches/Staatliches-Regular.ttf')
+    format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

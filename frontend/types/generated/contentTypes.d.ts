@@ -369,6 +369,50 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBudgetBudget extends Struct.CollectionTypeSchema {
+  collectionName: 'budgets';
+  info: {
+    description: '';
+    displayName: 'Budget';
+    pluralName: 'budgets';
+    singularName: 'budget';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    contactName: Schema.Attribute.String;
+    contactPhone: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    eventDetails: Schema.Attribute.Text;
+    eventDuration: Schema.Attribute.Integer;
+    extraHours: Schema.Attribute.Integer;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::budget.budget'
+    > &
+      Schema.Attribute.Private;
+    numberOfPeople: Schema.Attribute.Integer;
+    numberOfWaiters: Schema.Attribute.Integer;
+    partyType: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::party-type.party-type'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    selectedItems: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::product-variant.product-variant'
+    >;
+    totalPrice: Schema.Attribute.Decimal;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
@@ -452,6 +496,7 @@ export interface ApiPartyTypePartyType extends Struct.CollectionTypeSchema {
     backgroundImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
+    budgets: Schema.Attribute.Relation<'oneToMany', 'api::budget.budget'>;
     caption: Schema.Attribute.String;
     categories: Schema.Attribute.Relation<
       'manyToMany',
@@ -487,6 +532,7 @@ export interface ApiProductVariantProductVariant
     draftAndPublish: true;
   };
   attributes: {
+    budgets: Schema.Attribute.Relation<'manyToMany', 'api::budget.budget'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -511,6 +557,7 @@ export interface ApiProductVariantProductVariant
 export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   collectionName: 'products';
   info: {
+    description: '';
     displayName: 'Product';
     pluralName: 'products';
     singularName: 'product';
@@ -536,6 +583,13 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'api::product-variant.product-variant'
     >;
     publishedAt: Schema.Attribute.DateTime;
+    quantity: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1048,6 +1102,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::budget.budget': ApiBudgetBudget;
       'api::category.category': ApiCategoryCategory;
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::party-type.party-type': ApiPartyTypePartyType;

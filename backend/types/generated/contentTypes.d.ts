@@ -369,6 +369,53 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBudgetBudget extends Struct.CollectionTypeSchema {
+  collectionName: 'budgets';
+  info: {
+    description: '';
+    displayName: 'Budget';
+    pluralName: 'budgets';
+    singularName: 'budget';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    contactName: Schema.Attribute.String;
+    contactPhone: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.String;
+    eventDate: Schema.Attribute.DateTime & Schema.Attribute.Unique;
+    eventDetails: Schema.Attribute.Text;
+    eventDuration: Schema.Attribute.Integer;
+    extraHours: Schema.Attribute.Integer;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::budget.budget'
+    > &
+      Schema.Attribute.Private;
+    numberOfPeople: Schema.Attribute.Integer;
+    numberOfWaiters: Schema.Attribute.Integer;
+    party_type: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::party-type.party-type'
+    >;
+    product_variants: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::product-variant.product-variant'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    totalPrice: Schema.Attribute.Decimal;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
@@ -404,6 +451,51 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiEmployeeEmployee extends Struct.CollectionTypeSchema {
+  collectionName: 'employees';
+  info: {
+    description: '';
+    displayName: 'Employee';
+    pluralName: 'employees';
+    singularName: 'employee';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    employeePrice: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 60;
+        },
+        number
+      >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::employee.employee'
+    > &
+      Schema.Attribute.Private;
+    peopleNeededForOne: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
   collectionName: 'home_pages';
   info: {
@@ -416,13 +508,13 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    blocks: Schema.Attribute.DynamicZone<
+      ['section.hero-section', 'section.features-section']
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    ctaLink: Schema.Attribute.String;
-    ctaText: Schema.Attribute.String;
     description: Schema.Attribute.Text;
-    heroImage: Schema.Attribute.Media<'images' | 'files'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -452,6 +544,7 @@ export interface ApiPartyTypePartyType extends Struct.CollectionTypeSchema {
     backgroundImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
+    budgets: Schema.Attribute.Relation<'oneToMany', 'api::budget.budget'>;
     caption: Schema.Attribute.String;
     categories: Schema.Attribute.Relation<
       'manyToMany',
@@ -461,12 +554,14 @@ export interface ApiPartyTypePartyType extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.String;
+    duration: Schema.Attribute.Integer;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::party-type.party-type'
     > &
       Schema.Attribute.Private;
+    price: Schema.Attribute.Decimal;
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -487,6 +582,7 @@ export interface ApiProductVariantProductVariant
     draftAndPublish: true;
   };
   attributes: {
+    budgets: Schema.Attribute.Relation<'manyToMany', 'api::budget.budget'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1056,7 +1152,9 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::budget.budget': ApiBudgetBudget;
       'api::category.category': ApiCategoryCategory;
+      'api::employee.employee': ApiEmployeeEmployee;
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::party-type.party-type': ApiPartyTypePartyType;
       'api::product-variant.product-variant': ApiProductVariantProductVariant;
