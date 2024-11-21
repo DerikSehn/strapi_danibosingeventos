@@ -49,6 +49,18 @@ export interface PeopleContact extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionAboutSection extends Struct.ComponentSchema {
+  collectionName: 'components_section_about_sections';
+  info: {
+    displayName: 'About Section';
+  };
+  attributes: {
+    features: Schema.Attribute.Component<'section.feature', true>;
+    heading: Schema.Attribute.String;
+    subHeading: Schema.Attribute.Text;
+  };
+}
+
 export interface SectionFeature extends Struct.ComponentSchema {
   collectionName: 'components_section_features';
   info: {
@@ -99,6 +111,7 @@ declare module '@strapi/strapi' {
       'button.cta-button': ButtonCtaButton;
       'landing-page.background': LandingPageBackground;
       'people.contact': PeopleContact;
+      'section.about-section': SectionAboutSection;
       'section.feature': SectionFeature;
       'section.features-section': SectionFeaturesSection;
       'section.hero-section': SectionHeroSection;

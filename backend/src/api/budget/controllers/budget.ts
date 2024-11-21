@@ -25,17 +25,11 @@ export default factories.createCoreController(
           eventDate,
         } = ctx.request.body.data;
 
-        console.log({
-          partyType,
-          selectedItems,
-          numberOfPeople,
-          eventDuration,
-        });
+        
 
         // Fetch party type details
         const partyTypeDetails = await fetchPartyType(strapi, partyType);
-        console.log(partyTypeDetails);
-
+ 
         // Fetch selected items details
         const selectedItemsDetails = await fetchSelectedItemsDetails(
           strapi,

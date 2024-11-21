@@ -48,7 +48,6 @@ export default function MealPlanSummary({ partyType, selectedItems = {} }: MealP
     // Verifica se a seleção é válida
     const isValid = validateSelection(selectedPartyTypeStructure);
 
-    console.log({ selectedPartyTypeStructure });
 
     // Função para lidar com o envio do pedido
     const handleOrder = async () => {

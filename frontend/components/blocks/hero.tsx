@@ -36,6 +36,7 @@ export default function Hero({ backgroundImage, button, description, heroImage, 
     return (
         <section className="relative z-10 w-full py-12 md:py-48 min-h-screen flex flex-col justify-center bg-neutral-700 overflow-hidden">
             <MotionBackgroundZoom src={backgroundImage.url} alt="Hero" />
+            <span className="absolute inset-0  inset-y-[80%] bottom-0  bg-gradient-to-t  from-neutral-900 " />
             <div className="container px-4 md:px-6 mx-auto relative z-10">
                 <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
                     <div className="flex flex-col justify-center space-y-4">

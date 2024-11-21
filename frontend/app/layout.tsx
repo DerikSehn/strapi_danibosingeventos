@@ -6,6 +6,7 @@ import { Contact, HomeIcon, InfoIcon } from "lucide-react";
 import Footer from "@/components/blocks/footer";
 import { ViewTransitions } from "next-view-transitions";
 
+import { ReactLenis, useLenis } from 'lenis/react'
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -35,16 +36,20 @@ export default function RootLayout({
   ]
 
 
+
   return (
     <ViewTransitions>
       <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
-        >
-          <FloatingNavBar navItems={navItems} />
-          {children}
-          <Footer />
-        </body>
+        <ReactLenis root options={{ touchMultiplier: 0, syncTouch: false }}>
+
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
+          >
+            <FloatingNavBar navItems={navItems} />
+            {children}
+            <Footer />
+          </body>
+        </ReactLenis>
       </html>
     </ViewTransitions>
   );

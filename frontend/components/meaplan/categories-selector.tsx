@@ -18,7 +18,7 @@ export default function CategoriesSelector({ partyType }: { partyType: ApiPartyT
     return (
         < >
             <section className="relative z-10 w-full py-12 md:py-24 lg:py-32 xl:py-48 min-h-screen bg-muted">
-                <MotionBackgroundZoom src={partyType.backgroundImage.url} alt="Hero" />
+                {/* <MotionBackgroundZoom src={partyType.backgroundImage.url} alt="Hero" /> */}
 
                 <div className="relative container px-4 md:px-6 mx-auto">
                     <header className="bg-gradient-to-tr from-neutral-900/80 to-black/70 shadow-lg text-white-900 p-4">

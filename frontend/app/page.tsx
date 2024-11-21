@@ -1,12 +1,8 @@
+import Features from "@/components/blocks/features";
 import Hero from "@/components/blocks/hero";
 import { getStrapiData } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Link } from "next-view-transitions";
-import qs from 'qs'
-import Features from "@/components/blocks/features";
+import qs from 'qs';
 import React from "react";
-
 
 export default async function HomePage() {
   const query = qs.stringify({
@@ -44,8 +40,9 @@ export default async function HomePage() {
     'section.features-section': Features
   }
 
-  console.log({ blocks: strapiData.data.blocks })
   return (<main >
+
+
     {strapiData.data.blocks.map((block: any, index: number) =>
       React.createElement(components[block.__component], { ...block, key: index })
     )}

@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_section_about_sections",
+  "info": {
+    "displayName": "About Section"
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "subHeading": {
+      "type": "text"
+    },
+    "features": {
+      "type": "component",
+      "repeatable": true,
+      "component": "section.feature"
+    }
+  }
+}

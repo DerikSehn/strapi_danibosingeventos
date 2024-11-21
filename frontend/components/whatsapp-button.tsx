@@ -1,8 +1,6 @@
-import Link from "next/link";
-import { Button } from "../ui/button";
-import { MessageCircleIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 import PulsatingButton from "./pulsating-button";
 
 export default function WhatsappButton({ link, className }: { link: string, className?: string }) {

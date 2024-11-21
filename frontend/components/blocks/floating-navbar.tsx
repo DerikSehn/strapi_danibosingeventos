@@ -77,8 +77,8 @@ export const FloatingNavBar = ({
                 textShadow: '1px 1px 1px  gray'
             }}
             className={cn(
-                "flex p-8 pb-2 uppercase font-montserrat tracking-widest fixed top-0 inset-x-0 md:mx-auto transition-colors duration-500 bg-black/50 text-white backdrop-blur-md  z-[5000] items-between justify-between md:space-x-4",
-                isAtTop ? "md:bg-transparent md:bg-gradient-to-t from-neutral-900/80 to-black/70 shadow-lg  " : "",
+                "flex p-8 pb-2 uppercase font-montserrat tracking-widest fixed top-0 inset-x-0 md:mx-auto transition-colors duration-500 bg-black/50 text-white backdrop-blur-sm  z-[5000] items-between justify-between md:space-x-4",
+                isAtTop ? "md:bg-transparent md:bg-gradient-to-t from-neutral-900/20 to-black/20 shadow-lg  " : "",
                 className,
             )}
         >
