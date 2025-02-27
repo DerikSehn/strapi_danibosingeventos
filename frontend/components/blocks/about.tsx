@@ -1,7 +1,9 @@
+"use client";
 import { Star } from "lucide-react";
 import { StrapiImage } from "../strapi-image";
 import GradualSpacing from "../ui/gradual-spacing";
 import FeatureCard from "../cards/feature-card";
+import { motion } from "framer-motion";
 
 
 interface AboutSectionProps {
@@ -17,7 +19,7 @@ interface AboutSectionProps {
     subHeading: string;
 }
 
-export default function AboutSection({ features, heading, subHeading }: AboutSectionProps) {
+export default function AboutSection({ heading, subHeading, features }: AboutSectionProps) {
     return (
         <div className="min-h-screen bg-black text-white flex flex-col justify-center items-center p-8 py-12 md:py-48">
             <div className="max-w-6xl w-full">
@@ -57,19 +59,64 @@ export default function AboutSection({ features, heading, subHeading }: AboutSec
                         </p>
                     </div>
                 </div>
+                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                    <motion.div
+                        className="overflow-visible"
+                        whileInView={{ scale: 1.0, rotate: 5, x: '0%' }}
+                        initial={{ scale: 1.1, rotate: -12, x: '110%' }}
+                        transition={{
+                            ease: 'easeInOut',
+                            bounce: 0.1,
+                            duration: 1
+                        }}
+                        viewport={{
+                            amount: .9
+                        }}
+                    >
+                        <FeatureCard {...features[0]} />
+                    </motion.div>
+                    <motion.div
+                        className="overflow-visible"
+                        whileInView={{ scale: 1.0, rotate: 2, x: "0%" }}
+                        initial={{ scale: 1.3, rotate: 2, x: '3%' }}
+                        transition={{
+                            ease: 'easeInOut',
+                            bounce: 0.5,
+                            duration: 1
+                        }}
+                        viewport={{
+                            amount: .9
+                        }}
+                    >
+                        <FeatureCard {...features[0]} />
 
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {features.map((feature, idx) => (
-                        <FeatureCard key={idx} {...feature} />
-                    ))}
+                    </motion.div>
+
+                    <motion.div
+                        className="overflow-visible"
+                        whileInView={{ scale: 1.0, rotate: -6, x: '0%' }}
+                        initial={{ scale: 1.1, rotate: 12, x: '-110%' }}
+                        transition={{
+                            ease: 'easeInOut',
+                            bounce: 0.5,
+                            duration: 1
+                        }}
+                        viewport={{
+                            amount: .9
+                        }}
+                    >
+                        <FeatureCard {...features[0]} />
+
+
+                    </motion.div>
+
 
                 </div>
-
                 <footer className="mt-24 text-center">
                     <p className="text-2xl font-light italic text-primary-600">
                         "Uma frase de impacto."
                     </p>
-                    <p className="mt-2 text-xl font-semibold">- Chef Élégance</p>
+                    <p className="mt-2 text-xl font-rustic">- Cheff Daniela Bosing</p>
                 </footer>
             </div>
         </div>

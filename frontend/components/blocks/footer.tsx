@@ -23,6 +23,10 @@ const LINKS = [
                 name: "Início",
                 href: '/#',
             },
+            {
+                name: "Entrar no Sistema",
+                href: '/login',
+            },
 
         ],
     },
@@ -77,7 +81,7 @@ export default function Footer() {
                 <div className="flex w-full flex-col items-center justify-between border-t border-neutral-50 py-4 md:flex-row">
                     <div className="flex gap-2">
                         {/* TODO ADD DYNAMIC LINKS */}
-                       <WhatsappButton  link={whatsAppLink}/>
+                        <WhatsappButton link={whatsAppLink} />
 
                     </div>
                     <small className="mb-4 text-center font-normal  md:mb-0">

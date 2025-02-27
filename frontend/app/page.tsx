@@ -40,6 +40,7 @@ export default async function HomePage() {
     'section.features-section': Features
   }
 
+  console.log({ blocks: strapiData.data.blocks })
   return (<main >
 
 

@@ -4,7 +4,7 @@ module.exports = {
       // Path defined with an URL parameter
       method: 'POST',
       path: '/budget/calculate',
-      handler: 'budget.getBudgetCalculation',
+      handler: 'calculate.getBudgetCalculation',
     },
   ],
 };

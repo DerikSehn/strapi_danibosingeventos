@@ -13,7 +13,7 @@ interface ProductListWithVariantsProps {
 }
 
 const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ products, onSelect }) => {
-
+ 
     return (
         <div className=" space-y-4">
             {products.map((product, index) => (

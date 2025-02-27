@@ -12,18 +12,27 @@ interface FeatureCardProps {
     };
 }
 
-export default function FeatureCard({ heading, subHeading, image, className }: FeatureCardProps) {
+export default function FeatureCard({ heading, subHeading, className }: FeatureCardProps) {
 
     return (
-        <div className={cn("bg-gradient-to-br from-primary-100 to-primary-300 p-6 rounded-lg transform rotate-2", className)}>
+        <div className={cn(" p-6 rounded-lg transform  overflow-visible relative w-full", className)}>
             <StrapiImage
-                src={image.url}
+                src={'http://localhost:1337/uploads/image_table_wood_knife_ceb6995746.webp'}
                 alt={heading}
                 fill
-                className="w-12 h-12 text-primary-600 mb-4"
+                className="object-contain object-center scale-[2] z-0 brightness-75"
             />
-            <h3 className="text-2xl font-food mb-2">{heading}</h3>
-            <p>{subHeading}</p>
+            <StrapiImage
+                src={'http://localhost:1337/uploads/logo_strapi_72aec661ef.png'}
+                alt={heading}
+                fill
+                className="object-contain scale-50 opacity-25 z-10"
+            />
+            <span className="relative z-10">
+
+                <h3 className="relative z-10 text-2xl font-food mb-2">{heading}</h3>
+                <p className="relative z-10" >{subHeading}</p>
+            </span>
         </div>
     );
 }

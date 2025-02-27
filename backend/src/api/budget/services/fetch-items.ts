@@ -3,9 +3,9 @@ export async function fetchPartyType(strapi: any, partyType: string) {
     filters: {
       documentId: partyType,
     },
+    populate: '*',
   });
 }
-
 export async function fetchSelectedItemsDetails(
   strapi: any,
   selectedItems: string[],
@@ -18,5 +18,6 @@ export async function fetchSelectedItemsDetails(
           $in: selectedItems,
         },
       },
+      populate: '*',
     });
 }

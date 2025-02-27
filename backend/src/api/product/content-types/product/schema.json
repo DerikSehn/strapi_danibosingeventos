@@ -40,11 +40,6 @@
       "relation": "oneToMany",
       "target": "api::product-variant.product-variant",
       "mappedBy": "product"
-    },
-    "quantity": {
-      "type": "integer",
-      "min": 1,
-      "required": false
     }
   }
 }

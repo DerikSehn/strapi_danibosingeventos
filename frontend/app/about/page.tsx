@@ -1,4 +1,5 @@
 import AboutSection from "@/components/blocks/about";
+import AboutFeatures from "@/components/blocks/about-features";
 import Features from "@/components/blocks/features";
 import Hero from "@/components/blocks/hero";
 import { getStrapiData } from "@/lib/utils";
@@ -9,22 +10,16 @@ export default async function AboutPage() {
     const query = qs.stringify({
         populate: {
             blocks: {
-                populate: {
-                    heroImage: true,
-                    backgroundImage: true,
 
-                },
                 on: {
                     'section.about-section': {
-                        populate: '*'
-                    },
-                    'section.features-section': {
                         populate: {
-                            feature: {
+                            features: {
                                 populate: ['image']
                             }
                         }
-                    }
+                    },
+
 
                 }
 
@@ -37,9 +32,9 @@ export default async function AboutPage() {
 
 
     const components: any = {
-        'section.hero-section': AboutSection,
-        'section.features-section': Features
-    }
+        'section.about-section': AboutSection,
+/*         'section.features-section': AboutFeatures
+ */    }
 
     return (<main >
 

@@ -4,7 +4,8 @@
   "info": {
     "singularName": "category",
     "pluralName": "categories",
-    "displayName": "Category"
+    "displayName": "Category",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -18,12 +19,13 @@
       "type": "string"
     },
     "backgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "products": {
       "type": "relation",
@@ -36,6 +38,10 @@
       "relation": "manyToMany",
       "target": "api::party-type.party-type",
       "inversedBy": "categories"
+    },
+    "quantity_per_people": {
+      "type": "integer",
+      "min": 1
     }
   }
 }

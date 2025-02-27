@@ -18,12 +18,6 @@
     "description": {
       "type": "string"
     },
-    "contactName": {
-      "type": "string"
-    },
-    "contactPhone": {
-      "type": "string"
-    },
     "eventDetails": {
       "type": "text"
     },

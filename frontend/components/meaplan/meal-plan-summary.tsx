@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 // Função para validar a seleção de categorias e produtos
 const validateSelection = (categories: (ApiCategoryCategory['attributes'])[]) => {
     return categories.every(category =>
-        category.products.every(product =>
+        category.products.some(product =>
             !!product.product_variants.length)
     );
 };

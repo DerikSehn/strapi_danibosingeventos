@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 /**
@@ -33,6 +35,8 @@ export const FloatingNavBar = ({
     className?: string;
 }) => {
     const { scrollYProgress } = useScroll();
+
+    const pathName = usePathname()
 
     const [visible, setVisible] = useState(true);
     const [isAtTop, setIsAtTop] = useState(true);
@@ -78,7 +82,7 @@ export const FloatingNavBar = ({
             }}
             className={cn(
                 "flex p-8 pb-2 uppercase font-montserrat tracking-widest fixed top-0 inset-x-0 md:mx-auto transition-colors duration-500 bg-black/50 text-white backdrop-blur-sm  z-[5000] items-between justify-between md:space-x-4",
-                isAtTop ? "md:bg-transparent md:bg-gradient-to-t from-neutral-900/20 to-black/20 shadow-lg  " : "",
+                isAtTop ? (`md:bg-transparent md:bg-gradient-to-t ${pathName === "/" ? "from-neutral-900/20 to-black/20 " : "from-neutral-900/60 to-black/60 "}shadow-lg  `) : "",
                 className,
             )}
         >
