@@ -1,4 +1,6 @@
 import { factories } from '@strapi/strapi';
+import { fetchPartyType, fetchSelectedItemsDetails } from '../services/fetch-items';
+import { calculateBudget } from '../services/calculate-budget';
 
 export default factories.createCoreController(
   'api::budget.budget',
@@ -31,6 +33,52 @@ export default factories.createCoreController(
         ctx.send(updatedBudget);
       } catch (error) {
         ctx.throw(500, error);
+      }
+    },
+    async create(ctx) {
+      const { 
+        partyType, 
+        selectedItems, 
+        contactInfo, 
+        eventDetails, 
+        numberOfPeople, 
+      } = ctx.request.body;
+
+      try {
+        // Validate required fields
+        if (!partyType || !selectedItems || !contactInfo || !numberOfPeople) {
+          return ctx.badRequest('Missing required fields');
+        }
+
+        // Fetch the party type details
+        const partyTypeDetails = await fetchPartyType(strapi, partyType);
+        if (!partyTypeDetails) {
+          return ctx.notFound('Party type not found');
+        }        
+
+        // Fetch the selected items details
+        const selectedItemsDetails = await fetchSelectedItemsDetails(strapi, selectedItems);
+
+        // Calculate the budget
+        const budgetCalculation = calculateBudget(
+          partyTypeDetails as any,
+          selectedItemsDetails as any[],
+          numberOfPeople,
+        );
+
+        // Save the budget to the database
+        const newBudget = await strapi.documents('api::budget.budget').create({
+          data: {
+            partyType,
+            eventDetails,
+            ...budgetCalculation,
+          },
+        });
+
+        ctx.send(newBudget);
+      } catch (error) {
+        console.error('Error creating budget:', error);
+        ctx.throw(500, 'Internal server error');
       }
     },
   }),

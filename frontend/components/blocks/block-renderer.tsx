@@ -17,7 +17,7 @@ const components: Record<string, React.ElementType> = {
   "section.features-section": Features,
 };
 
-export default function BlockRenderer({ blocks }: BlockRendererProps) {
+export default function BlockRenderer({ blocks }: Readonly<BlockRendererProps>) {
   // Se não houver blocos, exibe skeletons (placeholder com animação)
   if (!blocks || blocks.length === 0) {
     return (
@@ -37,9 +37,9 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
       {blocks.map((block: Block, index: number) => {
         const Component = components[block.__component];
         return Component ? (
-          <Component key={index} {...block} />
+          <Component key={block.__component} {...block} />
         ) : (
-          <div key={index} className="p-4 bg-red-100">
+          <div key={block.__component} className="p-4 bg-red-100">
             Componente não encontrado: {block.__component}
           </div>
         );

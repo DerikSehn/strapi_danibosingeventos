@@ -40,6 +40,12 @@
       "relation": "oneToMany",
       "target": "api::product-variant.product-variant",
       "mappedBy": "product"
+    },
+    "product_group": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-group.product-group",
+      "inversedBy": "products"
     }
   }
 }

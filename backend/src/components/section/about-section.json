@@ -1,7 +1,8 @@
 {
   "collectionName": "components_section_about_sections",
   "info": {
-    "displayName": "About Section"
+    "displayName": "About Section",
+    "description": ""
   },
   "options": {},
   "attributes": {

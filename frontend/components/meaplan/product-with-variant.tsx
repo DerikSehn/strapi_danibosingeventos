@@ -1,33 +1,30 @@
 "use client"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ApiProductProduct, ApiProductVariantProductVariant } from "types/generated/contentTypes";
-import { cn } from "@/lib/utils";
-import { StrapiImage } from "../strapi-image";
-import { Checkbox } from "@radix-ui/react-checkbox";
-import CheckboxAnimated from "../checkbox-animated";
-import { useState } from "react";
 import ProductVariant from "./product-variant";
 
 interface ProductListWithVariantsProps {
     products: ApiProductProduct['attributes'][];
-    onSelect: (item: ApiProductVariantProductVariant['attributes']) => void;
 }
 
-const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ products, onSelect }) => {
- 
+const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ products }) => {
+    
     return (
-        <div className=" space-y-4">
+        <Accordion  type="multiple" defaultValue={products.map((_, index) => `product-${index}`)} className="space-y-4">
             {products.map((product, index) => (
-                <div key={index} className="">
-                    <h3 className="text-xl font-semibold">{product.title}</h3>
-                    <p className="text-sm text-muted-foreground">{product.description}</p>
-                    <div className="mt-4 space-y-2">
-                        {product.product_variants?.map((variant: ApiProductVariantProductVariant['attributes'], index: number) => (
-                            <ProductVariant key={index} item={variant} onSelect={onSelect} />
-                        ))}
-                    </div>
-                </div>
+                <AccordionItem key={product.id} value={`product-${index}`}>
+                    <AccordionTrigger className="text-xl font-semibold">{product.title}</AccordionTrigger>
+                    <AccordionContent>
+                        <p className="text-sm text-muted-foreground">{product.description}</p>
+                        <div className="mt-4 space-y-2">
+                            {product.product_variants?.map((variant: ApiProductVariantProductVariant['attributes'], index: number) => (
+                                <ProductVariant key={variant.id} item={variant} />
+                            ))}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
             ))}
-        </div>
+        </Accordion>
     );
 };
 

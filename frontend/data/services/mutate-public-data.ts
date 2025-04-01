@@ -24,7 +24,7 @@ export async function mutatePublicData(
     const data = await response?.json();
     return data;
   } catch (error) {
-    console.log('error', error);
+    console.error('Error mutating public data:', error);
     throw error;
   }
 }

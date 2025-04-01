@@ -276,7 +276,7 @@ Inside our newly created file, let's paste the following code.
 "use server";
 
 export async function registerUserAction(formData: FormData) {
-  console.log("Hello From Register User Action");
+  //console.log("Hello From Register User Action");
 }
 Now let's import our registerUserAction inside our signup-form.tsx file and add it to our form action.
 
@@ -315,7 +315,7 @@ With the following code, let's update our registerUserAction action in the auth-
 "use server";
 
 export async function registerUserAction(formData: FormData) {
-  console.log("Hello From Register User Action");
+  //console.log("Hello From Register User Action");
 
   const fields = {
     username: formData.get("username"),
@@ -323,9 +323,9 @@ export async function registerUserAction(formData: FormData) {
     email: formData.get("email"),
   };
 
-  console.log("#############");
-  console.log(fields);
-  console.log("#############");
+  //console.log("#############");
+  //console.log(fields);
+  //console.log("#############");
 }
 007-form-submit.gif
 
@@ -396,9 +396,9 @@ const INITIAL_STATE = {
 export function SignupForm() {
   const [formState, formAction] = useActionState(registerUserAction, INITIAL_STATE);
 
-  console.log("## will render on client ##");
-  console.log(formState);
-  console.log("###########################");
+  //console.log("## will render on client ##");
+  //console.log(formState);
+  //console.log("###########################");
   
   return (
     <div className="w-full max-w-md">
@@ -460,7 +460,7 @@ Finally, we have to update our registerUserAction action in the auth-actions.ts 
 "use server";
 
 export async function registerUserAction(prevState: any, formData: FormData) {
-  console.log("Hello From Register User Action");
+  //console.log("Hello From Register User Action");
 
   const fields = {
     username: formData.get("username"),
@@ -468,14 +468,14 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     email: formData.get("email"),
   };
 
-  console.log(fields);
+  //console.log(fields);
 
   return {
     ...prevState,
     data: fields,
   };
 }
-When you submit the form, you should see our data console logged in our frontend via our console.log(formState); that we have in our signup-form.tsx file.
+When you submit the form, you should see our data console logged in our frontend via our //console.log(formState); that we have in our signup-form.tsx file.
 
 008-data-front-end.png
 
@@ -520,7 +520,7 @@ Now, let's update our registerUserAction to use our schema to validate our field
 
 
 export async function registerUserAction(prevState: any, formData: FormData) {
-  console.log("Hello From Register User Action");
+  //console.log("Hello From Register User Action");
 
   const validatedFields = schemaRegister.safeParse({
     username: formData.get("username"),
@@ -606,9 +606,9 @@ export function SignupForm() {
     INITIAL_STATE
   );
 
-  console.log("## will render on client ##");
-  console.log(formState);
-  console.log("###########################");
+  //console.log("## will render on client ##");
+  //console.log(formState);
+  //console.log("###########################");
 
   return (
     <div className="w-full max-w-md">
@@ -787,7 +787,7 @@ const schemaRegister = z.object({
 });
 
 export async function registerUserAction(prevState: any, formData: FormData) {
-  console.log("Hello From Register User Action");
+  //console.log("Hello From Register User Action");
 
   const validatedFields = schemaRegister.safeParse({
     username: formData.get("username"),
@@ -824,9 +824,9 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     };
   }
 
-  console.log("#############");
-  console.log("User Registered Successfully", responseData.jwt);
-  console.log("#############");
+  //console.log("#############");
+  //console.log("User Registered Successfully", responseData.jwt);
+  //console.log("#############");
 }
 Notice in the code above, inside of our return we are now returning strapiErrors. We will see how to render them in the front in just a moment, but first, let's test our form and see if we can see our jwt token being returned in our terminal console.
 
@@ -1146,7 +1146,7 @@ export async function getUserMeLoader() {
     if (data.error) return { ok: false, data: null, error: data.error };
     return { ok: true, data: data, error: null };
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     return { ok: false, data: null, error: error };
   }
 }
@@ -1284,7 +1284,7 @@ export async function loginUserAction(prevState: any, formData: FormData) {
     };
   }
 
-  console.log(responseData, "responseData");
+  //console.log(responseData, "responseData");
 
   const cookieStore = await cookies();
   cookieStore.set("jwt", responseData.jwt, config);

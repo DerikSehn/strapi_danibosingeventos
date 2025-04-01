@@ -24,9 +24,9 @@ export function StrapiImage({
 
   return imageUrl || imageFallback ? (
     <Image
-      src={imageUrl ?? imageFallback!}
+      src={imageUrl!}
       alt={alt}
-      height={height}
+      height={height} 
       width={width}
       className={cn(className)}
       {...rest}

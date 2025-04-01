@@ -99,7 +99,7 @@ const { result } = event;
 
             })
         } catch(err) {
-            console.log(err);
+            //console.log(err);
         }
     }
 

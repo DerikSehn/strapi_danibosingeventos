@@ -1,22 +1,11 @@
 "use client"
+import { ApiCategoryCategory, ApiPartyTypePartyType } from "types/generated/contentTypes";
 import CategoryCard from "./category-card";
-import { ApiPartyTypePartyType } from "types/generated/contentTypes";
 import MealPlanSummary from "./meal-plan-summary";
-import { useState } from "react";
-import MotionBackgroundZoom from "../motion/motion-background-zoom";
 
-export default function CategoriesSelector({ partyType }: { partyType: ApiPartyTypePartyType['attributes'] }) {
-    const [selectedItems, setSelectedItems] = useState<Record<string, any[]>>({});
+export default function CategoriesSelector({ partyType }: Readonly<{ partyType: ApiPartyTypePartyType['attributes'] }>) {
 
-    const handleSelectProductVariant = (id: string, item: any) => {
-        setSelectedItems(pvSt => ({
-            ...selectedItems,
-            [id]: pvSt[id] ? null : item
-        }));
-    };
-
-    return (
-        < >
+    return ( 
             <section className="relative z-10 w-full py-12 md:py-24 lg:py-32 xl:py-48 min-h-screen bg-muted">
                 {/* <MotionBackgroundZoom src={partyType.backgroundImage.url} alt="Hero" /> */}
 
@@ -26,16 +15,15 @@ export default function CategoriesSelector({ partyType }: { partyType: ApiPartyT
                     </header>
                     <div className="md:relative md:grid md:grid-cols-3 gap-6">
                         <div className="md:col-span-2 space-y-6 my-6">
-                            {partyType?.categories.map((item: any, index: any) => (
-                                <CategoryCard key={index} item={item} onSelect={handleSelectProductVariant} />
+                            {partyType?.categories.map((category: ApiCategoryCategory['attributes'] ) => (
+                                <CategoryCard key={category.documentId} item={category}  />
                             ))}
                         </div>
                         <span className=" my-6">
-                            <MealPlanSummary partyType={partyType} selectedItems={selectedItems} />
+                            <MealPlanSummary partyType={partyType}  />
                         </span>
                     </div>
                 </div>
-            </section>
-        </>
+            </section> 
     )
 }

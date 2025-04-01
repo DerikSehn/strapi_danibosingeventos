@@ -1,83 +1,66 @@
+"use client";
 import { useState } from "react";
-import { ApiCategoryCategory, ApiPartyTypePartyType } from "types/generated/contentTypes";
-import SummaryCard from "./summary-card";
+import { ApiCategoryCategory, ApiPartyTypePartyType, ApiProductProduct, ApiProductVariantProductVariant } from "types/generated/contentTypes";
 import MealPlanDetails from "./details";
 import OrderForm from "./order-form";
-import { calculateBudget } from "app/actions";
-import { useFormState } from "react-use-form-state";
-import { cn } from "@/lib/utils";
+import SummaryCard from "./summary-card";
+import { useMealItemsStore } from "@/lib/store/meal-items-store";
+import { useBudget } from "@/lib/context/budget-context";
+import { Button } from "../ui/button";
 
 // Função para validar a seleção de categorias e produtos
-const validateSelection = (categories: (ApiCategoryCategory['attributes'])[]) => {
-    return categories.every(category =>
-        category.products.some(product =>
-            !!product.product_variants.length)
+const validateSelection = (categories: any[]) => {
+    // Check if there are any selected items
+    return categories.some(category =>
+        category.products.some((product: { product_variants: string | any[]; }) =>
+            product.product_variants.length > 0)
     );
 };
 
 interface MealPlanSummaryProps {
     partyType: ApiPartyTypePartyType['attributes'];
-    selectedItems: Record<string, any[]>;
 }
 
-export default function MealPlanSummary({ partyType, selectedItems = {} }: MealPlanSummaryProps) {
+export default function MealPlanSummary({ partyType }: Readonly<MealPlanSummaryProps>) {
     const [step, setStep] = useState(1);
-    const [formState, { text, number }] = useFormState({
-        numberOfPeople: 20,
-        eventDuration: 4,
-        eventDetails: "",
-        contactName: "",
-        contactPhone: ""
-    });
-
-    // Filtra os itens selecionados
-    const selectedMeals = Object.values(selectedItems).filter(Boolean);
-
-    // Calcula o preço total dos itens selecionados
-    const totalPrice = selectedMeals.reduce((total, meal) => total + meal.price, 0);
+    const { selectedItems} = useMealItemsStore();
+    const { formValues, updateFormValues, createBudget, budgetResult, isLoading, error } = useBudget();
 
     // Estrutura os tipos de festa selecionados
-    const selectedPartyTypeStructure = partyType.categories.map(category => ({
+    const filterSelectedVariants = (variants: ApiProductVariantProductVariant['attributes'][]) => {
+        return variants.filter(variant => selectedItems.some(item => item.id === variant.id));
+    };
+
+    const selectedPartyTypeStructure = partyType.categories.map((category: ApiCategoryCategory['attributes']) => ({
         ...category,
-        products: category.products.map(product => ({
+        products: category.products.map((product: ApiProductProduct['attributes']) => ({
             ...product,
-            product_variants: product.product_variants.filter(pv => pv.id in selectedItems && selectedItems[pv.id])
+            product_variants: filterSelectedVariants(product.product_variants)
         }))
     }));
 
     // Verifica se a seleção é válida
     const isValid = validateSelection(selectedPartyTypeStructure);
 
-
     // Função para lidar com o envio do pedido
     const handleOrder = async () => {
-        try {
-            const data = await calculateBudget({
-                partyTypeId: partyType.documentId,
-                selectedItemIds: selectedMeals.map(meal => meal.documentId),
-                numberOfPeople: formState.values.numberOfPeople,
-                eventDuration: formState.values.eventDuration,
-                eventDetails: formState.values.eventDetails
-            });
-
-            if (data.success) {
-                alert('Orçamento enviado com sucesso!');
-            } else {
-                alert('Erro ao enviar orçamento. Por favor, tente novamente.');
-            }
-        } catch (error) {
-            alert('Erro ao enviar orçamento. Por favor, tente novamente.');
-        }
+        // Pass the full items for now, our updated budget context will extract IDs
+        await createBudget(partyType);
+        setStep(2); // Move to result step after submitting
     };
 
     // Função para avançar para o próximo passo
     const handleNextStep = () => {
         setStep(step + 1);
-
+    };
+    
+    // Função para voltar ao passo anterior
+    const handleBack = () => {
+        setStep(step - 1);
     };
 
     return (
-        <SummaryCard >
+        <SummaryCard>
             {step === 1 && (
                 <MealPlanDetails
                     selectedPartyTypeStructure={selectedPartyTypeStructure}
@@ -87,12 +70,35 @@ export default function MealPlanSummary({ partyType, selectedItems = {} }: MealP
             )}
             {step === 2 && (
                 <OrderForm
-                    formState={formState}
-                    text={text}
-                    number={number}
+                    formValues={formValues}
+                    updateFormValues={updateFormValues}
                     handleOrder={handleOrder}
-                    handleBack={() => setStep(step - 1)}
+                    handleBack={handleBack}
+                    isLoading={isLoading}
                 />
+            )}
+            {step === 3 && budgetResult && (
+                <div className="space-y-4">
+                    <h2 className="text-2xl font-bold">Orçamento Finalizado</h2>
+                    {error ? (
+                        <div className="text-red-500 p-4 bg-red-50 rounded-md">
+                            {error}
+                        </div>
+                    ) : (
+                        <>
+                            <div className="space-y-2 p-4 bg-green-50 rounded-md">
+                                <p>Seu orçamento foi enviado com sucesso!</p>
+                                <p>Em breve entraremos em contato pelo telefone {formValues.contactPhone}.</p>
+                            </div>
+                            
+                            <div className="pt-4">
+                                <Button onClick={() => window.location.href = '/cardapio'} className="w-full">
+                                    Voltar ao Catálogo
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </div>
             )}
         </SummaryCard>
     );

@@ -49,9 +49,28 @@ export interface PeopleContact extends Struct.ComponentSchema {
   };
 }
 
+export interface PhraseImpactPhrase extends Struct.ComponentSchema {
+  collectionName: 'components_phrase_impact_phrases';
+  info: {
+    displayName: 'Impact Phrase';
+  };
+  attributes: {
+    author: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+    phrase: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 220;
+      }>;
+  };
+}
+
 export interface SectionAboutSection extends Struct.ComponentSchema {
   collectionName: 'components_section_about_sections';
   info: {
+    description: '';
     displayName: 'About Section';
   };
   attributes: {
@@ -111,6 +130,7 @@ declare module '@strapi/strapi' {
       'button.cta-button': ButtonCtaButton;
       'landing-page.background': LandingPageBackground;
       'people.contact': PeopleContact;
+      'phrase.impact-phrase': PhraseImpactPhrase;
       'section.about-section': SectionAboutSection;
       'section.feature': SectionFeature;
       'section.features-section': SectionFeaturesSection;

@@ -1,24 +1,33 @@
 "use client";
-import MotionEntrance from "../motion/motion-entrance";
 import MotionSlidingHeading from "../motion/motion-sliding-heading";
 import StickyScrollReveal from "../motion/sticky-scroll-reveal";
 import { StrapiImage } from "../strapi-image";
 import TextRevealByWord from "../ui/text-reveal";
 
+type Feature = {
+    heading: string;
+    subHeading: string;
+    image: {
+        url: string;
+        name: string;
+        documentId: string;
+    };
+};
+
 interface FeaturesProps {
     title: string;
     description: string;
-    feature: any[];
+    feature: Feature[];
 }
 
-export default function Features({ title, description, feature }: FeaturesProps) {
+export default function Features({ title, description, feature }: Readonly<FeaturesProps>) {
 
 
-    const content = feature.map((item: any, index: number) => {
+    const content = feature.map((item: Feature, index: number) => {
         return {
             title: item.heading,
             description: item.subHeading,
-            content: <StrapiImage key={index} alt="Feature" src={item.image.url} fill className="object-cover object-center" />
+            content: <StrapiImage key={item.heading} alt="Feature" src={item.image.url} fill className="object-cover object-center" />
         }
     })
 

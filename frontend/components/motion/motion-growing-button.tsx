@@ -6,7 +6,7 @@ interface MotionGrowingButtonProps {
     className?: string;
 }
 
-export default function MotionGrowingButton({ children, className, ...props }: MotionGrowingButtonProps) {
+export default function MotionGrowingButton({ children, className, ...props }: Readonly<MotionGrowingButtonProps>) {
 
     return (<motion.button {...props}
         whileHover={{

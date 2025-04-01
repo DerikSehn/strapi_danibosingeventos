@@ -1,10 +1,8 @@
 "use client";
 import { Star } from "lucide-react";
+import FeatureCard from "../cards/feature-card";
 import { StrapiImage } from "../strapi-image";
 import GradualSpacing from "../ui/gradual-spacing";
-import FeatureCard from "../cards/feature-card";
-import { motion } from "framer-motion";
-
 
 interface AboutSectionProps {
     features: {
@@ -19,7 +17,7 @@ interface AboutSectionProps {
     subHeading: string;
 }
 
-export default function AboutSection({ heading, subHeading, features }: AboutSectionProps) {
+export default function AboutSection({ heading, subHeading, features }: Readonly<AboutSectionProps>) {
     return (
         <div className="min-h-screen bg-black text-white flex flex-col justify-center items-center p-8 py-12 md:py-48">
             <div className="max-w-6xl w-full">
@@ -32,8 +30,8 @@ export default function AboutSection({ heading, subHeading, features }: AboutSec
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div className="relative  min-h-[590px] ">
-                        <div className="absolute -top-4  min-h-[590px] -left-4 w-full h-full border-2 border-primary-600"></div>
+                    <div className="relative  min-h-[590px] group ">
+                        <div className="absolute group-hover:top-4 group-hover:left-4 duration-500 transition-all -top-4  min-h-[590px] -left-4 w-full h-full border-2 border-primary-600"/>
                         <StrapiImage
                             src="/uploads/daniela_photo_06a81ad4b4.jpg"
                             alt="Chef Élégance"
@@ -59,58 +57,12 @@ export default function AboutSection({ heading, subHeading, features }: AboutSec
                         </p>
                     </div>
                 </div>
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-                    <motion.div
-                        className="overflow-visible"
-                        whileInView={{ scale: 1.0, rotate: 5, x: '0%' }}
-                        initial={{ scale: 1.1, rotate: -12, x: '110%' }}
-                        transition={{
-                            ease: 'easeInOut',
-                            bounce: 0.1,
-                            duration: 1
-                        }}
-                        viewport={{
-                            amount: .9
-                        }}
-                    >
-                        <FeatureCard {...features[0]} />
-                    </motion.div>
-                    <motion.div
-                        className="overflow-visible"
-                        whileInView={{ scale: 1.0, rotate: 2, x: "0%" }}
-                        initial={{ scale: 1.3, rotate: 2, x: '3%' }}
-                        transition={{
-                            ease: 'easeInOut',
-                            bounce: 0.5,
-                            duration: 1
-                        }}
-                        viewport={{
-                            amount: .9
-                        }}
-                    >
-                        <FeatureCard {...features[0]} />
-
-                    </motion.div>
-
-                    <motion.div
-                        className="overflow-visible"
-                        whileInView={{ scale: 1.0, rotate: -6, x: '0%' }}
-                        initial={{ scale: 1.1, rotate: 12, x: '-110%' }}
-                        transition={{
-                            ease: 'easeInOut',
-                            bounce: 0.5,
-                            duration: 1
-                        }}
-                        viewport={{
-                            amount: .9
-                        }}
-                    >
-                        <FeatureCard {...features[0]} />
-
-
-                    </motion.div>
-
-
+                
+                <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 relative z-10">
+                   {features.map((feature) =>
+                        <FeatureCard key={feature.heading} {...feature} />
+                    )
+                    }
                 </div>
                 <footer className="mt-24 text-center">
                     <p className="text-2xl font-light italic text-primary-600">

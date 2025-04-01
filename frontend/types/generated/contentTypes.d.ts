@@ -424,6 +424,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    [x: string]: Key | null | undefined;
     backgroundImage: Schema.Attribute.Media<'images' | 'files'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -482,6 +483,7 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
 }
 
 export interface ApiPartyTypePartyType extends Struct.CollectionTypeSchema {
+  documentId: number;
   collectionName: 'party_types';
   info: {
     description: '';
@@ -493,6 +495,7 @@ export interface ApiPartyTypePartyType extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    documentId: number;
     backgroundImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
@@ -532,6 +535,8 @@ export interface ApiProductVariantProductVariant
     draftAndPublish: true;
   };
   attributes: {
+    documentId: string;
+    id: string;
     budgets: Schema.Attribute.Relation<'manyToMany', 'api::budget.budget'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -566,6 +571,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    id: any;
     category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

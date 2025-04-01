@@ -1,18 +1,16 @@
 "use client";
+import { motion } from "framer-motion";
 import { Link } from "next-view-transitions";
-import { StrapiImage } from "../strapi-image";
-import { Button } from "../ui/button";
-import { motion, useScroll, useTransform } from "framer-motion";
-import MotionEntrance from "../motion/motion-entrance";
-import React, { useRef } from "react";
+import MotionBackgroundZoom from "../motion/motion-background-zoom";
 import MotionGlowingHeading from "../motion/motion-glowing-heading";
 import MotionGrowingButton from "../motion/motion-growing-button";
-import MotionBackgroundZoom from "../motion/motion-background-zoom";
+import { StrapiImage } from "../strapi-image";
+import { Button } from "../ui/button";
 
 type ButtonProps = {
     href: string;
     title: string;
-    variation: string;
+    variation:  'default' |'destructive' |'outline' |'secondary' |'ghost' |'link'
 }
 
 interface HeroProps {
@@ -31,13 +29,15 @@ interface HeroProps {
     title: string;
 }
 
-export default function Hero({ backgroundImage, button, description, heroImage, title }: HeroProps) {
+export default function Hero({ backgroundImage, button, description, heroImage, title }: Readonly<HeroProps>) {
 
     return (
         <section className="relative z-10 w-full py-12 md:py-48 min-h-screen flex flex-col justify-center bg-neutral-700 overflow-hidden">
             <MotionBackgroundZoom src={backgroundImage.url} alt="Hero" />
-            <span className="absolute inset-0  inset-y-[80%] bottom-0  bg-gradient-to-t  from-neutral-900 " />
-            <div className="container px-4 md:px-6 mx-auto relative z-10">
+
+         <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 from-10% to-neutral-900/20 z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-20% z-0"></div>            
+        <div className="container px-4 md:px-6 mx-auto relative z-10">
                 <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
                     <div className="flex flex-col justify-center space-y-4">
                         <div className="space-y-2">
@@ -52,17 +52,23 @@ export default function Hero({ backgroundImage, button, description, heroImage, 
                             {button.map(renderButtons)}
                         </div>
                     </div>
-                    <figure className="relative min-h-[550px] min-w-[550px]">
-                        <MotionEntrance className="bottom-0 size-40">
+                    <motion.figure 
+                     initial={{ opacity: 0, scale: 0.9 }}
+                     animate={{ opacity: 1, scale: 1 }}
+                     transition={{ duration: 1 }}
+                    
+                    className="relative  min-h-[550px] min-w-[550px] ">
+                   
+                        
                             <StrapiImage
                                 alt="Hero"
-                                height={550}
-                                width={550}
-                                className="select-none object-cover aspect-square rounded-full"
+                                fill    
+                                                            
+                                className="select-none object-contain aspect-square scale-[1.8]"
                                 src={heroImage[0].url}
-                            />
-                        </MotionEntrance>
-                        <MotionEntrance className="size-96 right-10 top-32">
+                                />
+                         
+                        {/* <MotionEntrance className="size-96 right-10 top-32">
                             <StrapiImage
                                 alt="Hero"
                                 height={550}
@@ -79,8 +85,8 @@ export default function Hero({ backgroundImage, button, description, heroImage, 
                                 className="select-none object-cover aspect-square rounded-full"
                                 src={heroImage[2].url}
                             />
-                        </MotionEntrance>
-                    </figure>
+                        </MotionEntrance> */}
+                    </motion.figure>
                 </div>
             </div>
         </section >
@@ -89,7 +95,13 @@ export default function Hero({ backgroundImage, button, description, heroImage, 
 
 function renderButtons(btn: ButtonProps, index: number) {
 
-    const Component = () => React.createElement((btn.variation === 'default' ? MotionGrowingButton : Button), { variant: btn.variation, size: 'lg', className: "font-food text-3xl bg-primary-700" }, btn.title);
+ 
+    const Component = () => {
+        if (btn.variation === 'default') {
+            return <MotionGrowingButton className="font-food text-3xl bg-primary-700">{btn.title}</MotionGrowingButton>;
+        }
+        return <Button variant={btn.variation} size="lg" className="font-food text-3xl bg-primary-700">{btn.title}</Button>;
+    };
     return (
         <Link key={index} href={btn.href}>
             <Component />

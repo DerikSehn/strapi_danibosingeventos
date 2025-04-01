@@ -3,7 +3,9 @@ import Hero from "@/components/blocks/hero";
 import { getStrapiData } from "@/lib/utils";
 import qs from 'qs';
 import React from "react";
+import DynamicComponentProps from "types/dynamic-component-props";
 
+ 
 export default async function HomePage() {
   const query = qs.stringify({
     populate: {
@@ -31,21 +33,17 @@ export default async function HomePage() {
     },
     encodeValuesOnly: true
   });
-
   const strapiData = await getStrapiData(`/api/home-page?${query}`);
 
-
-  const components: any = {
+  const components: DynamicComponentProps = {
     'section.hero-section': Hero,
     'section.features-section': Features
   }
 
-  console.log({ blocks: strapiData.data.blocks })
+
   return (<main >
-
-
     {strapiData.data.blocks.map((block: any, index: number) =>
-      React.createElement(components[block.__component], { ...block, key: index })
+      React.createElement(components[block.__component], { ...block, key: block.__component })
     )}
   </main>
   );

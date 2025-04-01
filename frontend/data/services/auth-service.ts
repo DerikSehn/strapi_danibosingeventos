@@ -1,5 +1,4 @@
 import { getStrapiURL } from '@/lib/utils';
-import { cookies } from 'next/headers';
 
 interface RegisterUserProps {
   username: string;
@@ -14,13 +13,6 @@ interface LoginUserProps {
 
 const baseUrl = getStrapiURL();
 
-const config = {
-  maxAge: 60 * 60 * 24 * 7, // 1 week
-  path: '/',
-  domain: process.env.HOST ?? 'localhost',
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-};
 
 export async function registerUserService(userData: RegisterUserProps) {
   const url = new URL('/api/auth/local/register', baseUrl);
@@ -52,7 +44,6 @@ export async function loginUserService(userData: LoginUserProps) {
       body: JSON.stringify({ ...userData }),
     });
 
-    console.log('response:', response);
 
     return response.json();
   } catch (error) {

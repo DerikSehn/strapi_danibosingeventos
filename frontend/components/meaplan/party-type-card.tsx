@@ -4,7 +4,18 @@ import { StrapiImage } from '../strapi-image';
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 
-export default function PartyTypeCard({ title, id, caption, description, backgroundImage, categories }) {
+interface PartyTypeCardProps {
+    title: string;
+    id: string;
+    caption: string;
+    description: string;
+    backgroundImage: {
+        url: string;
+    };
+    categories: any[];
+}
+
+export default function PartyTypeCard({ title, id, caption, description, backgroundImage, categories }: PartyTypeCardProps) {
     return (
         <Link href={`/cardapio/${caption}`}
             className=' h-[400px] max-h-[60vh]'
@@ -45,9 +56,6 @@ export default function PartyTypeCard({ title, id, caption, description, backgro
                             ))}
                         </div>
 
-                    </span>
-                    <span className=" absolute z-0 bottom-0 left-1/2 scale-150  flex-grow text-9xl -rotate-12 font-moglan text-black-500/10 ">
-                        {title}
                     </span>
                 </div>
 

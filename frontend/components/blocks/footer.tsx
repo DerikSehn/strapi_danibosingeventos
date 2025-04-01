@@ -34,7 +34,7 @@ const LINKS = [
 
 
 const phoneNumber = "(51) 99671-5643";
-const message = "Olá, tudo bem? ";
+const message = "Olá, tudo bem? Vi no seu site que vocês oferecem serviços de buffet e gostaria de saber mais informações sobre os serviços oferecidos. Poderia me ajudar?";
 
 const whatsAppLink = generateWhatsAppLink({ phoneNumber, message });
 const currentYear = new Date().getFullYear();
@@ -42,7 +42,7 @@ const currentYear = new Date().getFullYear();
 export default function Footer() {
 
     return (
-        <footer className="relative w-full py-20 min-h-[600px] h-auto bg-primary-200">
+        <footer className="relative w-full py-20 min-h-[600px] h-auto bg-neutral-900">
             <div className="mx-auto w-full max-w-screen-2xl px-8 text-neutral-400">
                 <div className="grid grid-cols-1 md:grid-cols-[1.5fr_0.5fr_0.5fr] gap-4">
                     <div className="not-prose flex flex-col gap-6">
@@ -80,7 +80,6 @@ export default function Footer() {
                 </div>
                 <div className="flex w-full flex-col items-center justify-between border-t border-neutral-50 py-4 md:flex-row">
                     <div className="flex gap-2">
-                        {/* TODO ADD DYNAMIC LINKS */}
                         <WhatsappButton link={whatsAppLink} />
 
                     </div>

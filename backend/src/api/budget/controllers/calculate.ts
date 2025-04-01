@@ -2,73 +2,73 @@
  * budget controller
  */
 
-import {
-  fetchPartyType,
-  fetchSelectedItemsDetails,
-} from '../services/fetch-items';
-import { calculateBudget } from '../services/calculate-budget';
-import { sendBudgetEmail } from '../services/send-email';
 import { factories } from '@strapi/strapi';
+import { calculateBudget } from '../services/calculate-budget';
+import { fetchSelectedItemsDetails } from '../services/fetch-items';
+import { sendBudgetEmail } from '../services/send-email';
 
 export default factories.createCoreController(
   'api::budget.budget',
   ({ strapi }) => ({
     async getBudgetCalculation(ctx) {
-      try {
-        const {
-          partyType,
-          selectedItems,
-          numberOfPeople,
-          eventDuration,
-          eventDate,
-        } = ctx.request.body.data;
+    try {
+      const { partyType, selectedItems, numberOfPeople, eventDetails, contactInfo } = ctx.request.body.data;
 
-        console.log(partyType);
-
-        // Fetch party type details
-        const partyTypeDetails = await fetchPartyType(strapi, partyType);
-
-        // Fetch selected items details
-        const selectedItemsDetails = await fetchSelectedItemsDetails(
-          strapi,
-          selectedItems,
-        );
-
-        // Calculate budget
-        const budget = calculateBudget(
-          partyTypeDetails,
-          selectedItemsDetails,
-          numberOfPeople,
-          eventDuration,
-        );
-
-        /* const item: ApiBudgetBudget['attributes'] = {
-          extraHours: budget.extraHours,
-          totalPrice: budget.totalPrice,
-          eventDate,
-        };
-
-        const result = await createBudget(item); */
-
-        console.log('selectedItemsDetails:', selectedItemsDetails);
-
-        // Send email with budget details
-        await sendBudgetEmail(
-          strapi,
-          partyTypeDetails,
-          selectedItemsDetails,
-          numberOfPeople,
-          eventDuration,
-          budget.totalPrice,
-        );
-
-        return {
-          totalPrice: budget.totalPrice,
-        };
-      } catch (error) {
-        console.error('Erro ao calcular o orçamento:', error);
-        throw error;
+      
+      // Validate required fields
+      if (!partyType || !selectedItems || !contactInfo || !numberOfPeople) {
+        return ctx.badRequest('Missing required fields');
       }
-    },
-  }),
+      // Fetch party type details
+      const partyTypeDetails = await strapi.documents('api::party-type.party-type').findFirst({
+        filters: { documentId: partyType },
+        populate: '*',
+      });
+      if (!partyTypeDetails) {
+        return ctx.notFound('Party type not found');
+      }
+      
+      // Fetch selected items details
+      const selectedItemsDetails = await fetchSelectedItemsDetails(strapi, selectedItems);
+      if (!selectedItemsDetails || selectedItemsDetails.length === 0) {
+        return ctx.notFound('No selected items found');
+      }
+      // Calculate budget
+      const budgetCalculation = calculateBudget(
+        partyTypeDetails as any,
+        selectedItemsDetails as any,
+        numberOfPeople,
+      );
+      strapi.log.debug('Budget calculation:', budgetCalculation);
+      // Create budget in database
+      const newBudget = await strapi.documents('api::budget.budget').create({
+        data: {
+          partyType,
+          eventDetails,
+          ...budgetCalculation,
+        },
+      });
+      strapi.log.debug('New budget created:', newBudget);
+
+      // 
+      if (contactInfo?.email) {
+        await sendBudgetEmail({
+          name: contactInfo.name,
+          email: contactInfo.email,
+          phone: contactInfo.phone,
+          eventDetails,
+          numberOfPeople,
+          totalPrice: budgetCalculation.totalPrice,
+          selectedItemsDetails,
+          strapi,
+        });
+      }
+      const result = { ...newBudget, success: true}
+
+      return result
+    } catch (error) {
+      ctx.throw(500, error);
+    }
+  },
+}),
 );

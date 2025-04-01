@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_phrase_impact_phrases",
+  "info": {
+    "displayName": "Impact Phrase"
+  },
+  "options": {},
+  "attributes": {
+    "phrase": {
+      "type": "text",
+      "maxLength": 220
+    },
+    "author": {
+      "type": "string",
+      "maxLength": 60,
+      "required": true
+    }
+  }
+}

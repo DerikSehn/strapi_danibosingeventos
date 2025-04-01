@@ -30,9 +30,6 @@ export function SignupForm() {
         INITIAL_STATE
     );
 
-    console.log("## will render on client ##");
-    console.log(formState);
-    console.log("###########################");
 
     return (
         <div className="w-full max-w-md mx-auto">
