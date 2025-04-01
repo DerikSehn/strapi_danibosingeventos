@@ -26,7 +26,7 @@ const INITIAL_STATE = {
     message: null,
 };
 
-export function SigninForm() {
+export default function SigninForm() {
     const [formState, formAction] = useActionState(loginUserAction, INITIAL_STATE);
     return (
         <div className="w-full max-w-md mx-auto">
