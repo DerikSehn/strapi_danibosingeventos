@@ -35,7 +35,7 @@ export default async function AboutPage() {
     return (<main >
 
 
-        {strapiData.data?.blocks.map((block: any, index: number) =>
+        {strapiData.data?.blocks.map((block: any) =>
             React.createElement(components[block.__component], { ...block, key: block.__component })
         )}
     </main>
