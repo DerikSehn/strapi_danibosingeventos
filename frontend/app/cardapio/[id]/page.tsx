@@ -24,7 +24,7 @@ export default async function CategoriesPage({ params }: any) {
         }
     });
     const result = (await getStrapiData(`/api/party-types?${query}`));
-    const partyType: ApiPartyTypePartyType['attributes'] = result.data[0];
+    const partyType: ApiPartyTypePartyType['attributes'] = result.data?.[0];
 
     return (
         <CategoriesSelector partyType={partyType} />

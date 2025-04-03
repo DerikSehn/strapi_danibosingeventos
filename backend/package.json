@@ -4,7 +4,8 @@
   "private": true,
   "description": "Strapi System to calculate the budgets and stock inventories",
   "scripts": {
-    "build": "bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\" && nvm install 20 && nvm use 20 && yarn install && yarn strapi import -f my-strapi-export.tar.gz --exclude files && strapi build'",
+    "setup": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && nvm install 20 && nvm use 20 && strapi import -f my-strapi-export.tar.gz --exclude files",
+    "build": "strapi build",
     "deploy": "strapi deploy",
     "develop": "strapi develop",
     "start": "strapi start",
