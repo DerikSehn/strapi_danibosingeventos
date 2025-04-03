@@ -16,7 +16,7 @@ export default async function CardapioPage() {
                 <div >
                     <h2 className="text-2xl w-full text-center font-semibold mb-4 text-primary-800 xl:text-5xl">Como você quer montar seu Cardápio?</h2>
                     <div className=" grid lg:grid-cols-2 mt-20 gap-10">
-                        {data.map((item: any, index: any) =>
+                        {data?.map((item: any, index:number) =>
                             <PartyTypeCard key={index} {...item} />
                         )}
                     </div>
