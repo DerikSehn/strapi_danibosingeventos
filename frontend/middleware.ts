@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const protectedRoutes = [
-  '/dashboard',
+  // '/dashboard', // Commented out protected routes
 ];
 
 function isProtectedRoute(path: string): boolean {
@@ -10,6 +10,10 @@ function isProtectedRoute(path: string): boolean {
 }
 
 export async function middleware(request: NextRequest) {
+  // Always allow access for now
+  return NextResponse.next();
+  
+  /* Disabled authentication logic
   const currentPath = request.nextUrl.pathname;
 
   if (isProtectedRoute(currentPath)) {
@@ -29,8 +33,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/signin', request.url));
     }
   }
-
-  return NextResponse.next();
+  */
 }
 
 export const config = {
