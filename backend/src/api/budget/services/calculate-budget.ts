@@ -43,9 +43,12 @@ export function calculateBudget(
 
   // Calculate number of waiters and waiter price
   const numberOfWaiters = Math.ceil(numberOfPeople / 25);
-  const waiterPrice = numberOfWaiters * 200;
+
+  // TODO possibility to put a custom value for the waiter price
+  const waiterPrice = numberOfWaiters * 260
 
   const partyTypeDuration = partyTypeDetails?.duration || 4;
+  // TODO possibility to put a custom profit value
   const partyTypePrice = typeof partyTypeDetails?.price === 'number' ? partyTypeDetails.price : 800;
 
   // Calculate extra hours and extra hour price

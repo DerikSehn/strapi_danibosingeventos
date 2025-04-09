@@ -81,10 +81,9 @@ export default function Footer() {
                 <div className="flex w-full flex-col items-center justify-between border-t border-neutral-50 py-4 md:flex-row">
                     <div className="flex gap-2">
                         <WhatsappButton link={whatsAppLink} />
-
                     </div>
                     <small className="mb-4 text-center font-normal  md:mb-0">
-                        by: <a href="https://github.com/DerikSehn">Derik Sehn</a>.
+                        by: <a href="https://devsehn.com.br">Derik Sehn</a>.
                     </small>
                     <small className="mb-4 text-center font-normal  md:mb-0">
                         &copy; {currentYear} <a href="https://danibosingeventos.com.br/">Cheff Daniela Bosing</a>. All Rights Reserved.

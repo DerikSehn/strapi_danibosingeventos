@@ -34,15 +34,14 @@ export default function Hero({ backgroundImage, button, description, heroImage, 
     return (
         <section className="relative z-10 w-full py-12 md:py-48 min-h-screen flex flex-col justify-center bg-neutral-700 overflow-hidden">
             <MotionBackgroundZoom src={backgroundImage.url} alt="Hero" />
-
          <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 from-10% to-neutral-900/20 z-0"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-20% z-0"></div>            
         <div className="container px-4 md:px-6 mx-auto relative z-10">
                 <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-                    <div className="flex flex-col justify-center space-y-4">
+                    <div className="relative z-50 flex flex-col justify-center space-y-4 backdrop-blur-lg bg-neutral-900 rounded-lg shadow-lg lg:rounded-lg lg:shadow-lg">
                         <div className="space-y-2">
                             <MotionGlowingHeading>
-                                {title}
+                              {title}
                             </MotionGlowingHeading>
                             <p className="max-w-[600px] md:text-xl text-white">
                                 {description}
@@ -56,36 +55,13 @@ export default function Hero({ backgroundImage, button, description, heroImage, 
                      initial={{ opacity: 0, scale: 0.9 }}
                      animate={{ opacity: 1, scale: 1 }}
                      transition={{ duration: 1 }}
-                    
-                    className="relative  min-h-[550px] min-w-[550px] ">
-                   
-                        
+                     className="relative  min-h-[550px] min-w-[550px] ">
                             <StrapiImage
                                 alt="Hero"
-                                fill    
-                                                            
+                                fill                
                                 className="select-none object-contain aspect-square scale-[1.8]"
                                 src={heroImage[0].url}
                                 />
-                         
-                        {/* <MotionEntrance className="size-96 right-10 top-32">
-                            <StrapiImage
-                                alt="Hero"
-                                height={550}
-                                width={550}
-                                className="select-none object-cover aspect-square rounded-full"
-                                src={heroImage[1].url}
-                            />
-                        </MotionEntrance>
-                        <MotionEntrance className="size-40 left-20 top-0">
-                            <StrapiImage
-                                alt="Hero"
-                                height={550}
-                                width={550}
-                                className="select-none object-cover aspect-square rounded-full"
-                                src={heroImage[2].url}
-                            />
-                        </MotionEntrance> */}
                     </motion.figure>
                 </div>
             </div>
@@ -94,8 +70,6 @@ export default function Hero({ backgroundImage, button, description, heroImage, 
 }
 
 function renderButtons(btn: ButtonProps, index: number) {
-
- 
     const Component = () => {
         if (btn.variation === 'default') {
             return <MotionGrowingButton className="font-food text-3xl bg-primary-700">{btn.title}</MotionGrowingButton>;
