@@ -2,9 +2,6 @@ import { Core } from '@strapi/strapi';
 import mjml2html from 'mjml';
 import { fetchBusinessContact } from './fetch-items';
 
- 
-
-
 export async function sendBudgetEmail({
   name,
   email,
@@ -13,6 +10,9 @@ export async function sendBudgetEmail({
   numberOfPeople,
   totalPrice,
   selectedItemsDetails,
+  partyTypeDetails,
+  waiterPrice,
+  numberOfWaiters,
   strapi,
 }: {
   name: string;
@@ -22,6 +22,9 @@ export async function sendBudgetEmail({
   numberOfPeople: number;
   totalPrice: number;
   selectedItemsDetails: any;
+  partyTypeDetails: any;
+  waiterPrice: number;
+  numberOfWaiters: number;
   strapi: Core.Strapi; 
 }) {
   // Get business contact information
@@ -33,19 +36,25 @@ export async function sendBudgetEmail({
     selectedItemsDetails = [];
   }
 
+  const partyTypePrice = typeof partyTypeDetails?.price === 'number' ? partyTypeDetails.price : 0;
+  const partyTypeName = partyTypeDetails?.title || 'Festa';
+
   // Group items by productGroup
   const groupedItems = selectedItemsDetails.reduce((groups, item) => {
     const groupId = item.product?.product_group?.id || 'ungrouped';
+    const categoryName = item.product?.category?.name || 'Sem categoria';
+    
     if (!groups[groupId]) {
       groups[groupId] = {
         items: [],
-        name: item.product?.product_group?.name,
+        name: item.product?.product_group?.name || 'Outros',
+        categoryName: categoryName,
         quantityPerPerson: item.product?.product_group?.quantity_per_people || 0,
       };
     }
     groups[groupId].items.push(item);
     return groups;
-  }, {} as Record<string, { items: any[]; quantityPerPerson: number; name?: string }>);
+  }, {} as Record<string, { items: any[]; quantityPerPerson: number; name?: string, categoryName: string }>);
 
   // Create tables for each product group
   const categoryTables = Object.keys(groupedItems).length > 0
@@ -58,6 +67,7 @@ export async function sendBudgetEmail({
             .map((item) => {
               const imageUrl = item.image?.url || 'https://danibosingeventos.s3.us-east-1.amazonaws.com/2024/logo-strapi.png';
               const itemPrice = itemQuantityPerPerson * parseFloat(item.price || 0) * numberOfPeople;
+              const totalQuantity = Math.ceil(itemQuantityPerPerson * numberOfPeople);
 
               return `
               <tr>
@@ -66,20 +76,22 @@ export async function sendBudgetEmail({
                     width="50" height="50" style="border-radius: 5px; margin-right: 10px;" />
                   ${item.title || 'Produto'}
                 </td>
-                <td style="padding: 10px; border-bottom: 1px solid #ecedee;">${Math.ceil(itemQuantityPerPerson)}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ecedee;">R$ ${itemPrice.toFixed(2)}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: center;">${Math.ceil(itemQuantityPerPerson)}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: center;">${totalQuantity}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${itemPrice.toFixed(2)}</td>
               </tr>
               `;
             })
             .join('');
 
           return `
-          <h3>Grupo ${group.name}</h3>
+          <h3>Categoria: ${group.categoryName} - Grupo: ${group.name}</h3>
           <mj-table>
             <tr style="border-bottom: 1px solid #ecedee; text-align: left; padding: 15px 0;">
               <th style="padding: 10px 0;">Produto</th>
-              <th style="padding: 10px 0;">Qt./Pessoa</th>
-              <th style="padding: 10px 0;">Preço</th>
+              <th style="padding: 10px 0; text-align: center;">Qt./Pessoa</th>
+              <th style="padding: 10px 0; text-align: center;">Qt. Total</th>
+              <th style="padding: 10px 0; text-align: right;">Preço</th>
             </tr>
             ${items}
           </mj-table>
@@ -97,7 +109,7 @@ export async function sendBudgetEmail({
         <tr style="border-bottom: 1px solid #ecedee; text-align: left; padding: 15px 0;">
           <th style="padding: 10px 0;">Grupo</th>
           <th style="padding: 10px 0;">Itens</th>
-          <th style="padding: 10px 0;">Preço Total</th>
+          <th style="padding: 10px 0; text-align: right;">Preço Total</th>
         </tr>
         ${Object.keys(groupedItems)
           .map((groupId) => {
@@ -109,16 +121,24 @@ export async function sendBudgetEmail({
 
             return `
             <tr>
-              <td style="padding: 10px; border-bottom: 1px solid #ecedee;">${group.name}</td>
+              <td style="padding: 10px; border-bottom: 1px solid #ecedee;">${group.categoryName} - ${group.name}</td>
               <td style="padding: 10px; border-bottom: 1px solid #ecedee;">${group.items.length}</td>
-              <td style="padding: 10px; border-bottom: 1px solid #ecedee;">R$ ${totalPrice.toFixed(2)}</td>
+              <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${totalPrice.toFixed(2)}</td>
             </tr>
             `;
           })
           .join('')}
         <tr>
-          <td colspan="2" style="padding: 10px; font-weight: bold; text-align: right;">Total Geral:</td>
-          <td style="padding: 10px; font-weight: bold;">R$ ${totalPrice.toFixed(2)}</td>
+          <td colspan="2" style="padding: 10px; border-bottom: 1px solid #ecedee; font-weight: bold; text-align: left;">Custo base do evento (${partyTypeName})</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee; font-weight: bold; text-align: right;">R$ ${partyTypePrice.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding: 10px; border-bottom: 1px solid #ecedee; font-weight: bold; text-align: left;">Garçons (${numberOfWaiters} × R$ ${(waiterPrice / numberOfWaiters).toFixed(2)})</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee; font-weight: bold; text-align: right;">R$ ${waiterPrice.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding: 10px; font-weight: bold; text-align: right; border-bottom: 2px solid #F45E43;">Total Geral:</td>
+          <td style="padding: 10px; font-weight: bold; text-align: right; border-bottom: 2px solid #F45E43;">R$ ${totalPrice.toFixed(2)}</td>
         </tr>
       </mj-table>
     </mj-column>
@@ -139,11 +159,13 @@ export async function sendBudgetEmail({
             <strong>Nome:</strong> ${name}<br />
             <strong>Email:</strong> ${email}<br />
             <strong>Telefone:</strong> ${phone}<br />
-            <strong>Detalhes do Evento:</strong> ${eventDetails}<br />
+            <strong>Tipo de Evento:</strong> ${partyTypeName}<br />
             <strong>Número de Pessoas:</strong> ${numberOfPeople}<br />
-            <strong>Preço Total:</strong> R$ ${totalPrice.toFixed(2)}
+            <strong>Detalhes do Evento:</strong> ${eventDetails || 'Sem detalhes adicionais'}<br />
           </mj-text>
           ${budgetSummary}
+          <mj-divider border-color="#F45E43"></mj-divider>
+          <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Detalhamento dos Itens</mj-text>
           ${categoryTables}
           <mj-divider border-color="#F45E43"></mj-divider>
           <mj-text font-size="16px" color="#000000" font-family="helvetica">
@@ -167,7 +189,7 @@ export async function sendBudgetEmail({
   await strapi.plugins['email'].services.email.send({
     to: businessContact.email,
     from: 'derikbosing@gmail.com',
-    subject: 'Orçamento - Dani Bosing Eventos',
+    subject: `Orçamento - ${name} - ${numberOfPeople} pessoas - Dani Bosing Eventos`,
     html,
   });
 }

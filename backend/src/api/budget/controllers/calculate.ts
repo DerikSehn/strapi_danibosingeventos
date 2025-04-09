@@ -60,6 +60,9 @@ export default factories.createCoreController(
           numberOfPeople,
           totalPrice: budgetCalculation.totalPrice,
           selectedItemsDetails,
+          partyTypeDetails,
+          waiterPrice: budgetCalculation.waiterPrice,
+          numberOfWaiters: budgetCalculation.numberOfWaiters,
           strapi,
         });
       }
