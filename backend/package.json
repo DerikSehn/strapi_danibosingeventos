@@ -6,7 +6,8 @@
   "scripts": {
     "setup": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && nvm install 20 && nvm use 20 && strapi import -f my-strapi-export.tar.gz --exclude files",
     "build": "strapi build",
-    "export": "strapi export -f strapi-backup --no-encrypt",
+    "exportdb": "strapi export -f strapi-backup --no-encrypt",
+    "importdb": "strapi import -f strapi-backup.tar.gz --exclude files",
     "deploy": "strapi deploy",
     "develop": "strapi develop",
     "start": "strapi start",
