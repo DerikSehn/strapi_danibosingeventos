@@ -1,13 +1,13 @@
 import { ApiProductVariantProductVariant } from 'types/generated/contentTypes';
 import { create } from 'zustand';
- 
+
 type MealItemsStore = {
   selectedItems: ApiProductVariantProductVariant['attributes'][];
   addItem: (item: ApiProductVariantProductVariant['attributes']) => void;
   removeItem: (item: ApiProductVariantProductVariant['attributes']) => void;
   hasItem: (item: ApiProductVariantProductVariant['attributes']) => boolean;
-  // Add a method to get just the IDs for API calls
   getSelectedItemIds: () => string[];
+  reset: () => void; // Add reset method
 };
 
 export const useMealItemsStore = create<MealItemsStore>((set, get) => ({
@@ -31,7 +31,7 @@ export const useMealItemsStore = create<MealItemsStore>((set, get) => ({
   
   hasItem: (item) => get().selectedItems.some((i) => i.id === item.id),
   
-  // New method to get just the IDs for API calls
   getSelectedItemIds: () => get().selectedItems.map(item => item.documentId),
   
+  reset: () => set({ selectedItems: [] }), // Implementation of reset
 }));

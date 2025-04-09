@@ -9,10 +9,9 @@ import { ApiProductProduct, ApiProductVariantProductVariant } from "types/genera
 interface DetailsProps {
     selectedPartyTypeStructure: any[];
     isValid: boolean;
-    handleNextStep: () => void;
 }
 
-export default function MealPlanDetails({ selectedPartyTypeStructure, isValid, handleNextStep }: Readonly<DetailsProps>) {
+export default function MealPlanDetails({ selectedPartyTypeStructure, isValid }: Readonly<DetailsProps>) {
     const { removeItem } = useMealItemsStore();
     
     const handleRemoveItem = (item: ApiProductVariantProductVariant['attributes']) => {
@@ -63,9 +62,6 @@ export default function MealPlanDetails({ selectedPartyTypeStructure, isValid, h
             </ScrollArea>
             
             <div className="mt-6 md:space-y-2 relative z-10 grid md:block grid-cols-2 bg-[#fff]">
-                <Button className="w-full" onClick={handleNextStep} disabled={!isValid}>
-                    Avançar
-                </Button>
                 <Link href="/cardapio" className="w-full flex items-center justify-center space-x-2 p-1 rounded-lg border hover:bg-muted">
                     <ChevronLeft className="mr-2 h-4 w-4" /> Voltar
                 </Link>

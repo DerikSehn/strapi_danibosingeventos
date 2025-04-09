@@ -1,4 +1,3 @@
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
@@ -14,16 +13,10 @@ interface FormValues {
 interface OrderFormProps {
     formValues: FormValues;
     updateFormValues: (values: Partial<FormValues>) => void;
-    handleOrder: () => void;
-    handleBack: () => void;
     isLoading: boolean;
 }
 
-export default function OrderForm({ formValues, updateFormValues, handleOrder, handleBack, isLoading }: Readonly<OrderFormProps>) {
-   
-    const handleWrapper = async () => {
-        handleOrder();
-    }
+export default function OrderForm({ formValues, updateFormValues, isLoading }: Readonly<OrderFormProps>) {
     return (
         <>
             <div className="mb-4">
@@ -85,23 +78,6 @@ export default function OrderForm({ formValues, updateFormValues, handleOrder, h
                     onChange={(e) => updateFormValues({ eventDetails: e.target.value })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm min-h-28"
                 />
-            </div>
-            <div className="mt-6 md:space-y-2 relative z-10 grid md:block grid-cols-2 bg-[#fff]">
-                <Button
-                    className="w-full"
-                    onClick={handleWrapper}
-                    disabled={isLoading || !formValues.contactName || !formValues.contactPhone}
-                >
-                    {isLoading ? 'Processando...' : 'Finalizar pedido'}
-                </Button>
-                <Button
-                    className="w-full"
-                    onClick={handleBack}
-                    disabled={isLoading}
-                    variant="outline"
-                >
-                    Voltar
-                </Button>
             </div>
         </>
     );
