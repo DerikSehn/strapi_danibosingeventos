@@ -16,6 +16,7 @@ export async function getStrapiData(url: string) {
 }
 
 export function getStrapiURL() {
+  console.log('NEXT_PUBLIC_STRAPI_URL', process.env.NEXT_PUBLIC_STRAPI_URL);
   return process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1337';
 }
 
