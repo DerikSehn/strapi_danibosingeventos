@@ -1,9 +1,9 @@
 "use client"
-import { ApiProductVariantProductVariant } from "types/generated/contentTypes";
-import CheckboxAnimated from "../checkbox-animated";
 import { useMealItemsStore } from "@/lib/store/meal-items-store";
-import { StrapiImage } from "../strapi-image";
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
+import { ApiProductVariantProductVariant } from "types/generated/contentTypes";
+import { StrapiImage } from "../strapi-image";
 
 interface ProductVariantProps {
   item: ApiProductVariantProductVariant['attributes'];
@@ -12,7 +12,6 @@ interface ProductVariantProps {
 const ProductVariant: React.FC<ProductVariantProps> = ({ item }) => {
   const { addItem, removeItem, hasItem } = useMealItemsStore();
   
-  // Get checked state directly from the store instead of local state
   const isChecked = hasItem(item);
   
   const handleToggle = (checked: boolean) => {
@@ -23,29 +22,38 @@ const ProductVariant: React.FC<ProductVariantProps> = ({ item }) => {
     }
   };
 
+  const backgroundColor = isChecked ? "bg-primary-400/90" : "";
+
   return (
-    <div className={cn("group relative flex items-start space-x-4 p-2 -mx-2 pr-4",
-        isChecked ? "bg-green-600/10" : " hover:bg-gray-100/50")}>
-        <div className="relative ">
-            <StrapiImage width={100} height={100} alt={item.title} src={item.image.url} className="max-w-[64px] max-h-[64px] md:max-h-[100px] md:max-w-[100px] z-0 object-cover rounded-sm aspect-square group-hover:opacity-25 transition-opacity" />
-            <CheckboxAnimated
-                id={`item-${item.id}`}
-                checked={isChecked}
-                className="opacity-0 absolute scale-[3] group-hover:opacity-75 transition-opacity top-1/2 -translate-y-1/2 left-10"
-                onCheckedChange={handleToggle}
-            />
-        </div>
-        <div className="flex-grow">
-            <div className="flex items-center justify-between text-2xl">
-                <h3 className=" font-medium">{item.title}</h3>
-            </div>
-            <div className="text-sm text-muted-foreground flex items-center justify-between">
-                <p>
-                    {item.description}
-                </p>
-            </div>
-        </div>
-    </div>
+    <button
+      type="button"
+      onClick={() => handleToggle(!isChecked)}
+      className={cn(
+        "group transition-colors relative flex flex-col items-center space-y-4 pb-4 border font-food",
+        backgroundColor
+      )}
+    >
+      <div className="relative w-full flex justify-center">
+        <figure className="relative w-full h-1/2 min-h-40">
+          <StrapiImage
+            fill
+            alt={item.title}
+            src={item.image.url}
+            className={cn("w-32 h-32 md:w-40 md:h-40 object-cover group-hover:opacity-75 transition-opacity", isChecked ? "brightness-75" : "opacity-100")}
+          />
+          {isChecked ? (
+            <Check className="absolute text-primary-500 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24" />
+          ) : (
+            <div className="absolute inset-4 rounded-none bg-primary/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span className="text-white font-bold text-4xl">Clique para selecionar</span>
+          </div>
+          )}
+        </figure>
+      </div>
+      <div className="text-center w-full">
+        <h3 className={cn("text-2xl transition-colors", isChecked && "text-white")}>{item.title}</h3>
+      </div>
+    </button>
   );
 };
 

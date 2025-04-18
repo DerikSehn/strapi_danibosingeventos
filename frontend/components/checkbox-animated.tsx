@@ -1,7 +1,6 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-import { useState, useEffect } from "react"
+import { cn } from "@/lib/utils";
 
 interface CheckboxAnimatedProps {
   id?: string;
@@ -15,7 +14,7 @@ export default function CheckboxAnimated({
    className,
   checked,
   onCheckedChange
-}: CheckboxAnimatedProps) {
+}: Readonly<CheckboxAnimatedProps>) {
    
 
   const handleChange = () => {
@@ -24,7 +23,10 @@ export default function CheckboxAnimated({
 
 
   return (
-    <label className={cn("relative block h-[1.5rem] w-[1.5rem] cursor-pointer rounded-sm outline-2 outline-offset-1 outline-gray-700 has-[:focus-visible]:outline", className)}>
+    <label 
+      className={cn("relative block h-[1.5rem] w-[1.5rem] cursor-pointer rounded-sm outline-2 outline-offset-1 outline-gray-700 has-[:focus-visible]:outline", className)} 
+      aria-label="Checkbox"
+    >
       <input
         id={id}
         type="checkbox"

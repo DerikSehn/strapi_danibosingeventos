@@ -4,7 +4,6 @@ import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
 import { useState } from "react";
 
 /**
@@ -39,23 +38,21 @@ export const FloatingNavBar = ({
     const pathName = usePathname()
 
     const [visible, setVisible] = useState(true);
-    const [isAtTop, setIsAtTop] = useState(true);
+    const [isAtTop, setIsAtTop] = useState(true);   
 
 
     useMotionValueEvent(scrollYProgress, "change", (current) => {
         // Check if current is not undefined and is a number
         if (typeof current === "number") {
-            let direction = current! - scrollYProgress.getPrevious()!;
+            let direction = current - scrollYProgress.getPrevious()!;
             setIsAtTop(scrollYProgress.get() < 0.05)
             if (scrollYProgress.get() < 0.05) {
                 setVisible(true);
-            } else {
-                if (direction < 0) {
+            } else if (direction < 0) {
                     setVisible(true);
                 } else {
                     setVisible(false);
                 }
-            }
         }
     });
     return (
@@ -81,12 +78,12 @@ export const FloatingNavBar = ({
                 textShadow: '1px 1px 1px  gray'
             }}
             className={cn(
-                "flex p-8 pb-2 uppercase font-montserrat tracking-widest fixed top-0 inset-x-0 md:mx-auto transition-colors duration-500 bg-black/50 text-white backdrop-blur-sm  z-[5000] items-between justify-between md:space-x-4",
-                isAtTop ? (`md:bg-transparent md:bg-gradient-to-t ${pathName === "/" ? "from-neutral-900/20 to-black/20 " : "from-neutral-900/60 to-black/60 "}shadow-lg  `) : "",
+                "flex p-4 pb-2 uppercase font-montserrat tracking-widest fixed top-0 inset-x-0 md:mx-auto transition-colors duration-500 bg-black/50 text-white backdrop-blur-sm  z-[5000] items-between justify-between md:space-x-4",
+                isAtTop ? (`md:bg-transparent md:bg-gradient-to-t ${pathName === "/" ? "from-neutral-900/20 to-black/20 " : "from-neutral-900/60 to-black/60 "} shadow-lg  `) : "",
                 className,
             )}
         >
-            <div className="hidden md:block relative max-w-[200px]  h-[72px] w-1/2">
+            <div className=" md:block relative max-w-20 md:max-w-[200px]  h-[72px] w-1/2">
                 <Image src="/logo.png" alt="logo" fill className="object-contain object-center" />
             </div>
             <div className="hidden sm:flex justify-end gap-6">
@@ -136,7 +133,7 @@ export const FloatingNavBar = ({
                             type: 'just'
                         },
                     }}
-                    className={cn("hidden sm:block relative z-10")}>
+                    className={cn(" sm:block relative z-10")}>
                     Montar Cardápio
                 </motion.span>
             </Link>

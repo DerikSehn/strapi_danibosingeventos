@@ -1,5 +1,5 @@
 
-import CategoriesSelector from '@/components/meaplan/categories-selector';
+ import BudgetCreator from '@/components/meaplan/budget-creator';
 import { getStrapiData } from '@/lib/utils';
 import qs from 'qs';
 import { ApiPartyTypePartyType } from 'types/generated/contentTypes';
@@ -27,6 +27,6 @@ export default async function CategoriesPage({ params }: any) {
     const partyType: ApiPartyTypePartyType['attributes'] = result.data?.[0];
 
     return (
-        <CategoriesSelector partyType={partyType} />
+        <BudgetCreator partyType={partyType} />
     );
 }

@@ -22,7 +22,6 @@ export function calculateBudget(
     groups[groupId].push(item);
     return groups;
   }, {} as Record<string, typeof selectedItemsDetails>);
-  console.log(groupedItems)
 
   let totalItemPrice = 0;
 

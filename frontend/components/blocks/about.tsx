@@ -66,7 +66,7 @@ export default function AboutSection({ heading, subHeading, features }: Readonly
                 </div>
                 <footer className="mt-24 text-center">
                     <p className="text-2xl font-light italic text-primary-600">
-                        "Uma frase de impacto."
+                        "A dificuldade é você quem define"
                     </p>
                     <p className="mt-2 text-xl font-rustic">- Cheff Daniela Bosing</p>
                 </footer>

@@ -68,7 +68,7 @@ export default function MealPlanSummary({ partyType }: Readonly<MealPlanSummaryP
 
     return (
         <>
-            <div className="pb-20"> {/* Adding padding at bottom for the ActionFooter */}
+            <div className="pb-20"> 
                 <SummaryCard>
                     {step === 1 && (
                         <MealPlanDetails

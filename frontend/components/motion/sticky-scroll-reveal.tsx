@@ -105,7 +105,7 @@ const StickyScrollReveal = ({
                                 {item.description}
                             </motion.p>
 
-                            <div className="min-h-40 aspect-video w-full relative my-10" >
+                            <div className="min-h-96 md:min-h-40  w-full relative my-10" >
                                 <div
                                     className="md:hidden  "
                                 >
