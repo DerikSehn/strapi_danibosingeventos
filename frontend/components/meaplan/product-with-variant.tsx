@@ -16,7 +16,7 @@ const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ produ
     const { selectedItems } = useMealItemsStore();
 
     return (
-        <Accordion type="multiple" defaultValue={[`product-0`]} className="border-none shadow-none">
+        <Accordion type="multiple" defaultValue={products.map((_, id) => `product-${id}`)} className="border-none shadow-none">
             {products.map((product, index) => {
                 // Filter selected items from the current product
                 const selectedItemsFromCategory = product.product_variants
