@@ -9,7 +9,7 @@ export default function ActionFooterSummary({ itemCount }: Readonly<ActionFooter
   
   
   return (
-    <div className="text-md font-food  text-primary-400 mx-4 p-5">
+    <div className="text-lg md:text-2xl font-food  text-primary-400 mx-4 p-5">
         {itemCount > 0 ? (
             <p>{itemCount} {itemCount === 1 ? 'item selecionado' : 'itens selecionados'}</p>
         ) : (
