@@ -5,7 +5,7 @@ import CategoriesSelector from "../meal-planner/categories-selector";
 export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPartyTypePartyType['attributes'] }>) {
 
     return ( 
-            <section className="relative z-10 w-full py-12 md:py-32  min-h-screen bg-muted">
+            <section className="relative z-10 w-full py-32  min-h-screen bg-muted">
                 {/* <MotionBackgroundZoom src={partyType.backgroundImage.url} alt="Hero" /> */}
 
                 <div className="relative container px-4 md:px-6 mx-auto">

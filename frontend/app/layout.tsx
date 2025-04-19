@@ -19,7 +19,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "CheFf Daniela Bosing",
+  title: "Cheff Daniela Bosing",
   description: "Eventos Gastronômicos",
 };
 

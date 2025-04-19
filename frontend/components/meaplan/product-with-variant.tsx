@@ -25,20 +25,32 @@ const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ produ
                     );
                 const hasSelectedItems = selectedItemsFromCategory.length > 0;
 
+                // Define class constants
+                const checkIconClass = cn(
+                    "absolute text-white top-5 left-2 w-8 h-8 transition-opacity opacity-0",
+                    hasSelectedItems && "opacity-100"
+                );
+                const triggerClass = cn(
+                    hasSelectedItems ? "bg-green-400 hover:bg-green-300" : "bg-primary",
+                    "group px-4 pl-12 flex justify-between items-center hover:bg-primary/80  transition-colors"
+                );
+                const titleClass = cn(
+                    hasSelectedItems ? "text-black-600 group-hover:text-white" : "text-white",
+                    "font-food text-3xl flex flex-col text-left items-start"
+                );
+
                 return (
                     <AccordionItem
                         className="relative mt-0 -mx-6 border-l-2"
                         key={product.id}
                         value={`product-${index}`}
-                     >
-                        <Check className={cn("absolute text-white top-5 left-2 w-8 h-8 transition-opacity opacity-0", hasSelectedItems && "opacity-100")} />
-                        <AccordionTrigger
-                            className="bg-primary px-4 pl-12 flex justify-between items-center hover:bg-primary/80 transition-colors"
-                         >
-                            <div className=" text-white font-food text-3xl flex flex-col text-left items-start ">
+                    >
+                        <Check className={checkIconClass} />
+                        <AccordionTrigger className={triggerClass}>
+                            <div className={titleClass}>
                                 {product.title}
                                 <motion.span
-                                    className="text-xs text-muted-foreground"
+                                    className={"text-xs text-muted-foreground"}
                                     initial={{ height: 0, opacity: 0 }}
                                     animate={hasSelectedItems ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
                                     transition={{ duration: 0.2 }}
@@ -50,7 +62,7 @@ const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ produ
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-2 border-none shadow-none my-2 py-2">
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+                            <div className="grid  grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                                 {product.product_variants?.map((variant: ApiProductVariantProductVariant['attributes'], index: number) => (
                                     <ProductVariant key={variant.id} item={variant} />
                                 ))}
