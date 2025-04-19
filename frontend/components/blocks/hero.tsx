@@ -36,7 +36,7 @@ export default function Hero({ backgroundImage, button, description, heroImage, 
             <MotionBackgroundZoom src={backgroundImage.url} alt="Hero" />
          <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 from-10% to-neutral-900/20 z-0"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-20% z-0"></div>            
-        <div className="container px-4 md:px-6 mx-auto relative z-10">
+        <div className="container px-4 md:px-6 mx-auto relative z-10 pt-10 md:pt-0">
                 <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
                     <div className="relative z-50 flex flex-col justify-center space-y-4  ">
                         <div className="space-y-2">

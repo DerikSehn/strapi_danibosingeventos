@@ -31,11 +31,11 @@ const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ produ
                     hasSelectedItems && "opacity-100"
                 );
                 const triggerClass = cn(
-                    hasSelectedItems ? "bg-green-400 hover:bg-green-300" : "bg-primary",
-                    "group px-4 pl-12 flex justify-between items-center hover:bg-primary/80  transition-colors"
+                    hasSelectedItems ? "bg-green-400 hover:bg-green-600" : "bg-primary hover:bg-primary/80 ",
+                    "group px-4 pl-12 flex justify-between items-center  transition-colors"
                 );
                 const titleClass = cn(
-                    hasSelectedItems ? "text-black-600 group-hover:text-white" : "text-white",
+                    hasSelectedItems ? "text-black group-hover:text-white" : "text-white",
                     "font-food text-3xl flex flex-col text-left items-start"
                 );
 

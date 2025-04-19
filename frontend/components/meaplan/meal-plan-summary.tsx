@@ -69,7 +69,7 @@ export default function MealPlanSummary({ partyType }: Readonly<MealPlanSummaryP
     return (
         <>
             <div className="pb-20"> 
-                <SummaryCard>
+                {/* <SummaryCard>
                     {step === 1 && (
                         <MealPlanDetails
                             selectedPartyTypeStructure={selectedPartyTypeStructure}
@@ -106,7 +106,7 @@ export default function MealPlanSummary({ partyType }: Readonly<MealPlanSummaryP
                             )}
                         </div>
                     )}
-                </SummaryCard>
+                </SummaryCard> */}
             </div>
 
             {step < 3 && (
@@ -114,9 +114,10 @@ export default function MealPlanSummary({ partyType }: Readonly<MealPlanSummaryP
                     onNext={step === 1 ? handleNextStep : handleOrder}
                     onReset={handleReset}
                     nextLabel={step === 1 ? "Próximo" : "Finalizar pedido"}
-                    resetLabel={step === 1 ? "Resetar seleção" : "Voltar"}
+                    resetLabel={step === 1 ? "Limpar seleção" : "Voltar"}
                     nextDisabled={step === 1 ? !isValid : !formValues.contactName || !formValues.contactPhone}
                     isLoading={isLoading}
+                    itemCount={selectedItems.length}
                 />
             )}
         </>

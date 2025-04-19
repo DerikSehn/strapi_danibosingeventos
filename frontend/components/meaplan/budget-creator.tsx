@@ -1,6 +1,7 @@
 "use client"
 import { ApiPartyTypePartyType } from "types/generated/contentTypes";
 import CategoriesSelector from "../meal-planner/categories-selector";
+import MealPlanSummary from "./meal-plan-summary";
 
 export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPartyTypePartyType['attributes'] }>) {
 
@@ -17,7 +18,7 @@ export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPa
                     </div>
                     <div className="relative">
                         <CategoriesSelector categories={partyType.categories}/>
-                             {/* <MealPlanSummary partyType={partyType}  /> */}
+                        <MealPlanSummary partyType={partyType}  />
                      </div>
                 </div>
             </section> 
