@@ -3,17 +3,10 @@
 import { useMealItemsStore } from '@/lib/store/meal-items-store';
 import { calculateBudget } from 'data/actions/calculate-budget';
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
+import { BudgetFormValues } from 'types/budget-form-values';
 import { ApiBudgetBudget, ApiPartyTypePartyType } from 'types/generated/contentTypes';
 
 
-interface BudgetFormValues {
-  numberOfPeople: number;
-  eventDuration: number;
-  eventDetails: string;
-  contactName: string;
-  contactPhone: string;
-  contactEmail: string;
-}
 
 interface BudgetContextType {
   budgetResult: ApiBudgetBudget['attributes'] | null;
@@ -82,6 +75,7 @@ export function BudgetProvider({ children }: Readonly<{ children: ReactNode }>) 
     setError(null);
     setFormValues(defaultFormValues);
   };
+
 
   const budgetContextValues = useMemo(() => ({
     budgetResult,

@@ -1,3 +1,4 @@
+import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
@@ -18,7 +19,7 @@ interface OrderFormProps {
 
 export default function OrderForm({ formValues, updateFormValues, isLoading }: Readonly<OrderFormProps>) {
     return (
-        <>
+        <Card className="max-w-prose mx-auto p-4">
             <div className="mb-4">
                 <label htmlFor="contactName" className="block text-sm font-medium text-gray-700">
                     Nome
@@ -79,6 +80,6 @@ export default function OrderForm({ formValues, updateFormValues, isLoading }: R
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm min-h-28"
                 />
             </div>
-        </>
+        </Card>
     );
 }
