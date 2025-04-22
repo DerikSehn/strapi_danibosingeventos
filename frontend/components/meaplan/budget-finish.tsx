@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { BudgetFormValues } from 'types/budget-form-values';
+import MotionGrowingButton from '../motion/motion-growing-button';
 
 interface BudgetFinishProps {
     budgetResult: ApiBudgetBudget['attributes'] | null;
@@ -76,7 +77,7 @@ const BudgetFinish: React.FC<BudgetFinishProps> = ({
 
     // Success state
     return (
-        <Card className="border-green-500 bg-green-500/10">
+        <Card className="border-green-500 bg-green-500/10 max-w-screen-lg mx-auto">
             <CardHeader>
                 <CardTitle className="flex items-center text-green-700">
                     <CheckCircle className="mr-2" /> Orçamento Enviado com Sucesso!
@@ -87,7 +88,7 @@ const BudgetFinish: React.FC<BudgetFinishProps> = ({
             </CardHeader>
             <CardContent className="space-y-6">
                 <div>
-                    <h3 className="font-semibold text-lg mb-2">Resumo do Pedido</h3>
+                    <h3 className="font-food text-3xl mb-2">Resumo do Pedido</h3>
                     <p><strong>Nome:</strong> {formValues.contactName}</p>
                     <p><strong>Email:</strong> {formValues.contactEmail}</p>
                     <p><strong>Telefone:</strong> {formValues.contactPhone}</p>
@@ -97,7 +98,7 @@ const BudgetFinish: React.FC<BudgetFinishProps> = ({
                 </div>
 
                 <div>
-                    <h3 className="font-semibold text-lg mb-2">Itens Selecionados ({selectedItems.length})</h3>
+                    <h3 className="font-food text-3xl mb-2">Itens Selecionados ({selectedItems.length})</h3>
                     <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                         {selectedItems.map(item => (
                             <li key={item.id}>{item.title}</li>
@@ -109,7 +110,7 @@ const BudgetFinish: React.FC<BudgetFinishProps> = ({
             </CardContent>
             <CardFooter>
                 <Link href="/" passHref>
-                    <Button variant="default">Voltar ao Início</Button>
+                    <MotionGrowingButton  >Voltar ao Início</MotionGrowingButton>
                 </Link>
             </CardFooter>
         </Card>
