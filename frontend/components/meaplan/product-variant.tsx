@@ -44,14 +44,14 @@ const ProductVariant: React.FC<ProductVariantProps> = ({ item }) => {
           {isChecked ? (
             <Check className="absolute text-primary-500 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24" />
           ) : (
-            <div className="absolute inset-4 rounded-none bg-primary/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <span className="text-white font-bold text-4xl">Clique para selecionar</span>
+            <div className="absolute inset-0 md:inset-4 rounded-none bg-primary/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span className="text-white font-bold text-2xl md:text-4xl">Clique para selecionar</span>
           </div>
           )}
         </figure>
       </div>
-      <div className="text-center w-full">
-        <h3 className={cn("text-2xl transition-colors", isChecked && "text-white")}>{item.title}</h3>
+      <div className="text-center w-full p-1">
+        <h3 className={cn("text-xl md:text-2xl transition-colors", isChecked && "text-white")}>{item.title}</h3>
       </div>
     </button>
   );

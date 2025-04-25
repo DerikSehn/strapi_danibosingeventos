@@ -32,7 +32,7 @@ export default function CategoriesSelector({ categories, className }: Readonly<C
                  ))}
             </div>
             {/* Scroll progress indicator */}
-            <div className="absolute top-[1px] -left-1 bottom-0 w-2 bg-primary  overflow-hidden">
+            <div className="absolute top-[1px] -left-4 md:-left-1 bottom-0 w-2 bg-primary  overflow-hidden">
                 <motion.div
                     className="relative h-full w-full bg-primary-600 origin-top"
                     style={{ scaleY: scrollYProgress }}
@@ -53,7 +53,7 @@ export default function CategoriesSelector({ categories, className }: Readonly<C
                 >
                     <path d="M9 11l3 3L22 4" />
                 </svg> 
-                <p className="text-2xl font-food text-primary-400">Todas as categorias foram exibidas</p>
+                <p className="text-2xl font-food text-primary-400">Todas as categorias foram exibidas, Clique em "Próximo" para continuar</p>
             </Card>
         </div>
     );

@@ -51,8 +51,8 @@ export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPa
 
                 <div className="relative px-4 md:px-6 mx-auto">
                     <div className=" text-primary text-center">
-                        <h1 className="text-6xl font-rustic font-bold">2º passo: {partyType?.title} - Monte seu Cardápio</h1>
-                        <p className="text-lg mt-4">
+                        <h1 className="text-4xl lg:text-6xl font-rustic font-bold">2º passo: {partyType?.title} - Monte seu Cardápio</h1>
+                        <p className="text-lg mt-4 border-t md:border-none border-t-primary py-4 md:pt-0 text-muted-foreground bg-black-900/50">
                             Escolha os sabores e tipos de salgados e doces de cada categoria para prosseguir com a criação do seu cardápio personalizado.
                         </p>
                     </div>

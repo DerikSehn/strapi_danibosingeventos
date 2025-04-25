@@ -26,12 +26,12 @@ export default function ActionFooter({
   return (
     <div className="fixed bottom-0 left-0 w-full bg-white-900 border-t shadow-lg z-50">
       {/* Adjust layout: add items-center */}
-      <div className="container max-w-screen-2xl mx-auto flex justify-between items-center gap-4">
+      <div className="container max-w-screen-2xl mx-auto flex  items-center gap-4">
         {/* Render the summary component */}
         <ActionFooterSummary itemCount={itemCount} />
 
         {/* Group buttons */}
-        <div className="flex ">
+        <div className="flex justify-end w-full max-w-[400px] ml-auto">
           <Button
             variant="default"
             onClick={onReset}

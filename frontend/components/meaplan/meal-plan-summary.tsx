@@ -1,13 +1,7 @@
 "use client";
-import { useBudget } from "@/lib/context/budget-context";
 import { useMealItemsStore } from "@/lib/store/meal-items-store";
 import { useState } from "react";
-import { ApiCategoryCategory, ApiPartyTypePartyType, ApiProductProduct, ApiProductVariantProductVariant } from "types/generated/contentTypes";
-import Stepper from "../ui/stepper";
-import ActionFooter from "./action-footer";
-import MealPlanDetails from "./details";
-import OrderForm from "./order-form";
-import SummaryCard from "./summary-card";
+import { ApiPartyTypePartyType } from "types/generated/contentTypes";
 
 // Função para validar a seleção de categorias e produtos
 const validateSelection = (categories: any[]) => {

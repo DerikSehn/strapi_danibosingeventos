@@ -61,8 +61,8 @@ const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ produ
                                 </motion.span>
                             </div>
                         </AccordionTrigger>
-                        <AccordionContent className="px-2 border-none shadow-none my-2 py-2">
-                            <div className="grid  grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                        <AccordionContent className="p-1 md:p-2 border-none shadow-none my-2">
+                            <div className="grid  grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-4">
                                 {product.product_variants?.map((variant: ApiProductVariantProductVariant['attributes'], index: number) => (
                                     <ProductVariant key={variant.id} item={variant} />
                                 ))}
