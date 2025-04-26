@@ -45,6 +45,8 @@ export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPa
 
     const {Stepper, nextStep, step, previousStep } = useFormStepper(steps)
 
+    const isFirstStep = step === 1;
+
     return ( 
             <section className="relative z-10 w-full py-32  min-h-screen bg-muted">
                 {/* <MotionBackgroundZoom src={partyType.backgroundImage.url} alt="Hero" /> */}
@@ -64,11 +66,11 @@ export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPa
                      </div>
                 </div>
                 <ActionFooter 
-                    onNext={step === 1 ? nextStep : handleOrder}
-                    onReset={step === 1 ? reset : previousStep}
-                    nextLabel={step === 1 ? "Próximo" : "Finalizar pedido"}
-                    resetLabel={step === 1 ? "Limpar seleção" : "Voltar"}
-                    nextDisabled={step === 1 ? selectedItems.length === 0 : false}
+                    onNext={isFirstStep ? nextStep : handleOrder}
+                    onReset={isFirstStep ? reset : previousStep}
+                    nextLabel={isFirstStep ? "Próximo" : "Finalizar pedido"}
+                    resetLabel={isFirstStep ? "Limpar seleção" : "Voltar"}
+                    nextDisabled={isFirstStep ? selectedItems.length === 0 : false}
                     isLoading={isLoading}
                     itemCount={selectedItems.length}
                 />
