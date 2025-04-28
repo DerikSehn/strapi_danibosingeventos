@@ -13,6 +13,11 @@ export async function sendBudgetEmail({
   partyTypeDetails,
   waiterPrice,
   numberOfWaiters,
+  // Add these lines
+  totalItemPrice,
+  extraHours,
+  extraHourPrice,
+  // End of added lines
   strapi,
 }: {
   name: string;
@@ -25,6 +30,11 @@ export async function sendBudgetEmail({
   partyTypeDetails: any;
   waiterPrice: number;
   numberOfWaiters: number;
+  // Add these lines
+  totalItemPrice: number;
+  extraHours: number;
+  extraHourPrice: number;
+  // End of added lines
   strapi: Core.Strapi; 
 }) {
   // Get business contact information
@@ -107,37 +117,29 @@ export async function sendBudgetEmail({
       <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Resumo do Orçamento</mj-text>
       <mj-table>
         <tr style="border-bottom: 1px solid #ecedee; text-align: left; padding: 15px 0;">
-          <th style="padding: 10px 0;">Grupo</th>
-          <th style="padding: 10px 0;">Itens</th>
-          <th style="padding: 10px 0; text-align: right;">Preço Total</th>
-        </tr>
-        ${Object.keys(groupedItems)
-          .map((groupId) => {
-            const group = groupedItems[groupId];
-            const totalPrice = group.items.reduce((acc, item) => {
-              const itemQuantityPerPerson = group.quantityPerPerson / group.items.length;
-              return acc + itemQuantityPerPerson * parseFloat(item.price || 0) * numberOfPeople;
-            }, 0);
-
-            return `
-            <tr>
-              <td style="padding: 10px; border-bottom: 1px solid #ecedee;">${group.categoryName} - ${group.name}</td>
-              <td style="padding: 10px; border-bottom: 1px solid #ecedee;">${group.items.length}</td>
-              <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${totalPrice.toFixed(2)}</td>
-            </tr>
-            `;
-          })
-          .join('')}
-        <tr>
-          <td colspan="2" style="padding: 10px; border-bottom: 1px solid #ecedee; font-weight: bold; text-align: left;">Custo base do evento (${partyTypeName})</td>
-          <td style="padding: 10px; border-bottom: 1px solid #ecedee; font-weight: bold; text-align: right;">R$ ${partyTypePrice.toFixed(2)}</td>
+          <th style="padding: 10px 0;">Descrição</th>
+          <th style="padding: 10px 0; text-align: right;">Valor</th>
         </tr>
         <tr>
-          <td colspan="2" style="padding: 10px; border-bottom: 1px solid #ecedee; font-weight: bold; text-align: left;">Garçons (${numberOfWaiters} × R$ ${(waiterPrice / numberOfWaiters).toFixed(2)})</td>
-          <td style="padding: 10px; border-bottom: 1px solid #ecedee; font-weight: bold; text-align: right;">R$ ${waiterPrice.toFixed(2)}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee;">Custo Total dos Itens Selecionados</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${totalItemPrice.toFixed(2)}</td>
         </tr>
         <tr>
-          <td colspan="2" style="padding: 10px; font-weight: bold; text-align: right; border-bottom: 2px solid #F45E43;">Total Geral:</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee;">Custo base do evento (${partyTypeName})</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${partyTypePrice.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee;">Garçons (${numberOfWaiters} × R$ ${(waiterPrice / (numberOfWaiters || 1)).toFixed(2)})</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${waiterPrice.toFixed(2)}</td>
+        </tr>
+        ${extraHours > 0 ? `
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee;">Horas Extras (${extraHours}h)</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${extraHourPrice.toFixed(2)}</td>
+        </tr>
+        ` : ''}
+        <tr>
+          <td style="padding: 10px; font-weight: bold; text-align: right; border-bottom: 2px solid #F45E43;">Total Geral:</td>
           <td style="padding: 10px; font-weight: bold; text-align: right; border-bottom: 2px solid #F45E43;">R$ ${totalPrice.toFixed(2)}</td>
         </tr>
       </mj-table>
@@ -163,10 +165,14 @@ export async function sendBudgetEmail({
             <strong>Número de Pessoas:</strong> ${numberOfPeople}<br />
             <strong>Detalhes do Evento:</strong> ${eventDetails || 'Sem detalhes adicionais'}<br />
           </mj-text>
-          ${budgetSummary}
+          
+          ${budgetSummary} 
+          
           <mj-divider border-color="#F45E43"></mj-divider>
           <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Detalhamento dos Itens</mj-text>
-          ${categoryTables}
+          
+          ${categoryTables} 
+          
           <mj-divider border-color="#F45E43"></mj-divider>
           <mj-text font-size="16px" color="#000000" font-family="helvetica">
             <strong>Obrigado por escolher nossos serviços!</strong><br />

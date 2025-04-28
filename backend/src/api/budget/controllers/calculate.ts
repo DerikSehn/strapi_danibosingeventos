@@ -63,6 +63,11 @@ export default factories.createCoreController(
           partyTypeDetails,
           waiterPrice: budgetCalculation.waiterPrice,
           numberOfWaiters: budgetCalculation.numberOfWaiters,
+          // Add these lines
+          totalItemPrice: budgetCalculation.totalItemPrice,
+          extraHours: budgetCalculation.extraHours,
+          extraHourPrice: budgetCalculation.extraHourPrice,
+          // End of added lines
           strapi,
         });
       }
