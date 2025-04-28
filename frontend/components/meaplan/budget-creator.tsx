@@ -52,12 +52,14 @@ export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPa
                 {/* <MotionBackgroundZoom src={partyType.backgroundImage.url} alt="Hero" /> */}
 
                 <div className="relative px-4 md:px-6 mx-auto">
+                {step ! == 3 && 
                     <div className=" text-primary text-center">
                         <h1 className="text-4xl lg:text-6xl font-rustic font-bold">2º passo: {partyType?.title} - Monte seu Cardápio</h1>
                         <p className="text-lg mt-4 border-t  border-t-black-700 py-4 max-w-screen-2xl mx-auto text-muted-foreground bg-black-900/50">
                             Escolha os sabores e tipos de salgados e doces de cada categoria para prosseguir com a criação do seu cardápio personalizado.
                         </p>
                     </div>
+                     }
                 <Stepper  currentStep={step} steps={steps} />
 
                     <div className="relative">
@@ -65,6 +67,7 @@ export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPa
                         <MealPlanSummary partyType={partyType}  />
                      </div>
                 </div>
+                {step ! == 3 && (
                 <ActionFooter 
                     onNext={isFirstStep ? nextStep : handleOrder}
                     onReset={isFirstStep ? reset : previousStep}
@@ -74,6 +77,7 @@ export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPa
                     isLoading={isLoading}
                     itemCount={selectedItems.length}
                 />
+                )}
             </section> 
     )
 }
