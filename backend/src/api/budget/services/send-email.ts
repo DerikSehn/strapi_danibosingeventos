@@ -75,15 +75,12 @@ export async function sendBudgetEmail({
           const itemQuantityPerPerson = totalQuantityPerPerson / group.items.length;
           const items = group.items
             .map((item) => {
-              const imageUrl = item.image?.url || 'https://danibosingeventos.s3.us-east-1.amazonaws.com/2024/logo-strapi.png';
               const itemPrice = itemQuantityPerPerson * parseFloat(item.price || 0) * numberOfPeople;
               const totalQuantity = Math.ceil(itemQuantityPerPerson * numberOfPeople);
 
               return `
               <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ecedee;">
-                  <img src="${imageUrl}" alt="${item.title || 'Produto'}" 
-                    width="50" height="50" style="border-radius: 5px; margin-right: 10px;" />
                   ${item.title || 'Produto'}
                 </td>
                 <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: center;">${Math.ceil(itemQuantityPerPerson)}</td>
