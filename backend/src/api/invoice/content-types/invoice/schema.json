@@ -1,0 +1,67 @@
+{
+  "kind": "collectionType",
+  "collectionName": "invoices",
+  "info": {
+    "singularName": "invoice",
+    "pluralName": "invoices",
+    "displayName": "Finance Invoice",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "tenant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::tenant.tenant",
+      "inversedBy": "invoices"
+    },
+    "finance_user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::finance-user.finance-user",
+      "inversedBy": "invoices"
+    },
+    "file": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "extracted_text": {
+      "type": "text"
+    },
+    "processing_status": {
+      "type": "enumeration",
+      "enum": [
+        "pendente",
+        "processando",
+        "concluido",
+        "erro"
+      ],
+      "required": true
+    },
+    "processed_data": {
+      "type": "json"
+    },
+    "issue_date": {
+      "type": "date"
+    },
+    "total_amount": {
+      "type": "decimal",
+      "required": true
+    },
+    "supplier_info": {
+      "type": "component",
+      "repeatable": false,
+      "component": "people.supplier-info"
+    }
+  }
+}

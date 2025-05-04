@@ -1,0 +1,66 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tenants",
+  "info": {
+    "singularName": "tenant",
+    "pluralName": "tenants",
+    "displayName": "Finance Tenant",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "cnpj": {
+      "type": "string",
+      "required": true,
+      "maxLength": 14,
+      "minLength": 14,
+      "unique": true
+    },
+    "cpf": {
+      "type": "string",
+      "unique": true,
+      "maxLength": 11,
+      "minLength": 11
+    },
+    "slug": {
+      "type": "uid"
+    },
+    "users_permissions_users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "tenants"
+    },
+    "finance_users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::finance-user.finance-user",
+      "mappedBy": "tenants"
+    },
+    "invoices": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::invoice.invoice",
+      "mappedBy": "tenant"
+    },
+    "finance_categories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::finance-category.finance-category",
+      "mappedBy": "tenant"
+    },
+    "inventory_items": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::inventory-item.inventory-item",
+      "mappedBy": "tenants"
+    }
+  }
+}

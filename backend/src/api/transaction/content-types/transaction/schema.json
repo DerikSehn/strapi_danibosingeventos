@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "transactions",
+  "info": {
+    "singularName": "transaction",
+    "pluralName": "transactions",
+    "displayName": "Finance Transaction",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "description": {
+      "type": "text"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "receita",
+        "despesa"
+      ],
+      "required": true
+    },
+    "amount": {
+      "type": "decimal"
+    },
+    "date": {
+      "type": "datetime"
+    },
+    "finance_category": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::finance-category.finance-category"
+    },
+    "related_invoice": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::invoice.invoice"
+    }
+  }
+}

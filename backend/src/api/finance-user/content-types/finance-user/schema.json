@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "finance_users",
+  "info": {
+    "singularName": "finance-user",
+    "pluralName": "finance-users",
+    "displayName": "Finance User"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "finance_user"
+    },
+    "tenants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tenant.tenant",
+      "inversedBy": "finance_users"
+    },
+    "role": {
+      "type": "enumeration",
+      "enum": [
+        "admin",
+        "editor",
+        "viewer"
+      ]
+    },
+    "isActive": {
+      "type": "boolean"
+    },
+    "invoices": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::invoice.invoice",
+      "mappedBy": "finance_user"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "finance_categories",
+  "info": {
+    "singularName": "finance-category",
+    "pluralName": "finance-categories",
+    "displayName": "Finance Category"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "receita",
+        "despesa",
+        "estoque"
+      ]
+    },
+    "tenant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::tenant.tenant",
+      "inversedBy": "finance_categories"
+    }
+  }
+}

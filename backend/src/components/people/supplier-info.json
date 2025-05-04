@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_people_supplier_infos",
+  "info": {
+    "displayName": "Supplier Info"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "cnpj": {
+      "type": "string"
+    },
+    "cpf": {
+      "type": "string"
+    },
+    "address": {
+      "type": "text"
+    },
+    "phone": {
+      "type": "string"
+    }
+  }
+}

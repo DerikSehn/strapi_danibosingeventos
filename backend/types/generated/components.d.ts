@@ -49,6 +49,20 @@ export interface PeopleContact extends Struct.ComponentSchema {
   };
 }
 
+export interface PeopleSupplierInfo extends Struct.ComponentSchema {
+  collectionName: 'components_people_supplier_infos';
+  info: {
+    displayName: 'Supplier Info';
+  };
+  attributes: {
+    address: Schema.Attribute.Text;
+    cnpj: Schema.Attribute.String;
+    cpf: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    phone: Schema.Attribute.String;
+  };
+}
+
 export interface PhraseImpactPhrase extends Struct.ComponentSchema {
   collectionName: 'components_phrase_impact_phrases';
   info: {
@@ -130,6 +144,7 @@ declare module '@strapi/strapi' {
       'button.cta-button': ButtonCtaButton;
       'landing-page.background': LandingPageBackground;
       'people.contact': PeopleContact;
+      'people.supplier-info': PeopleSupplierInfo;
       'phrase.impact-phrase': PhraseImpactPhrase;
       'section.about-section': SectionAboutSection;
       'section.feature': SectionFeature;

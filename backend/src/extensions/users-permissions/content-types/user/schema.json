@@ -70,6 +70,18 @@
       "maxLength": 15,
       "unique": false,
       "minLength": 8
+    },
+    "tenants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tenant.tenant",
+      "mappedBy": "users_permissions_users"
+    },
+    "finance_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::finance-user.finance-user",
+      "mappedBy": "users_permissions_user"
     }
   }
 }
