@@ -6,7 +6,6 @@ export default {
         handler: 'dashboard.getDashboardData', 
         config: {
           policies: ['global::isOwnerTenant'], 
-          auth: true
         },
       },
     ],
