@@ -52,14 +52,14 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
         console.log('Fetching expense transactions with categories...');
         const expenseTransactionsWithCategory = await strapi.entityService.findMany('api::transaction.transaction', {
             filters: { ...commonFilters, type: 'despesa' },
-            populate: { finance_category: { fields: ['name'] } },
+            populate: '*',
             fields: ['amount'],
         });
         console.log('Expense transactions with categories fetched:', expenseTransactionsWithCategory);
 
         expenseTransactionsWithCategory.forEach((t, id) => {
             console.log(`${id} EACH TRANSACTION LOG:`, t);
-            const categoryName = t.finance_category?.name || 'Sem Categoria';
+            const categoryName = (t as any).finance_category?.name || 'Sem Categoria';
             const currentAmount = expensesByCategoryMap.get(categoryName) || 0;
             expensesByCategoryMap.set(categoryName, currentAmount + (Number(t.amount) || 0));
         });
@@ -81,7 +81,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
                 date: t.date,
                 type: t.type,
                 category: {
-                    name: t.finance_category?.name || 'Sem Categoria',
+                    name: (t as any).finance_category?.name || 'Sem Categoria',
                 },
             })),
             expensesByCategory,
