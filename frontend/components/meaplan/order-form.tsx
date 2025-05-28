@@ -62,7 +62,7 @@ export default function OrderForm({ formValues, updateFormValues, isLoading }: R
                     type="range"
                     min="20"
                     max="300"
-                    step="10"
+                    step="5"
                     value={formValues.numberOfPeople}
                     onChange={(e) => updateFormValues({ numberOfPeople: Number(e.target.value) })}
                     className="mt-1 block w-full"
