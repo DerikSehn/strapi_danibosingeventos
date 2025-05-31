@@ -86,12 +86,12 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
         
         const orderPayload: OrderPayload = {
             data: {
-                contact_name: formValues.contactName,
-                contact_phone: formValues.contactPhone,
-                contact_email: formValues.contactEmail ?? undefined, // Use undefined for optional fields if empty
-                order_details_notes: formValues.eventDetails ?? undefined,
-                order_items: selectedItems.map(item => ({
-                    product_variant: item.id,
+                contactName: formValues.contactName,
+                contactPhone: formValues.contactPhone,
+                contactEmail: formValues.contactEmail ?? undefined, // Use undefined for optional fields if empty
+                orderDetailsNotes: formValues.eventDetails ?? undefined,
+                orderItems: selectedItems.map(item => ({
+                    id: item.id,
                     quantity: item.quantity,
                 })),
             },

@@ -9,5 +9,14 @@ export default {
         auth: false,
       },
     },
+     {
+      method: 'POST',
+      path: '/budget/create-order',
+      handler: 'calculate.createOrder',
+      config: {
+        policies: [],
+        auth: false,
+      },
+    },
   ],
 };

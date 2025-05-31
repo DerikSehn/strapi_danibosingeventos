@@ -10,7 +10,7 @@ export async function createOrder(
     // The payload already contains the 'data' wrapper, so it can be passed directly.
     const orderResponse = await mutatePublicData(
       'POST',
-      '/api/orders',
+      '/budget/create-order',
       payload,
     );
     return orderResponse as OrderApiResponse; // Cast to ensure type compatibility

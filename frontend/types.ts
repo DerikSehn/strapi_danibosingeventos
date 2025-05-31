@@ -17,17 +17,17 @@ export interface OrderPageClientProps {
 
 // Payload for submitting the order to the backend
 export interface OrderPayloadItem {
-  product_variant: number; // ID of the ProductVariant
+  id: number; // ID of the ProductVariant
   quantity: number;
 }
 
 export interface OrderPayload {
   data: {
-    contact_name: string;
-    contact_phone: string;
-    contact_email?: string;
-    order_details_notes?: string;
-    order_items: OrderPayloadItem[];
+    contactName: string;
+    contactPhone: string;
+    contactEmail?: string;
+    orderDetailsNotes?: string;
+    orderItems: OrderPayloadItem[];
   };
 }
 

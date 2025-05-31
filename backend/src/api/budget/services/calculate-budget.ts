@@ -66,3 +66,41 @@ export function calculateBudget(
     totalPrice,
   };
 }
+
+
+export function calculateTotalPriceFromItems(
+  selectedItemsDetails: (ApiProductVariantProductVariant['attributes'] & { 
+    product: {
+        product_group: { id: string; quantity_per_people: number   };
+    };
+    price: string;
+  } & { title: string; documentId: string; id: string; product: { title: string }
+
+  })[],
+) {
+ 
+  // Group items by productGroup
+  const groupedItems = selectedItemsDetails.reduce((groups, item) => {
+    const groupId = item.product?.product_group?.id || 'ungrouped';
+    if (!groups[groupId]) {
+      groups[groupId] = [];
+    }
+    groups[groupId].push(item);
+    return groups;
+  }, {} as Record<string, typeof selectedItemsDetails>);
+
+  let totalItemPrice = 0;
+
+  // Iterate over each group to calculate the price
+  for (const groupId in groupedItems) {
+    const itemsInGroup = groupedItems[groupId];
+
+    // Calculate the price for each item in the group
+    for (const item of itemsInGroup) {
+      const itemPrice = Number(item.price);
+      totalItemPrice += itemPrice;
+     }
+  }
+
+  return totalItemPrice
+}
