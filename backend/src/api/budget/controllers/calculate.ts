@@ -15,11 +15,11 @@ export default factories.createCoreController(
       const { partyType, selectedItems, numberOfPeople, eventDetails, contactInfo } = ctx.request.body.data;
 
       
-      // Validate required fields
+      
       if (!partyType || !selectedItems || !contactInfo || !numberOfPeople) {
         return ctx.badRequest('Missing required fields');
       }
-      // Fetch party type details
+      
       const partyTypeDetails = await strapi.documents('api::party-type.party-type').findFirst({
         filters: { documentId: partyType },
         populate: '*',
@@ -28,19 +28,19 @@ export default factories.createCoreController(
         return ctx.notFound('Party type not found');
       }
       
-      // Fetch selected items details
+      
       const selectedItemsDetails = await fetchSelectedItemsDetails(strapi, selectedItems);
       if (!selectedItemsDetails || selectedItemsDetails.length === 0) {
         return ctx.notFound('No selected items found');
       }
-      // Calculate budget
+      
       const budgetCalculation = calculateBudget(
         partyTypeDetails as any,
         selectedItemsDetails as any,
         numberOfPeople,
       );
       strapi.log.debug('Budget calculation:', budgetCalculation);
-      // Create budget in database
+      
       const newBudget = await strapi.documents('api::budget.budget').create({
         data: {
           partyType,
@@ -50,7 +50,7 @@ export default factories.createCoreController(
       });
       strapi.log.debug('New budget created:', newBudget);
 
-      // 
+      
       if (contactInfo?.email) {
         await sendBudgetEmail({
           name: contactInfo.name,
@@ -63,11 +63,11 @@ export default factories.createCoreController(
           partyTypeDetails,
           waiterPrice: budgetCalculation.waiterPrice,
           numberOfWaiters: budgetCalculation.numberOfWaiters,
-          // Add these lines
+          
           totalItemPrice: budgetCalculation.totalItemPrice,
           extraHours: budgetCalculation.extraHours,
           extraHourPrice: budgetCalculation.extraHourPrice,
-          // End of added lines
+          
           strapi,
         });
       }

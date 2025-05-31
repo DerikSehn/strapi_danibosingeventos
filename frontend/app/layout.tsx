@@ -5,8 +5,9 @@ import type { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
 import localFont from "next/font/local";
 import "./globals.css";
-
+import QueryProvider from "@/components/providers/query-provider";
 import { ReactLenis } from 'lenis/react';
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -35,19 +36,18 @@ export default function RootLayout({
     { name: "Contato", link: "/contact", icon: <Contact /> },
   ]
 
-
-
   return (
     <ViewTransitions>
       <html lang="en">
         <ReactLenis root options={{ touchMultiplier: 0, syncTouch: false }}>
-
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
           >
-            <FloatingNavBar navItems={navItems} />
-            {children}
-            <Footer />
+            <QueryProvider>
+              <FloatingNavBar navItems={navItems} />
+              {children}
+              <Footer />
+            </QueryProvider>
           </body>
         </ReactLenis>
       </html>

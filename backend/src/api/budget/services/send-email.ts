@@ -13,11 +13,11 @@ export async function sendBudgetEmail({
   partyTypeDetails,
   waiterPrice,
   numberOfWaiters,
-  // Add these lines
+  
   totalItemPrice,
   extraHours,
   extraHourPrice,
-  // End of added lines
+  
   strapi,
 }: {
   name: string;
@@ -30,17 +30,17 @@ export async function sendBudgetEmail({
   partyTypeDetails: any;
   waiterPrice: number;
   numberOfWaiters: number;
-  // Add these lines
+  
   totalItemPrice: number;
   extraHours: number;
   extraHourPrice: number;
-  // End of added lines
+  
   strapi: Core.Strapi; 
 }) {
-  // Get business contact information
+  
   const businessContact = await fetchBusinessContact(strapi);
 
-  // Check if selectedItemsDetails is valid and not empty
+  
   if (!selectedItemsDetails || selectedItemsDetails.length === 0) {
     console.error('No selected items found for the budget email');
     selectedItemsDetails = [];
@@ -49,7 +49,7 @@ export async function sendBudgetEmail({
   const partyTypePrice = typeof partyTypeDetails?.price === 'number' ? partyTypeDetails.price : 0;
   const partyTypeName = partyTypeDetails?.title || 'Festa';
 
-  // Group items by productGroup
+  
   const groupedItems = selectedItemsDetails.reduce((groups, item) => {
     const groupId = item.product?.product_group?.id || 'ungrouped';
     const categoryName = item.product?.category?.name || 'Sem categoria';
@@ -66,7 +66,7 @@ export async function sendBudgetEmail({
     return groups;
   }, {} as Record<string, { items: any[]; quantityPerPerson: number; name?: string, categoryName: string }>);
 
-  // Create tables for each product group
+  
   const categoryTables = Object.keys(groupedItems).length > 0
     ? Object.keys(groupedItems)
         .map((groupId) => {
@@ -107,7 +107,7 @@ export async function sendBudgetEmail({
         .join('')
     : '<mj-text font-size="16px" color="#555555">Nenhum item selecionado para este orçamento.</mj-text>';
 
-  // Budget summary
+  
   const budgetSummary = `
   <mj-section background-color="#ffffff" padding="20px">
     <mj-column>
@@ -150,7 +150,7 @@ export async function sendBudgetEmail({
       <mj-section background-color="#ffffff" padding-bottom="20px" padding-top="20px">
         <mj-column width="100%">
           <mj-wrapper background-color="rgba(0, 0, 0, 0.5)">
-            <mj-image src="https://danibosingeventos.s3.us-east-1.amazonaws.com/2024/logo-strapi.png" alt="Logo" align="center" width="200px"></mj-image>
+            <mj-image src="https:
           </mj-wrapper>                  
           <mj-divider border-color="#F45E43"></mj-divider>
           <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Novo Orçamento Criado</mj-text>
@@ -188,7 +188,7 @@ export async function sendBudgetEmail({
 
   const { html } = mjml2html(mjmlTemplate);
 
-  // Send the email with the generated HTML
+  
   await strapi.plugins['email'].services.email.send({
     to: businessContact.email,
     from: 'derikbosing@gmail.com',

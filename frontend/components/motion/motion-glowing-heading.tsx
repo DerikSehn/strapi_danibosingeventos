@@ -8,7 +8,7 @@ interface MotionGlowingHeadingProps {
 export default function MotionGlowingHeading({ children, className }: Readonly<MotionGlowingHeadingProps>) {
 
     return (<motion.h1
-        className={cn("text-3xl font-food tracking-tighter sm:text-5xl xl:text-7xl text-primary-600 ", className)}
+        className={cn("text-4xl font-food tracking-tighter sm:text-5xl xl:text-7xl text-primary-600 ", className)}
         initial={{
             textShadow: '6px 4px 1px #feb95920'
         }}

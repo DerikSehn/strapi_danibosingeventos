@@ -1,4 +1,3 @@
-import { ApiBudgetBudget } from '../../../../types/generated/contentTypes';
 
 // optional apibudget interface
 interface BudgetCalculationData {

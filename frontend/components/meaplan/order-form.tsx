@@ -1,15 +1,8 @@
+import { FormValues } from "@/types";
 import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
-interface FormValues {
-    numberOfPeople: number;
-    eventDuration: number;
-    eventDetails: string;
-    contactName: string;
-    contactPhone: string;
-    contactEmail: string;
-}
 
 interface OrderFormProps {
     formValues: FormValues;
@@ -42,17 +35,7 @@ export default function OrderForm({ formValues, updateFormValues, isLoading }: R
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
             </div>
-            <div className="mb-4">
-                <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">
-                    Email (opcional)
-                </label>
-                <Input
-                    id="contactEmail"
-                    value={formValues.contactEmail}
-                    onChange={(e) => updateFormValues({ contactEmail: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-            </div>
+         {!!formValues.numberOfPeople &&
             <div className="mb-4">
                 <label htmlFor="numberOfPeople" className="block text-sm font-medium text-gray-700">
                     Número de Pessoas
@@ -69,6 +52,7 @@ export default function OrderForm({ formValues, updateFormValues, isLoading }: R
                 />
                 <span>{formValues.numberOfPeople}</span>
             </div>
+         }
             <div className="mb-4">
                 <label htmlFor="eventDetails" className="block text-sm font-medium text-gray-700">
                     Observações

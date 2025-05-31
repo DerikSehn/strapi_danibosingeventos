@@ -20,13 +20,13 @@ interface AboutSectionProps {
 export default function AboutSection({ heading, subHeading, features }: Readonly<AboutSectionProps>) {
     return (
         <div className="min-h-screen bg-black text-white flex flex-col justify-center items-center p-8 py-12 md:py-48">
-            <div className="max-w-6xl w-full">
+            <div className="max-w-screen xl:max-w-6xl w-full">
                 <header className="mb-16">
                     <GradualSpacing
                         delayMultiple={.02} duration={1.2}
 
                         text={heading}
-                        className="text-8xl font-rustic text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-800" />
+                        className="text-xl lg:text-8xl font-rustic text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-800" />
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">

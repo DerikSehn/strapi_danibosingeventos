@@ -55,15 +55,16 @@ export default function Hero({ backgroundImage, button, description, heroImage, 
                      initial={{ opacity: 0, scale: 0.9 }}
                      animate={{ opacity: 1, scale: 1 }}
                      transition={{ duration: 1 }}
-                     className="relative  min-h-[350px] min-w-[350px]  sm:min-h-[550px] sm:min-w-[550px]">
+                     className="relative  min-h-[250px]  min-w-[350px]  sm:min-h-[550px] sm:min-w-[550px]">
                             <StrapiImage
                                 alt="Hero"
                                 fill                
-                                className="select-none object-contain aspect-square xl:scale-[1.4] 2xl:scale-[1.8]"
+                                className="select-none scale-150 sm:scale-100 object-contain aspect-square xl:scale-[1.4] 2xl:scale-[1.8]"
                                 src={heroImage[0].url}
                                 />
                     </motion.figure>
                 </div>
+                
             </div>
         </section >
     );

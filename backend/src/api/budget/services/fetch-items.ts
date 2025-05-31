@@ -19,7 +19,7 @@ export async function fetchSelectedItemsDetails(
       return [];
     }
 
-    // Ensure the IDs are numbers and filter correctly
+    
     const items = await strapi.documents('api::product-variant.product-variant').findMany({
       filters: {
         documentId: { $in: selectedItems },
@@ -35,7 +35,7 @@ export async function fetchSelectedItemsDetails(
       },
     });
 
-    return items || []; // Return an empty array if no items found
+    return items || []; 
   } catch (error) {
     console.error('Error in fetchSelectedItemsDetails:', error);
     return [];
@@ -48,14 +48,14 @@ export async function fetchSelectedItemsDetails(
  */
 export async function fetchBusinessContact(strapi: Core.Strapi) {
   try {
-    // Fetch the business settings or user with role 'admin' and username 'danibosing'
+    
     const user = await strapi.query('plugin::users-permissions.user').findOne({
       where: { username: 'danibosing' },
       select: ['email', 'phone'],
     });
 
     if (!user) {
-      // Fallback to default values if user not found
+      
       return {
         email: 'contato@danibosingeventos.com',
         phone: '(11) 1234-5678',
@@ -68,7 +68,7 @@ export async function fetchBusinessContact(strapi: Core.Strapi) {
     };
   } catch (error) {
     console.error('Error fetching business contact:', error);
-    // Return default values if there's an error
+    
     return {
       email: 'contato@danibosingeventos.com',
       phone: '(11) 1234-5678',
