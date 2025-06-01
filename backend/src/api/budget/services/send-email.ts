@@ -154,7 +154,6 @@ export async function sendBudgetEmail({
           <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Novo Orçamento Criado</mj-text>
           <mj-text font-size="16px" color="#000000" font-family="helvetica">
             <strong>Nome:</strong> ${name}<br />
-            <strong>Email:</strong> ${email}<br />
             <strong>Telefone:</strong> ${phone}<br />
             <strong>Tipo de Evento:</strong> ${partyTypeName}<br />
             <strong>Número de Pessoas:</strong> ${numberOfPeople}<br />
