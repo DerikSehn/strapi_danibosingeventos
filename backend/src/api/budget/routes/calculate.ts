@@ -8,8 +8,7 @@ export default {
         policies: [],
         auth: false,
       },
-    },
-     {
+    },     {
       method: 'POST',
       path: '/budget/create-order',
       handler: 'calculate.createOrder',
