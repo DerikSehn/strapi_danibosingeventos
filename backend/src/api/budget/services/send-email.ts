@@ -4,7 +4,6 @@ import { fetchBusinessContact } from './fetch-items';
 
 export async function sendBudgetEmail({
   name,
-  email,
   phone,
   eventDetails,
   numberOfPeople,
@@ -21,8 +20,7 @@ export async function sendBudgetEmail({
   strapi,
 }: {
   name: string;
-  email: string;
-  phone: string;
+   phone: string;
   eventDetails: string;
   numberOfPeople: number;
   totalPrice: number;

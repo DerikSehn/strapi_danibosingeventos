@@ -51,10 +51,8 @@ export default factories.createCoreController(
       strapi.log.debug('New budget created:', newBudget);
 
       
-      if (contactInfo?.email) {
-        await sendBudgetEmail({
+         await sendBudgetEmail({
           name: contactInfo.name,
-          email: contactInfo.email,
           phone: contactInfo.phone,
           eventDetails,
           numberOfPeople,
@@ -70,7 +68,7 @@ export default factories.createCoreController(
           
           strapi,
         });
-      }      const result = { ...newBudget, success: true}
+     const result = { ...newBudget, success: true}
 
       return result
     } catch (error) {
