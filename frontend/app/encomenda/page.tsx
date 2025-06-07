@@ -32,8 +32,6 @@ async function getCategoriesForOrder(): Promise<PureCategory[]> { // Return Pure
 export default async function EncomendaPage() {
   const categoriesData = await getCategoriesForOrder();
 
-  console.log('Pure Categories Data:', JSON.stringify(categoriesData, null, 2));
-
   if (!categoriesData || categoriesData.length === 0) {
     return (
       <div className="container mx-auto py-8 text-center">

@@ -1,6 +1,6 @@
 import { FloatingNavBar } from "@/components/blocks/floating-navbar";
 import Footer from "@/components/blocks/footer";
-import { Contact, HomeIcon, InfoIcon } from "lucide-react";
+import { ChefHat, Contact, HomeIcon, InfoIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
 import localFont from "next/font/local";
@@ -32,6 +32,7 @@ export default function RootLayout({
 
   const navItems = [
     { name: "Início", link: "/", icon: <HomeIcon /> },
+    { name: "Cardápio", link: "/mostruario", icon: <ChefHat /> },
     { name: "Sobre", link: "/about", icon: <InfoIcon /> },
     { name: "Contato", link: "/contact", icon: <Contact /> },
   ]

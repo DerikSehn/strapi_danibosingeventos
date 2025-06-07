@@ -81,7 +81,6 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
     const {Stepper, nextStep, step, previousStep } = useFormStepper(steps)
  
     const handleSubmitOrder = async () => { 
-        console.log("Submitting order with values:", formValues, "and selected items:", selectedItems);
        
         
         const orderPayload: OrderPayload = {

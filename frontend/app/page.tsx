@@ -1,5 +1,6 @@
 import Features from "@/components/blocks/features";
 import Hero from "@/components/blocks/hero";
+import MenuShowcase from "@/components/blocks/menu-showcase";
 import { getStrapiData } from "@/lib/utils";
 import qs from 'qs';
 import React from "react";
@@ -40,11 +41,18 @@ export default async function HomePage() {
     'section.features-section': Features
   }
 
-
   return (<main >
-    {strapiData?.data?.blocks?.map((block: any) =>
-      React.createElement(components[block.__component], { ...block, key: block.__component })
-    )}
+    {strapiData?.data?.blocks?.map((block: any, index: number) => {
+      if (block.__component === 'section.hero-section') {
+        return (
+          <React.Fragment key={block.__component}>
+            {React.createElement(components[block.__component], { ...block, key: block.__component })}
+            <MenuShowcase />
+          </React.Fragment>
+        );
+      }
+      return React.createElement(components[block.__component], { ...block, key: `${block.__component}-${index}` });
+    })}
   </main>
   );
 }

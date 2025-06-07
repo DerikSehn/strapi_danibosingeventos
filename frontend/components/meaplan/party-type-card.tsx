@@ -50,7 +50,7 @@ export default function PartyTypeCard({ title, id, caption, description, backgro
                         <h3 className='text-muted-foreground font-thin '>Contém:</h3>
                         <div className='flex space-x-2   '>
                             {categories.map((category: any, index: number) => (
-                                <div className="p-1 bg-primary-500 text-black text-sm font-thin h-14 flex items-center" key={index}>
+                                <div className="p-1 bg-primary-500 text-black text-sm font-thin h-14 flex items-center" key={index * 2}>
                                     {category.title}
                                 </div>
                             ))}

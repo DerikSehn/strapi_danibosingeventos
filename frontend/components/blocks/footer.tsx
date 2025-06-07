@@ -13,6 +13,9 @@ const LINKS = [
             {
                 name: "Contato",
                 href: '/contact',
+            },            {
+                name: "Ver Mostruário",
+                href: '/mostruario',
             },
         ],
     },

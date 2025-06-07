@@ -1,7 +1,7 @@
 import { FormValues } from "@/types";
-import { Card } from "../ui/card";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { GastronomyInput } from "../custom/gastronomy-input";
+import { GastronomyTextarea } from "../custom/gastronomy-textarea";
+import { MenuCard } from "../custom/menu-card";
 
 
 interface OrderFormProps {
@@ -12,35 +12,30 @@ interface OrderFormProps {
 
 export default function OrderForm({ formValues, updateFormValues, isLoading }: Readonly<OrderFormProps>) {
     return (
-        <Card className="max-w-prose mx-auto p-4">
+        <MenuCard variant="rustic" className="max-w-prose mx-auto p-4">
             <div className="mb-4">
-                <label htmlFor="contactName" className="block text-sm font-medium text-gray-700">
-                    Nome
-                </label>
-                <Input
+                <GastronomyInput
+                    variant="chef" 
+                    label="Nome"
                     id="contactName"
                     value={formValues.contactName}
                     onChange={(e) => updateFormValues({ contactName: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
+                 />
             </div>
             <div className="mb-4">
-                <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700">
-                    Número de Celular
-                </label>
-                <Input
+                <GastronomyInput
+                    variant="chef" 
+                    label="Número de Celular"
                     id="contactPhone"
                     value={formValues.contactPhone}
                     onChange={(e) => updateFormValues({ contactPhone: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
+                 />
             </div>
          {!!formValues.numberOfPeople &&
             <div className="mb-4">
-                <label htmlFor="numberOfPeople" className="block text-sm font-medium text-gray-700">
-                    Número de Pessoas
-                </label>
-                <Input
+                <GastronomyInput
+                    variant="chef" 
+                    label="Número de Pessoas"
                     id="numberOfPeople"
                     type="range"
                     min="20"
@@ -48,22 +43,18 @@ export default function OrderForm({ formValues, updateFormValues, isLoading }: R
                     step="5"
                     value={formValues.numberOfPeople}
                     onChange={(e) => updateFormValues({ numberOfPeople: Number(e.target.value) })}
-                    className="mt-1 block w-full"
-                />
+                 />
                 <span>{formValues.numberOfPeople}</span>
             </div>
          }
             <div className="mb-4">
-                <label htmlFor="eventDetails" className="block text-sm font-medium text-gray-700">
-                    Observações
-                </label>
-                <Textarea
+                <GastronomyTextarea
                     id="eventDetails"
+                    label="Observações"
                     value={formValues.eventDetails}
                     onChange={(e) => updateFormValues({ eventDetails: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm min-h-28"
-                />
+                 />
             </div>
-        </Card>
+        </MenuCard>
     );
 }

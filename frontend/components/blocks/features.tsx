@@ -33,9 +33,7 @@ export default function Features({ title, description, feature }: Readonly<Featu
 
     return (
         <section className="flex flex-col h-auto relative z-0 bg-neutral-900 items-center " >
-            <MotionSlidingHeading className="hidden md:block text-9xl font-rustic text-primary-900  py-10 " >
-                {title}
-            </MotionSlidingHeading>
+      
             <TextRevealByWord text={description} className="hidden md:block " 
                 paragraphProps={{
                     className: "xl:text-primary-500 text-center lg:text-6xl xl:text-7xl  font-food"
