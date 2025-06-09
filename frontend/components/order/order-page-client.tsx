@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { toast } from "sonner";
 
 import { createOrder } from '../../data/actions/create-order'; // Corrected import path
+import { validateOrderForm } from '@/lib/utils/validation';
 import { useFormStepper } from '@/lib/hooks/useFormStepper';
 import type {
     FormValues,
@@ -39,12 +40,9 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
             toast.error(error.message ?? 'Ocorreu um erro ao enviar a encomenda.');
             setOrderResult({ error: error.message ?? 'Falha no envio' });
          },
-    });
-
-    const updateFormValues = (newValues: Partial<FormValues>) => {
+    });    const updateFormValues = (newValues: Partial<FormValues>) => {
         setFormValues((prev: FormValues) => ({ ...prev, ...newValues })); // Explicitly type prev
     };
-    
     
     const steps = [
         {
@@ -63,6 +61,7 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
                         formValues={formValues}
                         updateFormValues={updateFormValues}
                         isLoading={mutation.isPending}
+                        showValidation={true}
                     />
         },
         {
@@ -74,14 +73,31 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
                 selectedItems={selectedItems}
                 isLoading={mutation.isPending}
 
-                />
-        }
+                />        }
     ]
 
-    const {Stepper, nextStep, step, previousStep } = useFormStepper(steps)
- 
-    const handleSubmitOrder = async () => { 
-       
+    const {Stepper, nextStep, step, previousStep } = useFormStepper(steps);
+
+    const handleSubmitOrder = async () => {
+        // Validate form before submitting
+        const validation = validateOrderForm({
+            contactName: formValues.contactName,
+            contactPhone: formValues.contactPhone,
+            contactEmail: formValues.contactEmail,
+            orderDetailsNotes: formValues.eventDetails,
+            orderItems: selectedItems.map(item => ({
+                id: item.id,
+                quantity: item.quantity,
+            })),
+        });
+
+        if (!validation.isValid) {
+            // Show validation errors
+            validation.errors.forEach(error => {
+                toast.error(error.message);
+            });
+            return;
+        }
         
         const orderPayload: OrderPayload = {
             data: {

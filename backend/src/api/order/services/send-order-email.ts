@@ -27,21 +27,30 @@ export async function sendOrderMail({
   orderItemsDetails: OrderItemDetail[];
   strapi: Core.Strapi;
 }) {
+  strapi.log.debug('[Send Order Mail] Starting email generation');
+  strapi.log.debug('[Send Order Mail] Order items details:', JSON.stringify(orderItemsDetails, null, 2));
+  strapi.log.debug('[Send Order Mail] Total items price:', totalItemsPrice);
+  
   const businessContact = await fetchBusinessContact(strapi);
 
   if (!orderItemsDetails || orderItemsDetails.length === 0) {
     strapi.log.warn('[Send Order Mail] No order items provided for the email. Aborting email send.');
     return; // Or throw an error, depending on desired behavior
   }
-
   const itemsTableRows = orderItemsDetails
     .map((item) => {
+      // Validate that itemPrice and totalItemPrice are numbers
+      const itemPrice = typeof item.itemPrice === 'number' ? item.itemPrice : 0;
+      const totalItemPrice = typeof item.totalItemPrice === 'number' ? item.totalItemPrice : 0;
+      const quantity = typeof item.quantity === 'number' ? item.quantity : 0;
+      const itemName = item.itemName || 'Unknown Item';
+      
       return `
       <tr>
-        <td style="padding: 10px; border-bottom: 1px solid #ecedee;">${item.itemName}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: center;">${item.quantity}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${item.itemPrice.toFixed(2)}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${item.totalItemPrice.toFixed(2)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ecedee;">${itemName}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: center;">${quantity}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${itemPrice.toFixed(2)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ecedee; text-align: right;">R$ ${totalItemPrice.toFixed(2)}</td>
       </tr>
       `;
     })
@@ -58,10 +67,9 @@ export async function sendOrderMail({
           <th style="padding: 10px 0; text-align: right;">Preço Unit.</th>
           <th style="padding: 10px 0; text-align: right;">Preço Total</th>
         </tr>
-        ${itemsTableRows}
-        <tr style="border-top: 2px solid #F45E43;">
+        ${itemsTableRows}        <tr style="border-top: 2px solid #F45E43;">
           <td colspan="3" style="padding: 10px; font-weight: bold; text-align: right;">Total da Encomenda:</td>
-          <td style="padding: 10px; font-weight: bold; text-align: right;">R$ ${totalItemsPrice.toFixed(2)}</td>
+          <td style="padding: 10px; font-weight: bold; text-align: right;">R$ ${(typeof totalItemsPrice === 'number' ? totalItemsPrice : 0).toFixed(2)}</td>
         </tr>
       </mj-table>
     </mj-column>
@@ -74,7 +82,7 @@ export async function sendOrderMail({
       <mj-section background-color="#ffffff" padding-bottom="20px" padding-top="20px">
         <mj-column width="100%">
           <mj-wrapper background-color="rgba(0, 0, 0, 0.5)">
-            <mj-image src="${'https://via.placeholder.com/150?text=Logo'}" alt="Logo" width="150px"></mj-image>
+            <mj-image src="${'https://ci3.googleusercontent.com/meips/ADKq_NZmZgJ4FbWSitygxnSEiBQPZaneA_n41A_8865T26q0xeOFvHMJxGm9O1HmcArr-MPH9dC3mTLxOmV6i1Qys7VxDZp59CAlp2jyGLBiLggyPtPeYDzocV4aorhqpgXB=s0-d-e1-ft#https://danibosingeventos.s3.us-east-1.amazonaws.com/2024/logo-strapi.png'}" alt="Logo" width="150px"></mj-image>
           </mj-wrapper>
           <mj-divider border-color="#F45E43"></mj-divider>
           <mj-text font-size="24px" font-weight="bold" color="#F45E43" font-family="helvetica" align="center">Nova Encomenda Recebida!</mj-text>

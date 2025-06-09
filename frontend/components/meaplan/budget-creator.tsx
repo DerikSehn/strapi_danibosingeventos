@@ -13,26 +13,27 @@ import OrderForm from "./order-form";
 
 export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPartyTypePartyType['attributes'] }>) {
 
- const { formValues, updateFormValues, createBudget, budgetResult, isLoading, error } = useBudget();
+ const { formValues, updateFormValues, createBudget, budgetResult, isLoading, error, validateForm } = useBudget();
  const { selectedItems, reset } = useMealItemsStore();
     // Estrutura os tipos de festa selecionados
    
     // Função para lidar com o envio do pedido
-    const handleOrder = async () => {
-        await createBudget(partyType);
-        nextStep()
-    };
+  
 
     const steps = [
         {
             title: "Seleção de Itens",
             description: "Escolha os itens do seu cardápio",
             content: <CategoriesSelector categories={partyType.categories}/>
-        },
-        {
+        },        {
             title: "Detalhes do Pedido",
             description: "Preencha os detalhes do seu pedido",
-            content: <OrderForm formValues={formValues} updateFormValues={updateFormValues} isLoading={isLoading} />
+            content: <OrderForm 
+                formValues={formValues} 
+                updateFormValues={updateFormValues} 
+                isLoading={isLoading} 
+                showValidation={true}
+            />
         },
         {
             title: "Conclusão",
@@ -44,6 +45,11 @@ export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPa
     
 
     const {Stepper, nextStep, step, previousStep } = useFormStepper(steps)
+
+      const handleOrder = async () => {
+        await createBudget(partyType);
+        nextStep()
+    };
 
     const isFirstStep = step === 1;
 

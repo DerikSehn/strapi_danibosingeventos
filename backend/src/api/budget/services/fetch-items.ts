@@ -13,9 +13,10 @@ export async function fetchSelectedItemsDetails(
   selectedItems: string[],
 ) {
   try {
+    strapi.log.debug('[Fetch Items] Input selectedItems:', selectedItems);
 
     if (!selectedItems || selectedItems.length === 0) {
-      console.error('No selected items provided');
+      strapi.log.error('[Fetch Items] No selected items provided');
       return [];
     }
 
@@ -35,9 +36,12 @@ export async function fetchSelectedItemsDetails(
       },
     });
 
+    strapi.log.debug('[Fetch Items] Found items count:', items?.length || 0);
+    strapi.log.debug('[Fetch Items] Items details:', JSON.stringify(items, null, 2));
+
     return items || []; 
   } catch (error) {
-    console.error('Error in fetchSelectedItemsDetails:', error);
+    strapi.log.error('[Fetch Items] Error in fetchSelectedItemsDetails:', error);
     return [];
   }
 }
@@ -48,26 +52,32 @@ export async function fetchSelectedItemsDetails(
  */
 export async function fetchBusinessContact(strapi: Core.Strapi) {
   try {
+    strapi.log.debug('[Fetch Business Contact] Starting to fetch business contact');
     
     const user = await strapi.query('plugin::users-permissions.user').findOne({
       where: { username: 'danibosing' },
       select: ['email', 'phone'],
     });
 
+    strapi.log.debug('[Fetch Business Contact] User found:', user);
+
     if (!user) {
-      
+      strapi.log.warn('[Fetch Business Contact] No user found, using default contact');
       return {
         email: 'contato@danibosingeventos.com',
         phone: '(11) 1234-5678',
       };
     }
 
-    return {
+    const result = {
       email: user.email || 'contato@danibosingeventos.com',
       phone: user.phone || '(11) 1234-5678',
     };
+    
+    strapi.log.debug('[Fetch Business Contact] Returning contact:', result);
+    return result;
   } catch (error) {
-    console.error('Error fetching business contact:', error);
+    strapi.log.error('[Fetch Business Contact] Error fetching business contact:', error);
     
     return {
       email: 'contato@danibosingeventos.com',

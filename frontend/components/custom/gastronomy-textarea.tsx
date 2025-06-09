@@ -15,30 +15,30 @@ const GastronomyTextarea = React.forwardRef<HTMLTextAreaElement, GastronomyTexta
     const variantStyles = {
       recipe: {
         container: "bg-gradient-to-br from-white-100 via-white-200 to-primary-100 border-3 border-dashed border-primary-400 hover:border-primary-600 focus-within:border-primary-700 shadow-lg hover:shadow-xl transition-all duration-500",
-        label: "text-primary-700 font-food text-xl font-bold tracking-wide",
-        textarea: "bg-transparent text-gray-800 placeholder-primary-500 font-medium resize-none",
+        label: "text-primary-700 text-xl tracking-wide",
+        textarea: "bg-transparent text-white placeholder-white font-medium resize-none",
         icon: "text-primary-600",
         decoration: "recipe-lines"
       },
       menu: {
         container: "bg-gradient-to-br from-primary-50 to-white-200 border-4 border-double border-secondary-500 hover:border-secondary-700 focus-within:border-secondary-800 shadow-xl hover:shadow-2xl transition-all duration-700",
-        label: "text-secondary-800 font-rustic text-2xl font-extrabold tracking-widest uppercase",
-        textarea: "bg-transparent text-gray-900 placeholder-secondary-600 font-semibold text-lg resize-none",
-        icon: "text-secondary-700",
+        label: "text-white text-2xl font-extrabold tracking-widest uppercase",
+        textarea: "bg-transparent text-white placeholder-secondary-600 font-semibold text-lg resize-none",
+        icon: "text-white",
         decoration: "menu-border"
       },
       'chef-notes': {
         container: "bg-gradient-to-br from-white-200 to-primary-200 border-2 border-solid border-primary-500 hover:border-primary-700 focus-within:border-primary-800 shadow-md hover:shadow-lg transition-all duration-300 relative",
-        label: "text-primary-800 font-food text-lg font-bold tracking-wide italic",
-        textarea: "bg-transparent text-gray-800 placeholder-primary-600 font-medium italic resize-none",
+        label: "text-primary-800 text-lg font-bold tracking-wide italic",
+        textarea: "bg-transparent text-white placeholder-white font-medium italic resize-none",
         icon: "text-primary-700",
         decoration: "chef-paper"
       },
       vintage: {
         container: "bg-gradient-to-br from-white-300 via-primary-100 to-white-300 border-4 border-double border-secondary-600 hover:border-secondary-800 focus-within:border-secondary-900 shadow-2xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] transition-all duration-700",
-        label: "text-secondary-900 font-rustic text-xl font-black tracking-[0.3em] uppercase",
-        textarea: "bg-transparent text-gray-900 placeholder-secondary-700 font-bold italic resize-none",
-        icon: "text-secondary-800",
+        label: "text-white text-xl font-black tracking-[0.3em] uppercase",
+        textarea: "bg-transparent text-white placeholder-white font-bold italic resize-none",
+        icon: "text-white",
         decoration: "vintage-ornate"
       }
     };
@@ -148,7 +148,7 @@ const GastronomyTextarea = React.forwardRef<HTMLTextAreaElement, GastronomyTexta
 
             {/* Helper text */}
             {helperText && (
-              <p className="mt-3 text-sm text-gray-600 font-medium opacity-70 italic">
+              <p className="mt-3 text-sm text-white opacity-70 italic">
                 {helperText}
               </p>
             )}

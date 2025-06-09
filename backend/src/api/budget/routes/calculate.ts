@@ -8,10 +8,20 @@ export default {
         policies: [],
         auth: false,
       },
-    },     {
+    },
+    {
       method: 'POST',
       path: '/budget/create-order',
       handler: 'calculate.createOrder',
+      config: {
+        policies: [],
+        auth: false,
+      },
+    },
+    {
+      method: 'POST',
+      path: '/budget/test-email',
+      handler: 'calculate.testEmail',
       config: {
         policies: [],
         auth: false,

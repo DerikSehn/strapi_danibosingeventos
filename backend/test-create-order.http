@@ -1,0 +1,124 @@
+### Test Create Order Endpoint
+### Este arquivo contém exemplos de requisições para testar o endpoint createOrder
+
+### 1. Teste básico do createOrder com itens válidos
+POST http://localhost:1337/api/budget/create-order
+Content-Type: application/json
+
+{
+  "data": {
+    "contactName": "Ana Costa Silva",
+    "contactPhone": "(11) 91234-5678",
+    "contactEmail": "ana.costa@email.com",
+    "orderDetailsNotes": "Entrega no sábado às 14h. Festa de aniversário de 15 anos. Local: Salão de festas do condomínio.",
+    "orderItems": [
+      {
+        "id": "variant1",
+        "quantity": 50
+      },
+      {
+        "id": "variant2", 
+        "quantity": 30
+      },
+      {
+        "id": "variant3",
+        "quantity": 25
+      }
+    ]
+  }
+}
+
+### 2. Teste com apenas campos obrigatórios
+POST http://localhost:1337/api/budget/create-order
+Content-Type: application/json
+
+{
+  "data": {
+    "contactName": "João Santos",
+    "contactPhone": "(11) 98765-4321",
+    "orderItems": [
+      {
+        "id": "variant1",
+        "quantity": 10
+      }
+    ]
+  }
+}
+
+### 3. Teste com múltiplos itens e quantidades diferentes
+POST http://localhost:1337/api/budget/create-order
+Content-Type: application/json
+
+{
+  "data": {
+    "contactName": "Maria Fernanda Oliveira",
+    "contactPhone": "(11) 95678-1234",
+    "contactEmail": "maria.fernanda@gmail.com",
+    "orderDetailsNotes": "Evento corporativo. Necessário entrega até as 12h. Empresa: TechSolutions Ltda. Contato adicional: (11) 3456-7890",
+    "orderItems": [
+      {
+        "id": "variant1",
+        "quantity": 100
+      },
+      {
+        "id": "variant2",
+        "quantity": 75
+      },
+      {
+        "id": "variant3",
+        "quantity": 50
+      },
+      {
+        "id": "variant4",
+        "quantity": 40
+      },
+      {
+        "id": "variant5",
+        "quantity": 60
+      }
+    ]
+  }
+}
+
+### 4. Teste que deve falhar - campos obrigatórios faltando
+POST http://localhost:1337/api/budget/create-order
+Content-Type: application/json
+
+{
+  "data": {
+    "contactName": "Teste Sem Phone"
+  }
+}
+
+### 5. Teste que deve falhar - quantidade inválida
+POST http://localhost:1337/api/budget/create-order
+Content-Type: application/json
+
+{
+  "data": {
+    "contactName": "Teste Quantidade Inválida",
+    "contactPhone": "(11) 99999-9999",
+    "orderItems": [
+      {
+        "id": "variant1",
+        "quantity": 0
+      }
+    ]
+  }
+}
+
+### 6. Teste que deve falhar - ID de item faltando
+POST http://localhost:1337/api/budget/create-order
+Content-Type: application/json
+
+{
+  "data": {
+    "contactName": "Teste ID Faltando",
+    "contactPhone": "(11) 88888-8888",
+    "orderItems": [
+      {
+        "quantity": 5
+      }
+    ]
+  }
+}

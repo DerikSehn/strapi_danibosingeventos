@@ -5,11 +5,9 @@ import type { OrderPayload, OrderApiResponse } from '../../types';
 export async function createOrder(
   payload: OrderPayload,
 ): Promise<OrderApiResponse> {
-  try {
-
-    const orderResponse = await mutatePublicData(
+  try {    const orderResponse = await mutatePublicData(
       'POST',
-      '/budget/create-order',
+      '/api/budget/create-order',
       payload,
     );
     return orderResponse as OrderApiResponse; // Cast to ensure type compatibility
