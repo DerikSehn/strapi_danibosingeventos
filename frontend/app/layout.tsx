@@ -7,6 +7,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import QueryProvider from "@/components/providers/query-provider";
 import { ReactLenis } from 'lenis/react';
+import WhatsappButton from "@/components/whatsapp-button";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -47,6 +48,7 @@ export default function RootLayout({
             <QueryProvider>
               <FloatingNavBar navItems={navItems} />
               {children}
+              <WhatsappButton link="https://wa.me/5551996715643?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Vi%20no%20site%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os." />
               <Footer />
             </QueryProvider>
           </body>
