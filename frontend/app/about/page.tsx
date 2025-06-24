@@ -24,7 +24,7 @@ export default async function AboutPage() {
         encodeValuesOnly: true
     });
 
-    const strapiData = await getStrapiData(`/api/contact-page?${query}`);
+    const strapiData = await getStrapiData(`/api/about-page?${query}`);
 
     
     const components: any = {
