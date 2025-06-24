@@ -24,9 +24,9 @@ export default async function AboutPage() {
         encodeValuesOnly: true
     });
 
-    const strapiData = await getStrapiData(`/api/about-page?${query}`);
+    const strapiData = await getStrapiData(`/api/contact-page?${query}`);
 
-
+    
     const components: any = {
         'section.about-section': AboutSection,
 /*         'section.features-section': AboutFeatures
