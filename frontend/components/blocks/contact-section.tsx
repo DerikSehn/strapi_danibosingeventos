@@ -4,7 +4,6 @@ import GradualSpacing from "../ui/gradual-spacing";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import InstagramProfileEmbed from "../custom/instagram-profile-embed";
 import Image from "next/image";
 
 interface SocialLink {
