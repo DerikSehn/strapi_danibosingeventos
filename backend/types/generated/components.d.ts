@@ -16,6 +16,18 @@ export interface ButtonCtaButton extends Struct.ComponentSchema {
   };
 }
 
+export interface ButtonSocialLink extends Struct.ComponentSchema {
+  collectionName: 'components_button_social_links';
+  info: {
+    displayName: 'Social Link';
+  };
+  attributes: {
+    icon: Schema.Attribute.String;
+    text: Schema.Attribute.String;
+    url: Schema.Attribute.String;
+  };
+}
+
 export interface LandingPageBackground extends Struct.ComponentSchema {
   collectionName: 'components_landing_page_backgrounds';
   info: {
@@ -94,6 +106,22 @@ export interface SectionAboutSection extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionContactSection extends Struct.ComponentSchema {
+  collectionName: 'components_section_contact_sections';
+  info: {
+    description: '';
+    displayName: 'Contact Section';
+  };
+  attributes: {
+    address: Schema.Attribute.String;
+    email: Schema.Attribute.Email;
+    heading: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    socialLinks: Schema.Attribute.Component<'button.social-link', true>;
+    subHeading: Schema.Attribute.String;
+  };
+}
+
 export interface SectionFeature extends Struct.ComponentSchema {
   collectionName: 'components_section_features';
   info: {
@@ -142,11 +170,13 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'button.cta-button': ButtonCtaButton;
+      'button.social-link': ButtonSocialLink;
       'landing-page.background': LandingPageBackground;
       'people.contact': PeopleContact;
       'people.supplier-info': PeopleSupplierInfo;
       'phrase.impact-phrase': PhraseImpactPhrase;
       'section.about-section': SectionAboutSection;
+      'section.contact-section': SectionContactSection;
       'section.feature': SectionFeature;
       'section.features-section': SectionFeaturesSection;
       'section.hero-section': SectionHeroSection;
