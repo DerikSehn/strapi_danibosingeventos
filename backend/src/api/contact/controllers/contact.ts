@@ -14,7 +14,7 @@ module.exports = {
       }
 
       await strapi.plugin('email').service('email').send({
-        to: process.env.SMTP_USERNAME || 'danibosing@gmail.com',
+        to: 'danibosing@gmail.com',
         from: `"Formulário de Contato" <${process.env.SMTP_USERNAME}>`,
         replyTo: email,
         subject: `Nova mensagem de ${name} (${email})`,
