@@ -5,8 +5,8 @@ export default {
       path: '/contact/send',
       handler: 'contact.send',
       config: {
-        policies: ['global::rate-limit'], // Aplicando política de segurança
-        auth: false, // Rota pública
+        policies: [],
+        auth: false,
       },
     },
   ],
