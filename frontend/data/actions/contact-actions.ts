@@ -3,7 +3,7 @@
 import { contactFormSchema, ContactFormValues } from "types/contact-form-values";
 
  
-const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://localhost:1337';
 
 export async function sendContactEmail(data: ContactFormValues): Promise<{ success: boolean; message: string; errors?: any }> {
   const validation = contactFormSchema.safeParse(data);
