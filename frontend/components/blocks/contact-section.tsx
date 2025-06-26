@@ -1,11 +1,16 @@
 "use client";
-import { Phone, Mail, MapPin, Send, Instagram } from "lucide-react";
+import { Phone, Mail, MapPin, Send } from "lucide-react";
 import GradualSpacing from "../ui/gradual-spacing";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import Image from "next/image";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { contactFormSchema, ContactFormValues } from "types/contact-form-values";
+import { sendContactEmail } from "data/actions/contact-actions";
+ 
 interface SocialLink {
     url: string;
     icon: string;
@@ -101,19 +106,45 @@ export default function ContactSection({
 
                     <div className="relative group">
                         <div className="absolute group-hover:top-2 group-hover:left-2 duration-500 transition-all -top-2 -left-2 w-full h-full border-2 border-primary-600"/>
-                        <form className="relative z-10 bg-gray-900 p-8 space-y-6">
-                            <h3 className="text-2xl font-food text-primary-600">Envie uma Mensagem</h3>
-                            <Input placeholder="Seu nome" className="bg-gray-800 border-gray-700" />
-                            <Input placeholder="Seu e-mail" type="email" className="bg-gray-800 border-gray-700" />
-                            <Textarea placeholder="Sua mensagem" className="bg-gray-800 border-gray-700" rows={5} />
-                            <Button type="submit" className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2">
-                                <Send className="w-5 h-5" />
-                                <span>Enviar</span>
-                            </Button>
-                        </form>
+                        <ContactForm />
                     </div>
                 </div>
             </div>
         </div>
     );
+}
+
+export function ContactForm() {
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      message: "",
+    },
+  });
+
+  const onSubmit = async (data: ContactFormValues) => {
+    const result = await sendContactEmail(data);
+    if (result.success) {
+      toast.success(result.message);
+      form.reset();
+    } else {
+      toast.error(result.message);
+    }
+  };
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="relative z-10 bg-gray-900 p-8 space-y-6">
+        <h3 className="text-2xl font-food text-primary-600">Envie uma Mensagem</h3>
+        <Input placeholder="Seu nome" {...form.register("name")} className="bg-gray-800 border-gray-700" />
+        {form.formState.errors.name && <p className="text-red-500 text-sm">{form.formState.errors.name.message}</p>}
+        <Input placeholder="Seu e-mail" type="email" {...form.register("email")} className="bg-gray-800 border-gray-700" />
+        {form.formState.errors.email && <p className="text-red-500 text-sm">{form.formState.errors.email.message}</p>}
+        <Textarea placeholder="Sua mensagem" {...form.register("message")} className="bg-gray-800 border-gray-700" rows={5} />
+        {form.formState.errors.message && <p className="text-red-500 text-sm">{form.formState.errors.message.message}</p>}
+        <Button type="submit" disabled={form.formState.isSubmitting} className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2">
+            {form.formState.isSubmitting ? "Enviando..." : <><Send className="w-5 h-5" /><span>Enviar</span></>}</Button>
+    </form>
+  );
 }

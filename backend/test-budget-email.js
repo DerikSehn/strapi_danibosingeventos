@@ -5,7 +5,7 @@ async function testBudgetEmail() {
 
       // Test the actual calculation endpoint
     console.log('\nTesting actual budget calculation endpoint...');
-    const baseUrl = 'http://localhost:1337/api';
+    const baseUrl = 'http://vps57906.publiccloud.com.br:1337/api';
     const variantsResponse = await axios.get(`${baseUrl}/product-variants?pagination[pageSize]=1000000`);
     const variantsData = variantsResponse.data;
     
@@ -16,7 +16,7 @@ async function testBudgetEmail() {
       realIds = variantsData.data.slice(0, 3).map(item => item.documentId);
 
     }
-    const calcResponse = await axios.post('http://localhost:1337/api/budget/calculate', {
+    const calcResponse = await axios.post('http://vps57906.publiccloud.com.br:1337/api/budget/calculate', {
       data: {
         partyType: "if8z117zxfgsuqdr5wdglnwz",
         selectedItems: [realIds[0], realIds[1], realIds[2]],

@@ -1,0 +1,106 @@
+# Apresentação Cheff Daniela Bosing: Origem, Evolução e Qualidades
+
+## 1. Prompt para Geração de Slides (Gemini)
+
+**Objetivo:** Criar uma apresentação de slides profissional e impactante de 7 minutos para a Cheff Daniela Bosing, destacando a história, os serviços e os diferenciais da empresa.
+
+**Público-alvo:** Potenciais clientes para eventos sociais (casamentos, aniversários) e corporativos.
+
+**Tom e Estilo:**
+*   **Visual:** Elegante, sofisticado e "clean". Usar a paleta de cores da marca (se houver, caso contrário, sugerir tons de dourado, branco e um toque de cor vibrante como marsala ou azul-petróleo).
+*   **Fotografia:** Utilizar fotos de alta qualidade dos pratos, da equipe em ação e de eventos já realizados. As imagens devem transmitir sabor, cuidado no preparo e a alegria dos momentos.
+*   **Texto:** Conciso, inspirador e focado nos benefícios para o cliente. Usar fontes legíveis e elegantes.
+*   **Animações:** Sutis e profissionais, para dar fluidez à apresentação sem distrair.
+
+---
+
+## 2. Estrutura da Apresentação (Slide a Slide)
+
+**Slide 1: Título**
+*   **Título:** Cheff Daniela Bosing: Gastronomia que Transforma Eventos.
+*   **Subtítulo:** O seu evento com a melhor gastronomia do RS.
+*   **Visual:** Logo da empresa em destaque sobre uma imagem de fundo impactante (ex: uma mesa de eventos bem decorada).
+
+**Slide 2: Introdução - A Nossa Paixão**
+*   **Título:** Sabor, Cuidado e Paixão em Cada Detalhe.
+*   **Texto:** "Transformamos ingredientes em obras de arte culinárias. Nossa missão é criar experiências gastronômicas inesquecíveis, adicionando um toque de sofisticação e sabor único ao seu evento."
+*   **Visual:** Mosaico de fotos que mostrem a variedade dos pratos (canapés, doces, pratos principais).
+
+**Slide 3: A Nossa História - O Início**
+*   **Título:** De um Sonho à Realidade.
+*   **Texto:** "Nossa jornada começou em 2018, no litoral gaúcho. Com a visão de inovar, a família Bosing transformou o desafio de vender pastéis na praia em uma indústria de salgados, atendendo à demanda local com uma massa perfeita, criada em família."
+*   **Visual:** Imagens contextuais (se disponíveis): `avos-trabalhando-inicio.jfif`, `pacote-pastel-frango-fabrica.jfif`.
+
+**Slide 4: A Nossa História - O Primeiro Cliente**
+*   **Título:** A Confiança que Impulsiona.
+*   **Texto:** "Batendo de porta em porta, conquistamos nosso primeiro cliente, a Pousada Solar do Sol, em 20 de dezembro de 2018. Um marco que deu início a uma trajetória de sucesso e parcerias duradouras."
+*   **Visual:** Imagem da `partners-pousada-solar-do-sol.png`.
+
+**Slide 5: A Nossa Evolução - Crescimento e Reconhecimento**
+*   **Título:** Semeando Qualidade, Colhendo Excelência.
+*   **Texto:** "Da produção de salgados, expandimos para um serviço de buffet completo. Hoje, somos referência em gastronomia para eventos, um crescimento coroado por três prêmios de destaque gastronômico no Litoral Gaúcho."
+*   **Visual:** Uma imagem que simbolize crescimento/evolução, talvez uma foto da equipe atual ou de um grande evento.
+
+**Slide 6: Nossos Serviços - O Que Fazemos**
+*   **Título:** Soluções Completas para o Seu Evento.
+*   **Texto:**
+    *   Buffet volante com equipe completa.
+    *   Finger foods e coquetéis (tradicionais e gourmet).
+    *   Mini jantares e degustações.
+    *   Doces finos e bolos artísticos.
+    *   Cardápios 100% personalizados.
+*   **Visual:** Ícones elegantes para cada serviço, acompanhados de fotos representativas.
+
+**Slide 7: Nossos Diferenciais - Por Que Somos Únicos**
+*   **Título:** A Excelência está em Nosso DNA.
+*   **Texto:**
+    *   **Qualidade Premium:** Ingredientes frescos e preparo artesanal.
+    *   **Chef Especialista:** Criatividade e paixão em cada receita.
+    *   **Atendimento Personalizado:** Cuidamos do seu evento como se fosse nosso.
+    *   **Excelência Comprovada:** Triplamente premiados na região.
+*   **Visual:** Foto da Cheff Daniela Bosing em destaque ou da equipe.
+
+**Slide 8: Depoimento (Prova Social)**
+*   **Título:** "Uma experiência inesquecível!"
+*   **Texto:** "Contratamos a Cheff Daniela para nosso casamento e foi a melhor decisão. A comida estava divina, a apresentação impecável e a equipe foi de uma gentileza ímpar. Todos os convidados elogiaram!" - Cliente Satisfeito.
+*   **Visual:** Foto de um evento de casamento realizado pela empresa.
+
+**Slide 9: Chamada para Ação (CTA)**
+*   **Título:** Vamos Planejar o Seu Próximo Evento?
+*   **Texto:** "Surpreenda seus convidados com sabores delicados e uma apresentação impecável. Entre em contato e solicite um orçamento personalizado."
+*   **Informações:**
+    *   Telefone / WhatsApp: (XX) XXXX-XXXX
+    *   E-mail: contato@cheffdanibosing.com.br
+    *   Website: www.cheffdanibosing.com.br
+    *   Instagram: @danibosingeventos
+*   **Visual:** Logo da empresa e QR codes para o WhatsApp e Instagram.
+
+---
+
+## 3. Conteúdo de Apoio (Baseado no Contexto Fornecido)
+
+### A Origem
+*   **Data de início:** 15 de outubro de 2018.
+*   **Motivação:** Família Bosing muda-se de Venâncio Aires para o litoral em busca de novas oportunidades.
+*   **Plano inicial:** Vender pastel na beira da praia em Capão da Canoa.
+*   **A Virada de Chave:** Conversa com a proprietária da "La Gondoleira" revela a demanda por fornecimento B2B.
+*   **Ação:** Decidem abrir uma indústria de salgados.
+*   **Primeiro Desafio:** Desenvolver a receita da massa de pastel perfeita, com a família atuando como "cobaias".
+*   **Primeiro Cliente:** Pousada Solar do Sol, conquistado em 20/12/2018 após prospecção porta a porta.
+
+### Qualidades e Diferenciais
+*   **Prêmios:** Três vezes destaque gastronômico no Litoral Gaúcho.
+*   **Paixão:** "Cada prato é preparado com carinho e precisão."
+*   **Equipe:** Profissionais experientes e qualificados.
+*   **Personalização:** "Cada cardápio é pensado exclusivamente para o estilo do evento e a preferência dos convidados."
+
+### Tipos de Eventos Atendidos
+*   Casamentos
+*   Aniversários
+*   Eventos corporativos
+*   Coquetéis e recepções
+
+### Frases de Efeito e Slogans
+*   "Seja qual for a ocasião, nossa gastronomia adiciona um toque de sofisticação e sabor único ao seu evento!!"
+*   "Surpreenda no seu evento com sabores delicados, apresentação impecável e combinações irresistíveis!"
+*   "Transformamos sabores em uma experiência inesquecível! 😋"
