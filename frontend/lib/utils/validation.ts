@@ -13,7 +13,6 @@ export interface ValidationResult {
 // Phone number validation (Brazilian format)
 export const validatePhoneNumber = (phone: string): boolean => {
   // Remove all non-digit characters
-  console.log(phone)
   const cleaned = phone.replace(/\D/g, '');
   // Brazilian phone: 11 digits (with area code) or 10 digits (landline)
   return cleaned.length >= 10 && cleaned.length <= 12;

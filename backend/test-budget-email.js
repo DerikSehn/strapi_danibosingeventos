@@ -4,12 +4,10 @@ async function testBudgetEmail() {
   try {
 
       // Test the actual calculation endpoint
-    console.log('\nTesting actual budget calculation endpoint...');
     const baseUrl = 'http://vps57906.publiccloud.com.br:1337/api';
     const variantsResponse = await axios.get(`${baseUrl}/product-variants?pagination[pageSize]=1000000`);
     const variantsData = variantsResponse.data;
     
-    console.log('📦 Product-variants encontrados:', variantsData.data?.length || 0);
     let realIds = [];
     if (variantsData.data && variantsData.data.length > 0) {
       // Usar IDs reais dos primeiros 3 itens
@@ -29,7 +27,6 @@ async function testBudgetEmail() {
       }
     });
 
-    console.log('✅ Budget calculation response:', calcResponse.data);
     
   } catch (error) {
     console.error('❌ Budget email test failed:');

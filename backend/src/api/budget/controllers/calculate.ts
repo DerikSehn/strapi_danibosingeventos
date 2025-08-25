@@ -8,6 +8,30 @@ import { fetchSelectedItemsDetails } from '../services/fetch-items';
 import { sendBudgetEmail } from '../services/send-email';
 import { sendOrderMail } from '../../order/services/send-order-email';
 
+// Helper to match and compute totals for order items
+function matchAndSummarize(orderItems: Array<{ id: string | number; quantity: number }>, selectedItemsDetails: any[]) {
+  let total = 0;
+  const detailed: any[] = [];
+  for (const orderItem of orderItems) {
+    const detail = selectedItemsDetails.find(
+      (d: any) => d.documentId === orderItem.id || d.id === orderItem.id,
+    );
+    if (!detail) continue;
+    const unitPrice = Number(detail.price) || 0;
+    const quantity = Number(orderItem.quantity);
+    const totalItemPrice = unitPrice * quantity;
+    total += totalItemPrice;
+    detailed.push({
+      itemId: orderItem.id,
+      itemName: detail.title || 'Unknown Item',
+      itemPrice: unitPrice,
+      quantity,
+      totalItemPrice,
+    });
+  }
+  return { total, detailed };
+}
+
 export default factories.createCoreController(
   'api::budget.budget',
   ({ strapi }) => ({
@@ -263,6 +287,7 @@ export default factories.createCoreController(
      */
     async createOrder(ctx) {
       try {
+  // debug logs removed
         const {
           contactName,
           contactPhone,
@@ -288,34 +313,18 @@ export default factories.createCoreController(
           }
         }
 
-        const itemIdsToFetch = orderItems.map(item => item.id);
-        const selectedItemsDetails = await fetchSelectedItemsDetails(strapi, itemIdsToFetch);
+  const itemIdsToFetch = orderItems.map(item => item.id);
+  // debug logs removed
+  const selectedItemsDetails = await fetchSelectedItemsDetails(strapi, itemIdsToFetch);
+  // debug logs removed
 
-        // This check ensures that we found details for at least some of the requested items.
-        if (!selectedItemsDetails || selectedItemsDetails.length === 0 && itemIdsToFetch.length > 0) {
-          return ctx.notFound('None of the provided item IDs could be found or fetched.');
+        // Ensure we found at least one requested item
+        if ((!selectedItemsDetails || selectedItemsDetails.length === 0) && itemIdsToFetch.length > 0) {
+          // debug logs removed
+          return ctx.notFound(`None of the provided item IDs could be found or fetched. Requested: ${JSON.stringify(itemIdsToFetch)}`);
         }
 
-        let calculatedTotalItemsPrice = 0;
-        const detailedOrderItemsForEmail = [];        for (const orderItem of orderItems) {
-          const detail = selectedItemsDetails.find(d => d.documentId === orderItem.id);
-          if (detail) {
-            const unitPrice = Number(detail.price) || 0;
-            const quantity = Number(orderItem.quantity);
-            const totalPriceForItem = unitPrice * quantity;
-
-            calculatedTotalItemsPrice += totalPriceForItem;
-            detailedOrderItemsForEmail.push({
-              itemId: orderItem.id,
-              itemName: detail.title || 'Unknown Item',
-              itemPrice: unitPrice,
-              quantity: quantity,
-              totalItemPrice: totalPriceForItem,
-            });
-          } else {
-            strapi.log.warn(`[Budget/createOrder] Item detail not found for ID: ${orderItem.id}. This item will be skipped.`);
-          }
-        }
+  const { total: calculatedTotalItemsPrice, detailed: detailedOrderItemsForEmail } = matchAndSummarize(orderItems, selectedItemsDetails);
 
         // If after processing, no items were valid
         if (detailedOrderItemsForEmail.length === 0 && orderItems.length > 0) {

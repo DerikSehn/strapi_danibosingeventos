@@ -7,18 +7,15 @@ const testCreateOrderEndpoint = async () => {
   const baseUrl = 'http://localhost:1337/api';
   
   // Primeiro, vamos buscar alguns product-variants para usar IDs reais
-  console.log('🔍 Buscando product-variants disponíveis...');
   
   try {
     const variantsResponse = await fetch(`${baseUrl}/product-variants?pagination[pageSize]=1000000`);
     const variantsData = await variantsResponse.json();
     
-    console.log('📦 Product-variants encontrados:', variantsData.data?.length || 0);
     
     if (variantsData.data && variantsData.data.length > 0) {
       // Usar IDs reais dos primeiros 3 itens
       const realIds = variantsData.data.slice(0, 3).map(item => item.documentId);
-      console.log('🎯 Usando IDs reais:', realIds);
       
       // Fazer a requisição de teste com IDs reais
       const testOrderData = {
@@ -44,8 +41,6 @@ const testCreateOrderEndpoint = async () => {
         }
       };
       
-      console.log('📤 Enviando requisição de teste...');
-      console.log('📋 Dados do pedido:', JSON.stringify(testOrderData, null, 2));
       
       const response = await fetch(`${baseUrl}/budget/create-order`, {
         method: 'POST',
@@ -57,18 +52,12 @@ const testCreateOrderEndpoint = async () => {
       
       const result = await response.json();
       
-      console.log('📊 Status da resposta:', response.status);
-      console.log('✅ Resultado:', JSON.stringify(result, null, 2));
       
       if (response.ok) {
-        console.log('🎉 Teste realizado com sucesso!');
-        console.log('💰 Total do pedido:', result.totalPrice);
       } else {
-        console.log('❌ Erro no teste:', result);
       }
       
     } else {
-      console.log('⚠️  Nenhum product-variant encontrado. Usando IDs de exemplo...');
       
       // Usar IDs de exemplo se não encontrar dados reais
       const testOrderData = {
@@ -90,7 +79,6 @@ const testCreateOrderEndpoint = async () => {
         }
       };
       
-      console.log('📤 Enviando requisição de teste com IDs de exemplo...');
       
       const response = await fetch(`${baseUrl}/budget/create-order`, {
         method: 'POST',
@@ -101,8 +89,6 @@ const testCreateOrderEndpoint = async () => {
       });
       
       const result = await response.json();
-      console.log('📊 Status:', response.status);
-      console.log('📋 Resultado:', JSON.stringify(result, null, 2));
     }
     
   } catch (error) {

@@ -28,7 +28,7 @@ const LINKS = [
             },
             {
                 name: "Entrar no Sistema",
-                href: '/login',
+                href: '/signin',
             },
 
         ],

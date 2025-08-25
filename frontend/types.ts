@@ -2,7 +2,8 @@
 
 // For OrderItemsSelector and state in OrderPageClient
 export interface SelectedOrderItem {
-  id: number; // Corresponds to ProductVariant ID
+  id: number; // Numeric variant ID (for UI state)
+  docId?: string; // Strapi documentId (string) for robust backend matching
   name: string;
   quantity: number;
   price: number; // Unit price
@@ -17,7 +18,7 @@ export interface OrderPageClientProps {
 
 // Payload for submitting the order to the backend
 export interface OrderPayloadItem {
-  id: number; // ID of the ProductVariant
+  id: string | number; // Prefer documentId (string); fallback to numeric id
   quantity: number;
 }
 
@@ -77,6 +78,7 @@ export interface PureImage {
 
 export interface PureProductVariant {
   id: number;
+  documentId?: string;
   title?: string | null;
   description?: string | null;
   price?: number | null;

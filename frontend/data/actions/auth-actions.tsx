@@ -7,9 +7,10 @@ import { loginUserService, registerUserService } from "data/services/auth-servic
 const config = {
     maxAge: 60 * 60 * 24 * 7, // 1 week
     path: '/',
-    domain: process.env.HOST ?? 'localhost',
+    // Don't force domain; let Next set the current host automatically to avoid localhost/127.0.0.1 mismatches
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
 };
 
 const schemaRegister = z.object({
@@ -72,8 +73,9 @@ const schemaLogin = z.object({
         .min(3, {
             message: "Identifier must have at least 3 or more characters",
         })
-        .max(20, {
-            message: "Please enter a valid username or email address",
+        // Allow full-length emails; don't block by an arbitrary 20-char cap
+        .max(254, {
+            message: "Identifier is too long",
         }),
     password: z
         .string()

@@ -7,9 +7,10 @@ import { registerUserService } from 'data/services/auth-service';
 const config = {
   maxAge: 60 * 60 * 24 * 7, // 1 week
   path: '/',
-  domain: process.env.HOST ?? 'localhost',
+  // Don't set domain explicitly; let Next infer from current host
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
 };
 
 const schemaRegister = z.object({

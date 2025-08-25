@@ -21,7 +21,6 @@ export default async function ContactPage() {
     });
 
     const strapiData = await getStrapiData(`/api/contact-page?${query}`);
-    console.log(strapiData);
     const components: any = {
         'section.contact-section': ContactSection,
     }

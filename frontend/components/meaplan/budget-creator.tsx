@@ -32,7 +32,7 @@ export default function BudgetCreator({ partyType }: Readonly<{ partyType: ApiPa
                 formValues={formValues} 
                 updateFormValues={updateFormValues} 
                 isLoading={isLoading} 
-                showValidation={true}
+                showValidation={false}
             />
         },
         {

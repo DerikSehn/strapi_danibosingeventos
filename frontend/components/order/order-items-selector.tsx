@@ -13,7 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion"; 
-import { Minus, MinusCircle, Plus, PlusCircle } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OrderItemSearchInput } from "./search/order-item-search-input";
 import { useState, useMemo } from "react";
@@ -159,6 +159,7 @@ export default function OrderItemsSelector({
       }
       const newItem: SelectedOrderItem = {
         id: variantId,
+        docId: (variantAttributes as any)?.documentId, // carry documentId if present
         name: variantAttributes.title ?? "Item sem nome",
         price: variantAttributes.price ?? 0,
         quantity: quantity,
@@ -216,11 +217,12 @@ export default function OrderItemsSelector({
         className="mb-0"
       />
       {filteredCategories.length === 0 ? (
-        searchTerm ? (
-          <p className="mx-2">Nenhum item encontrado para "{searchTerm}".</p>
-        ) : (
-          <p>Nenhum produto disponível.</p>
-        )
+        (() => {
+          if (searchTerm) {
+            return <p className="mx-2">Nenhum item encontrado para "{searchTerm}".</p>;
+          }
+          return <p>Nenhum produto disponível.</p>;
+        })()
       ) : (
         <Accordion type="multiple" defaultValue={defaultAccordionValues} className="w-full">
           {filteredCategories.map((categoryItem: PureCategory) => { 

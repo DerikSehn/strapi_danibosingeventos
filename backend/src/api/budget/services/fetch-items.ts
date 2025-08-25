@@ -10,21 +10,32 @@ export async function fetchPartyType(strapi: Core.Strapi, partyType: string) {
 }
 export async function fetchSelectedItemsDetails(
   strapi: Core.Strapi,
-  selectedItems: string[],
+  selectedItems: Array<string | number>,
 ) {
   try {
-    strapi.log.debug('[Fetch Items] Input selectedItems:', selectedItems);
 
     if (!selectedItems || selectedItems.length === 0) {
       strapi.log.error('[Fetch Items] No selected items provided');
       return [];
     }
 
-    
+    // Support both string documentId and numeric id inputs
+    const docIds = selectedItems.filter((v) => typeof v === 'string');
+    const numIds = selectedItems.filter((v) => typeof v === 'number');
+
+    let filters: any;
+    if (docIds.length && numIds.length) {
+      filters = { $or: [{ documentId: { $in: docIds } }, { id: { $in: numIds } }] };
+    } else if (docIds.length) {
+      filters = { documentId: { $in: docIds } };
+    } else {
+      filters = { id: { $in: numIds } };
+    }
+
+  // debug logs removed
+
     const items = await strapi.documents('api::product-variant.product-variant').findMany({
-      filters: {
-        documentId: { $in: selectedItems },
-      },
+      filters,
       populate: {
         product: {
           populate: {
@@ -36,12 +47,11 @@ export async function fetchSelectedItemsDetails(
       },
     });
 
-    strapi.log.debug('[Fetch Items] Found items count:', items?.length || 0);
-    strapi.log.debug('[Fetch Items] Items details:', JSON.stringify(items, null, 2));
+  // debug logs removed
 
     return items || []; 
   } catch (error) {
-    strapi.log.error('[Fetch Items] Error in fetchSelectedItemsDetails:', error);
+  strapi.log.error('[Fetch Items] Error in fetchSelectedItemsDetails:', error);
     return [];
   }
 }

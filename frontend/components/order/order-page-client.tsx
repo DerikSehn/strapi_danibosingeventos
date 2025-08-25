@@ -61,7 +61,7 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
                         formValues={formValues}
                         updateFormValues={updateFormValues}
                         isLoading={mutation.isPending}
-                        showValidation={true}
+                        showValidation={false}
                     />
         },
         {
@@ -86,7 +86,7 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
             contactEmail: formValues.contactEmail,
             orderDetailsNotes: formValues.eventDetails,
             orderItems: selectedItems.map(item => ({
-                id: item.id,
+                id: item.docId ?? item.id,
                 quantity: item.quantity,
             })),
         });
@@ -106,7 +106,7 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
                 contactEmail: formValues.contactEmail ?? undefined, // Use undefined for optional fields if empty
                 orderDetailsNotes: formValues.eventDetails ?? undefined,
                 orderItems: selectedItems.map(item => ({
-                    id: item.id,
+                    id: item.docId ?? item.id,
                     quantity: item.quantity,
                 })),
             },

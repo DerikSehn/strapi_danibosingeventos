@@ -1,5 +1,6 @@
 import { FloatingNavBar } from "@/components/blocks/floating-navbar";
 import Footer from "@/components/blocks/footer";
+import { AuthProvider } from "@/components/providers/auth-provider";
 import { ChefHat, Contact, HomeIcon, InfoIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
@@ -46,10 +47,12 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
           >
             <QueryProvider>
-              <FloatingNavBar navItems={navItems} />
-              {children}
-              <WhatsappButton link="https://wa.me/5551996715643?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Vi%20no%20site%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os." />
-              <Footer />
+              <AuthProvider>
+                <FloatingNavBar navItems={navItems} />
+                {children}
+                <WhatsappButton link="https://wa.me/5551996715643?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Vi%20no%20site%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os." />
+                <Footer />
+              </AuthProvider>
             </QueryProvider>
           </body>
         </ReactLenis>
