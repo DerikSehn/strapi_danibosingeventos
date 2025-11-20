@@ -1,0 +1,15 @@
+### Test Order Quote Sending Endpoint
+
+@baseUrl = http://localhost:1337/api
+
+### Get a sample order to test with
+GET {{baseUrl}}/orders?pageSize=1
+
+### Send quote for specific order (replace ID with real order ID)
+POST {{baseUrl}}/budget/{{orderId}}/send-quote
+Content-Type: application/json
+
+### Example: if order documentId is "abc123xyz"
+POST http://localhost:1337/api/budget/abc123xyz/send-quote
+Content-Type: application/json
+

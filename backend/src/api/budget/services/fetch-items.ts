@@ -32,26 +32,26 @@ export async function fetchSelectedItemsDetails(
       filters = { id: { $in: numIds } };
     }
 
-  // debug logs removed
+    // debug logs removed
 
     const items = await strapi.documents('api::product-variant.product-variant').findMany({
       filters,
       populate: {
         product: {
           populate: {
-              product_group: {
-                fields: ['quantity_per_people', 'name'],
-              },
+            product_group: {
+              fields: ['quantity_per_people', 'name'],
             },
+          },
         },
       },
     });
 
-  // debug logs removed
+    // debug logs removed
 
-    return items || []; 
+    return items || [];
   } catch (error) {
-  strapi.log.error('[Fetch Items] Error in fetchSelectedItemsDetails:', error);
+    strapi.log.error('[Fetch Items] Error in fetchSelectedItemsDetails:', error);
     return [];
   }
 }
@@ -63,7 +63,7 @@ export async function fetchSelectedItemsDetails(
 export async function fetchBusinessContact(strapi: Core.Strapi) {
   try {
     strapi.log.debug('[Fetch Business Contact] Starting to fetch business contact');
-    
+
     const user = await strapi.query('plugin::users-permissions.user').findOne({
       where: { username: 'danibosing' },
       select: ['email', 'phone'],
@@ -83,12 +83,12 @@ export async function fetchBusinessContact(strapi: Core.Strapi) {
       email: user.email || 'contato@danibosingeventos.com',
       phone: user.phone || '(11) 1234-5678',
     };
-    
+
     strapi.log.debug('[Fetch Business Contact] Returning contact:', result);
     return result;
   } catch (error) {
     strapi.log.error('[Fetch Business Contact] Error fetching business contact:', error);
-    
+
     return {
       email: 'contato@danibosingeventos.com',
       phone: '(11) 1234-5678',

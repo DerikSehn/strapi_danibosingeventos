@@ -2,7 +2,7 @@ import React from 'react';
 import { ApiBudgetBudget, ApiProductVariantProductVariant } from 'types/generated/contentTypes';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Link } from 'next-view-transitions';
 import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { BudgetFormValues } from 'types/budget-form-values';
 import MotionGrowingButton from '../motion/motion-growing-button';

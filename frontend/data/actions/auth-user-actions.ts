@@ -25,44 +25,11 @@ const schemaRegister = z.object({
   }),
 });
 
-export async function registerUserAction(prevState: any, formData: FormData) {
-  const validatedFields = schemaRegister.safeParse({
-    username: formData.get('username'),
-    password: formData.get('password'),
-    email: formData.get('email'),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      ...prevState,
-      zodErrors: validatedFields.error.flatten().fieldErrors,
-      strapiErrors: null,
-      message: 'Missing Fields. Failed to Register.',
-    };
-  }
-
-  const responseData = await registerUserService(validatedFields.data);
-
-  if (!responseData) {
-    return {
-      ...prevState,
-      strapiErrors: null,
-      zodErrors: null,
-      message: 'Ops! Something went wrong. Please try again.',
-    };
-  }
-
-  if (responseData.error) {
-    return {
-      ...prevState,
-      strapiErrors: responseData.error,
-      zodErrors: null,
-      message: 'Failed to Register.',
-    };
-  }
-
-  const cookieStore = await cookies();
-  cookieStore.set('jwt', responseData.jwt, config);
-
-  redirect('/dashboard');
+export async function registerUserAction(prevState: any) {
+  return {
+    ...prevState,
+    zodErrors: null,
+    strapiErrors: null,
+    message: 'Registration is disabled. Contact an administrator.',
+  };
 }

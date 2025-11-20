@@ -69,11 +69,8 @@ export default function SigninForm() {
                         <StrapiErrors error={formState?.strapiErrors} />
                     </CardFooter>
                 </Card>
-                <div className="mt-4 text-center text-sm">
-                    Don't have an account?
-                    <Link className="underline ml-2" href="signup">
-                        Sign Up
-                    </Link>
+                <div className="mt-4 text-center text-sm text-gray-500">
+                    Precisa de acesso? Contate um administrador.
                 </div>
             </form>
         </div>

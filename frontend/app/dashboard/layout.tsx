@@ -12,13 +12,14 @@ import {
   X,
   ChefHat
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from 'next-view-transitions';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Pedidos', href: '/dashboard/orders', icon: Home },
   { name: 'Perfil', href: '/dashboard/profile', icon: User },
   { name: 'Configurações', href: '/dashboard/settings', icon: Settings },
 ];
@@ -56,7 +57,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           onClick={() => setSidebarOpen(false)}
           aria-label="Fechar menu"
         />
-        <div className="relative flex flex-col w-64 bg-white shadow-xl">
+        <div className="relative flex flex-col w-64 bg-neutral-50 shadow-xl">
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
               type="button"
@@ -73,7 +74,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Static sidebar for desktop */}
       <div className="hidden lg:flex lg:flex-shrink-0">
         <div className="flex flex-col w-64">
-          <div className="flex flex-col h-0 flex-1 bg-white shadow-lg">
+          <div className="flex flex-col h-0 flex-1 bg-neutral-50 shadow-md">
             <SidebarContent pathname={pathname} onLogout={handleLogout} user={user} />
           </div>
         </div>
@@ -82,7 +83,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <div className="bg-white shadow-sm border-b border-gray-200 lg:hidden">
+        <div className="bg-neutral-50 shadow-sm border-b border-gray-200 lg:hidden">
           <div className="flex items-center justify-between px-4 py-3">
             <button
               type="button"

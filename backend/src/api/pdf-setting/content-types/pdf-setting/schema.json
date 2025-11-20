@@ -1,0 +1,258 @@
+{
+  "kind": "singleType",
+  "collectionName": "pdf_settings",
+  "info": {
+    "singularName": "pdf-setting",
+    "pluralName": "pdf-settings",
+    "displayName": "PDF Settings",
+    "description": "Configurações centralizadas para geração de PDFs de orçamentos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "companyName": {
+      "type": "string",
+      "required": true,
+      "default": "Cheff Daniela Bosing"
+    },
+    "companyPhone": {
+      "type": "string",
+      "default": "(11) 99999-9999"
+    },
+    "companyEmail": {
+      "type": "email",
+      "default": "contato@cheffdanielabosing.com.br"
+    },
+    "companyWebsite": {
+      "type": "string"
+    },
+    "companyAddress": {
+      "type": "text"
+    },
+    "companyRegistration": {
+      "type": "string"
+    },
+    "companyDescription": {
+      "type": "text"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false
+    },
+    "headerImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false
+    },
+    "footerImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false
+    },
+    "backgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false
+    },
+    "coverImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false
+    },
+    "signatureImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false
+    },
+    "colorPrimary": {
+      "type": "string",
+      "default": "#1f2937"
+    },
+    "colorSecondary": {
+      "type": "string",
+      "default": "#f3f4f6"
+    },
+    "colorAccent": {
+      "type": "string",
+      "default": "#3b82f6"
+    },
+    "colorText": {
+      "type": "string",
+      "default": "#374151"
+    },
+    "colorBorder": {
+      "type": "string",
+      "default": "#d1d5db"
+    },
+    "colorTotal": {
+      "type": "string",
+      "default": "#111827"
+    },
+    "fontTitle": {
+      "type": "enumeration",
+      "enum": ["Helvetica", "Times-Roman", "Courier"],
+      "default": "Helvetica"
+    },
+    "fontTitleSize": {
+      "type": "integer",
+      "default": 24
+    },
+    "fontSubtitle": {
+      "type": "enumeration",
+      "enum": ["Helvetica", "Times-Roman", "Courier"],
+      "default": "Helvetica"
+    },
+    "fontSubtitleSize": {
+      "type": "integer",
+      "default": 12
+    },
+    "fontBody": {
+      "type": "enumeration",
+      "enum": ["Helvetica", "Times-Roman", "Courier"],
+      "default": "Helvetica"
+    },
+    "fontBodySize": {
+      "type": "integer",
+      "default": 10
+    },
+    "fontSmall": {
+      "type": "integer",
+      "default": 8
+    },
+    "headerTitle": {
+      "type": "string",
+      "default": "ORÇAMENTO DE NEGOCIAÇÃO"
+    },
+    "headerSubtitle": {
+      "type": "string",
+      "default": "Este documento contém nosso orçamento profissional"
+    },
+    "sectionTitleClient": {
+      "type": "string",
+      "default": "DADOS DO CLIENTE"
+    },
+    "sectionTitleItems": {
+      "type": "string",
+      "default": "ITENS DO PEDIDO"
+    },
+    "sectionTitleNotes": {
+      "type": "string",
+      "default": "OBSERVAÇÕES"
+    },
+    "tableHeaderItem": {
+      "type": "string",
+      "default": "Item"
+    },
+    "tableHeaderQuantity": {
+      "type": "string",
+      "default": "Qtd"
+    },
+    "tableHeaderUnitPrice": {
+      "type": "string",
+      "default": "Preço Unit."
+    },
+    "tableHeaderTotal": {
+      "type": "string",
+      "default": "Total"
+    },
+    "labelTotal": {
+      "type": "string",
+      "default": "TOTAL:"
+    },
+    "notesContent": {
+      "type": "text",
+      "default": "Este é um orçamento de negociação. Os valores e itens listados acima são nossos valores finais para este pedido."
+    },
+    "footerText": {
+      "type": "text",
+      "default": "Documento gerado automaticamente pelo sistema de orçamentos"
+    },
+    "warrantyText": {
+      "type": "string"
+    },
+    "thanksText": {
+      "type": "string",
+      "default": "Obrigado por sua confiança!"
+    },
+    "disclaimerText": {
+      "type": "text"
+    },
+    "pageMargin": {
+      "type": "integer",
+      "default": 40
+    },
+    "pageSize": {
+      "type": "enumeration",
+      "enum": ["A4", "Letter"],
+      "default": "A4"
+    },
+    "includeCover": {
+      "type": "boolean",
+      "default": true
+    },
+    "includeSignature": {
+      "type": "boolean",
+      "default": false
+    },
+    "includeBackground": {
+      "type": "boolean",
+      "default": true
+    },
+    "includeFooter": {
+      "type": "boolean",
+      "default": true
+    },
+    "tableStriped": {
+      "type": "boolean",
+      "default": true
+    },
+    "companyBoxEnabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDocumentNumber": {
+      "type": "boolean",
+      "default": true
+    },
+    "showGenerationDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "showGenerationTime": {
+      "type": "boolean",
+      "default": false
+    },
+    "logoWidth": {
+      "type": "integer",
+      "default": 80
+    },
+    "logoHeight": {
+      "type": "integer",
+      "default": 80
+    },
+    "headerImageHeight": {
+      "type": "integer",
+      "default": 150
+    },
+    "backgroundOpacity": {
+      "type": "decimal",
+      "default": 0.15
+    },
+    "cellPadding": {
+      "type": "integer",
+      "default": 8
+    },
+    "enableDebugMode": {
+      "type": "boolean",
+      "default": false
+    },
+    "currencySymbol": {
+      "type": "string",
+      "default": "R$"
+    }
+  }
+}
+

@@ -13,6 +13,7 @@ interface BudgetCalculationData {
   selectedItemIds: string[];
   numberOfPeople: number;
   eventDetails: string;
+  eventDate?: string;
   contactInfo: ContactInfo;
 }
 
@@ -30,6 +31,7 @@ export async function calculateBudget(
           selectedItems: data.selectedItemIds,
           numberOfPeople: data.numberOfPeople,
           eventDetails: data.eventDetails,
+          eventDate: data.eventDate,
           contactInfo: data.contactInfo
         },
       },

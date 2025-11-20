@@ -32,6 +32,88 @@ export default function SettingsPage() {
     },
   });
 
+  const [pushLoading, setPushLoading] = useState(false);
+
+  function urlBase64ToUint8Array(base64String: string) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = typeof atob !== 'undefined' ? atob(base64) : Buffer.from(base64, 'base64').toString('binary');
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+    return outputArray;
+  }
+
+  const enablePush = async () => {
+    try {
+      const me = await fetch('/api/users/me', { cache: 'no-store' });
+      if (!me.ok) {
+        console.warn('[Settings/Push] Not logged in. Status:', me.status);
+        alert('Faça login para ativar as notificações.');
+        return false;
+      }
+
+      const reg = await navigator.serviceWorker.register('/sw.js');
+      await navigator.serviceWorker.ready;
+
+      if (Notification.permission === 'default') {
+        await Notification.requestPermission();
+      }
+      if (Notification.permission !== 'granted') {
+        console.warn('[Settings/Push] Permission not granted:', Notification.permission);
+        alert('Permita as notificações no navegador.');
+        return false;
+      }
+
+      const pkRes = await fetch('/api/push/public-key');
+      const { publicKey } = await pkRes.json();
+      if (!publicKey) {
+        console.error('[Settings/Push] Missing public key');
+        alert('Chave pública de push não configurada.');
+        return false;
+      }
+      const applicationServerKey = urlBase64ToUint8Array(publicKey);
+
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
+      const res = await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sub),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error('[Settings/Push] Subscribe failed:', txt);
+        alert('Falha ao registrar assinatura de push.');
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error('[Settings/Push] Enable error:', e);
+      alert('Não foi possível ativar as notificações.');
+      return false;
+    }
+  };
+
+  const disablePush = async () => {
+    try {
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (!reg) {
+        console.warn('[Settings/Push] No service worker registration found');
+        return true;
+      }
+      const sub = await reg.pushManager.getSubscription();
+      if (!sub) {
+        return true;
+      }
+      const ok = await sub.unsubscribe();
+      // Optionally, implement a backend DELETE endpoint to remove the subscription entry.
+      return true;
+    } catch (e) {
+      console.error('[Settings/Push] Disable error:', e);
+      alert('Não foi possível desativar as notificações.');
+      return false;
+    }
+  };
+
   const handleSave = () => {
     // Implementation will be added when backend endpoints are ready
   };
@@ -86,12 +168,24 @@ export default function SettingsPage() {
               </div>
               <Switch
                 checked={settings.notifications.push}
-                onCheckedChange={(checked: boolean) =>
-                  setSettings(prev => ({
-                    ...prev,
-                    notifications: { ...prev.notifications, push: checked }
-                  }))
-                }
+                disabled={pushLoading}
+                onCheckedChange={async (checked: boolean) => {
+                  setPushLoading(true);
+                  if (checked) {
+                    const ok = await enablePush();
+                    setSettings(prev => ({
+                      ...prev,
+                      notifications: { ...prev.notifications, push: ok }
+                    }));
+                  } else {
+                    const ok = await disablePush();
+                    setSettings(prev => ({
+                      ...prev,
+                      notifications: { ...prev.notifications, push: ok ? false : prev.notifications.push }
+                    }));
+                  }
+                  setPushLoading(false);
+                }}
               />
             </div>
 

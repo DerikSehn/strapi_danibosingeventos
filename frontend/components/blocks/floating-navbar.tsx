@@ -55,7 +55,8 @@ export const FloatingNavBar = ({
                 }
         }
     });
-    return (
+    return pathName.includes('dashboard') 
+    ? null : (
 
         <motion.div
             layout

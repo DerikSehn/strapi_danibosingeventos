@@ -1,10 +1,11 @@
 import { FormValues } from "@/types";
+import { useEffect, useState } from "react";
+import { EventDatePicker } from "@/components/orders/event-date-picker";
 import { formatPhoneNumber, validateBudgetForm, ValidationResult } from "@/lib/utils/validation";
 import { GastronomyInput } from "../custom/gastronomy-input";
 import { GastronomyTextarea } from "../custom/gastronomy-textarea";
 import { MenuCard } from "../custom/menu-card";
 import { AlertCircle } from "lucide-react";
-import { useState, useEffect } from "react";
 import { Alert, AlertDescription } from "../ui/alert";
 import { PhoneInput } from "../ui/phone-input";
 
@@ -18,6 +19,7 @@ interface OrderFormProps {
 
 export default function OrderForm({ formValues, updateFormValues, isLoading, showValidation = false }: Readonly<OrderFormProps>) {
     const [validation, setValidation] = useState<ValidationResult | null>(null);
+    const [blockedDates, setBlockedDates] = useState<string[]>([]);
 
     // Validate form when showValidation changes or form values change
     useEffect(() => {
@@ -40,7 +42,31 @@ export default function OrderForm({ formValues, updateFormValues, isLoading, sho
     const handlePhoneChange = (value: string) => {
         const formatted = formatPhoneNumber(value);
         updateFormValues({ contactPhone: formatted });
-    }; return (
+    };
+
+    // Fetch blocked dates once on mount
+    useEffect(() => {
+        let alive = true;
+        (async () => {
+            try {
+                const base = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1337';
+                const res = await fetch(`${base}/api/budget/orders/blocked-dates`, { cache: 'no-store' });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json?.error?.message || 'Falha ao carregar datas');
+                if (alive && Array.isArray(json?.dates)) setBlockedDates(json.dates);
+            } catch {
+                // ignore silently; fallback is just past-days disabled via picker
+            }
+        })();
+        return () => { alive = false; };
+    }, []);
+
+    // Update form state when date/time changes
+    const onPickerValueChange = (v: string) => {
+        updateFormValues({ eventDate: v });
+    };
+
+    return (
         <MenuCard variant="rustic" className="max-w-prose mx-auto p-4">
             {validation && !validation.isValid && (
                 <Alert className="mb-4 border-red-500 bg-red-50">
@@ -116,6 +142,11 @@ export default function OrderForm({ formValues, updateFormValues, isLoading, sho
                     <span className="text-sm text-gray-600">{formValues.numberOfPeople} pessoas</span>
                 </div>
             )}
+
+            <div className="mb-4">
+                <label htmlFor="eventDate" className="block text-sm font-medium mb-1">Data do Evento (opcional)</label>
+                <EventDatePicker defaultValue={formValues.eventDate ?? ''} name="eventDate" disabledDates={blockedDates} onValueChange={onPickerValueChange} />
+            </div>
 
             <div className="mb-4">
                 <GastronomyTextarea

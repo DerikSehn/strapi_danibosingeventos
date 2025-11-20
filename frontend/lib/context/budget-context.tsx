@@ -25,6 +25,7 @@ const defaultFormValues: BudgetFormValues = {
   numberOfPeople: 20,
   eventDuration: 4,
   eventDetails: "",
+  eventDate: undefined as unknown as string | undefined,
   contactName: "",
   contactPhone: "",
   contactEmail: ""
@@ -71,7 +72,7 @@ export function BudgetProvider({ children }: Readonly<{ children: ReactNode }>) 
     setError(null);
     try {
       // Extract just the IDs from the selected items
-      const response = await calculateBudget({
+      const payload: any = {
         partyTypeId: partyType.documentId,
         selectedItemIds,
         numberOfPeople: formValues.numberOfPeople,
@@ -81,7 +82,9 @@ export function BudgetProvider({ children }: Readonly<{ children: ReactNode }>) 
           phone: formValues.contactPhone,
           email: formValues.contactEmail
         }
-      });
+      };
+      if (formValues.eventDate) payload.eventDate = formValues.eventDate;
+      const response = await calculateBudget(payload);
       
       setBudgetResult(response);
       return response;

@@ -23,6 +23,7 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
     const [formValues, setFormValues] = useState<FormValues>({
     eventDuration: 0,
     eventDetails:'',
+    eventDate: undefined,
     contactName:'',
     contactPhone:'',
     contactEmail:'',
@@ -105,6 +106,7 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
                 contactPhone: formValues.contactPhone,
                 contactEmail: formValues.contactEmail ?? undefined, // Use undefined for optional fields if empty
                 orderDetailsNotes: formValues.eventDetails ?? undefined,
+                eventDate: formValues.eventDate || undefined,
                 orderItems: selectedItems.map(item => ({
                     id: item.docId ?? item.id,
                     quantity: item.quantity,
@@ -127,6 +129,7 @@ export default function OrderPageClient({ categories }: Readonly<OrderPageClient
         setFormValues({
             eventDuration: 0,
             eventDetails: '',
+            eventDate: undefined,
             contactName: '',
             contactPhone: '',
             contactEmail: '',

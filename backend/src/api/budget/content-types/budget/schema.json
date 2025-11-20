@@ -52,6 +52,64 @@
       "type": "datetime",
       "required": false,
       "unique": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pendente",
+        "confirmado",
+        "em_producao",
+        "pronto",
+        "entregue",
+        "cancelado"
+      ],
+      "default": "pendente"
+    },
+    "customerName": {
+      "type": "string",
+      "required": false
+    },
+    "customerEmail": {
+      "type": "email",
+      "required": false
+    },
+    "customerPhone": {
+      "type": "string",
+      "required": false
+    },
+    "order_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order-item.order-item",
+      "mappedBy": "budget"
+    },
+    "total_cost_price": {
+      "type": "decimal"
+    },
+    "margin_percent": {
+      "type": "decimal",
+      "default": 50
+    },
+    "internalNotes": {
+      "type": "text",
+      "required": false
+    },
+    "deliveryAddress": {
+      "type": "text",
+      "required": false
+    },
+    "deliveryCity": {
+      "type": "string",
+      "required": false
+    },
+    "deliveryZip": {
+      "type": "string",
+      "required": false
+    },
+    "source_channel": {
+      "type": "enumeration",
+      "enum": ["site", "whatsapp", "presencial", "outro"],
+      "required": false
     }
   }
 }

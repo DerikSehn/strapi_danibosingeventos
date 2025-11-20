@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -10,93 +11,124 @@ import {
   TrendingUp,
   Package
 } from 'lucide-react';
+import PushToggle from '@/components/providers/push-toggle';
+import { Link } from 'next-view-transitions';
+
+type DashboardResponse = {
+  ok: boolean;
+  data?: {
+    stats: {
+      totalOrders: number;
+      totalQuotes: number;
+      eventsScheduled: number;
+      receita30: number;
+    };
+    recentActivity: Array<{
+      id: string | number;
+      type: string;
+      description: string;
+      time: string;
+      amount?: number;
+      status: 'pending' | 'completed';
+    }>;
+  };
+  error?: string;
+};
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DashboardResponse['data'] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data for demonstration
-  const stats = [
-    {
-      title: 'Total de Pedidos',
-      value: '127',
-      description: '+12% em relação ao mês passado',
-      icon: ShoppingCart,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
-    },
-    {
-      title: 'Receita Total',
-      value: 'R$ 15.240',
-      description: '+8% em relação ao mês passado',
-      icon: DollarSign,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
-    },
-    {
-      title: 'Clientes Ativos',
-      value: '89',
-      description: '+4 novos esta semana',
-      icon: Users,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
-    },
-    {
-      title: 'Eventos Agendados',
-      value: '12',
-      description: 'Para os próximos 30 dias',
-      icon: Calendar,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
-    },
-  ];
+  useEffect(() => {
+    let active = true;
+  const load = async () => {
+      try {
+    const res = await fetch('/api/dashboard', { cache: 'no-store' });
+        const json: DashboardResponse = await res.json();
+        if (!active) return;
+        if (json.ok) {
+          setData(json.data || null);
+          setError(null);
+        } else {
+          setError(json.error || 'Falha ao carregar o dashboard');
+        }
+      } catch (e: any) {
+        if (!active) return;
+        setError(e?.message || 'Erro ao carregar');
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  const recentActivity = [
-    {
-      id: 1,
-      type: 'Novo Pedido',
-      description: 'Maria Silva - Festa de Aniversário',
-      time: 'Há 2 horas',
-      status: 'pending',
-    },
-    {
-      id: 2,
-      type: 'Pagamento Recebido',
-      description: 'João Santos - R$ 850,00',
-      time: 'Há 4 horas',
-      status: 'completed',
-    },
-    {
-      id: 3,
-      type: 'Evento Entregue',
-      description: 'Ana Costa - Casamento',
-      time: 'Ontem',
-      status: 'completed',
-    },
-    {
-      id: 4,
-      type: 'Nova Consulta',
-      description: 'Pedro Oliveira - Festa Corporativa',
-      time: 'Há 2 dias',
-      status: 'pending',
-    },
-  ];
+  const stats = useMemo(() => {
+    const s = data?.stats;
+    return [
+      {
+        title: 'Total de Pedidos',
+        value: s ? String(s.totalOrders) : '—',
+        description: 'Pedidos diretos criados',
+        icon: ShoppingCart,
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-100',
+      },
+      {
+        title: 'Receita (30 dias)',
+        value: s ? s.receita30.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—',
+        description: 'Somatório dos pedidos',
+        icon: DollarSign,
+        color: 'text-green-600',
+        bgColor: 'bg-green-100',
+      },
+      {
+        title: 'Orçamentos',
+        value: s ? String(s.totalQuotes) : '—',
+        description: 'Orçamentos gerados',
+        icon: Users,
+        color: 'text-purple-600',
+        bgColor: 'bg-purple-100',
+      },
+      {
+        title: 'Eventos Agendados',
+        value: s ? String(s.eventsScheduled) : '—',
+        description: 'Próximos 30 dias',
+        icon: Calendar,
+        color: 'text-orange-600',
+        bgColor: 'bg-orange-100',
+      },
+    ];
+  }, [data]);
+
+  const recentActivity = data?.recentActivity ?? [];
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
-          Olá, {user?.username}! 👋
+          Olá, {user?.username || 'visitante'}! 👋
         </h1>
         <p className="mt-1 text-sm text-gray-600">
           Aqui está um resumo do seu negócio hoje.
         </p>
+        <div className="mt-3">
+          <PushToggle />
+        </div>
       </div>
+
+      {error && (
+        <div className="text-sm text-red-600">{error}</div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => {
-          const Icon = stat.icon;
+          const Icon = stat.icon as any;
           return (
             <Card key={stat.title}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -131,6 +163,10 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {loading && <div className="text-sm text-gray-500">Carregando...</div>}
+            {!loading && recentActivity.length === 0 && (
+              <div className="text-sm text-gray-500">Sem atividades ainda.</div>
+            )}
             {recentActivity.map((activity) => (
               <div key={activity.id} className="flex items-start space-x-3">
                 <div className={`w-2 h-2 rounded-full mt-2 ${
@@ -144,7 +180,7 @@ export default function DashboardPage() {
                     {activity.description}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    {activity.time}
+                    {new Date(activity.time).toLocaleString('pt-BR')}
                   </p>
                 </div>
               </div>
@@ -165,8 +201,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="grid grid-cols-1 gap-3">
-              <button className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="flex items-center space-x-3">
+                <Link href="/encomenda" className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">                <div className="flex items-center space-x-3">
                   <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
                     <ShoppingCart className="h-4 w-4 text-blue-600" />
                   </div>
@@ -175,9 +210,9 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <span className="text-gray-400">→</span>
-              </button>
-              
-              <button className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              </Link>
+
+              <Link href="/dashboard/calendar" className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="flex items-center space-x-3">
                   <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
                     <Calendar className="h-4 w-4 text-green-600" />
@@ -187,9 +222,9 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <span className="text-gray-400">→</span>
-              </button>
-              
-              <button className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              </Link>
+
+              <Link href="/dashboard/customers" className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="flex items-center space-x-3">
                   <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
                     <Users className="h-4 w-4 text-purple-600" />
@@ -199,9 +234,9 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <span className="text-gray-400">→</span>
-              </button>
-              
-              <button className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              </Link>
+
+              <Link href="/dashboard/reports" className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="flex items-center space-x-3">
                   <div className="h-8 w-8 bg-yellow-100 rounded-full flex items-center justify-center">
                     <DollarSign className="h-4 w-4 text-yellow-600" />
@@ -211,7 +246,7 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <span className="text-gray-400">→</span>
-              </button>
+              </Link>
             </div>
           </CardContent>
         </Card>

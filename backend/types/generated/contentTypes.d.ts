@@ -415,19 +415,31 @@ export interface ApiBudgetBudget extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    customerEmail: Schema.Attribute.Email;
+    customerName: Schema.Attribute.String;
+    customerPhone: Schema.Attribute.String;
+    deliveryAddress: Schema.Attribute.Text;
+    deliveryCity: Schema.Attribute.String;
+    deliveryZip: Schema.Attribute.String;
     description: Schema.Attribute.String;
     eventDate: Schema.Attribute.DateTime & Schema.Attribute.Unique;
     eventDetails: Schema.Attribute.Text;
     eventDuration: Schema.Attribute.Integer;
     extraHours: Schema.Attribute.Integer;
+    internalNotes: Schema.Attribute.Text;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::budget.budget'
     > &
       Schema.Attribute.Private;
+    margin_percent: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<50>;
     numberOfPeople: Schema.Attribute.Integer;
     numberOfWaiters: Schema.Attribute.Integer;
+    order_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::order-item.order-item'
+    >;
     party_type: Schema.Attribute.Relation<
       'manyToOne',
       'api::party-type.party-type'
@@ -437,7 +449,22 @@ export interface ApiBudgetBudget extends Struct.CollectionTypeSchema {
       'api::product-variant.product-variant'
     >;
     publishedAt: Schema.Attribute.DateTime;
+    source_channel: Schema.Attribute.Enumeration<
+      ['site', 'whatsapp', 'presencial', 'outro']
+    >;
+    status: Schema.Attribute.Enumeration<
+      [
+        'pendente',
+        'confirmado',
+        'em_producao',
+        'pronto',
+        'entregue',
+        'cancelado',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'pendente'>;
     title: Schema.Attribute.String;
+    total_cost_price: Schema.Attribute.Decimal;
     totalPrice: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -794,6 +821,85 @@ export interface ApiInvoiceInvoice extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiOrderEventOrderEvent extends Struct.CollectionTypeSchema {
+  collectionName: 'order_events';
+  info: {
+    description: 'Timeline events for orders/budgets';
+    displayName: 'OrderEvent';
+    pluralName: 'order-events';
+    singularName: 'order-event';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    budget: Schema.Attribute.Relation<'manyToOne', 'api::budget.budget'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::order-event.order-event'
+    > &
+      Schema.Attribute.Private;
+    payload: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    type: Schema.Attribute.Enumeration<
+      [
+        'created',
+        'status_changed',
+        'date_changed',
+        'note_added',
+        'item_added',
+        'item_updated',
+        'cost_recalculated',
+      ]
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiOrderItemOrderItem extends Struct.CollectionTypeSchema {
+  collectionName: 'order_items';
+  info: {
+    description: 'Items for a direct order with quantity and pricing';
+    displayName: 'Order Item';
+    pluralName: 'order-items';
+    singularName: 'order-item';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    budget: Schema.Attribute.Relation<'manyToOne', 'api::budget.budget'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    item_name: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::order-item.order-item'
+    > &
+      Schema.Attribute.Private;
+    product_variant: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::product-variant.product-variant'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    quantity: Schema.Attribute.Integer & Schema.Attribute.Required;
+    total_item_price: Schema.Attribute.Decimal;
+    unit_cost: Schema.Attribute.Decimal;
+    unit_price: Schema.Attribute.Decimal;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPartyTypePartyType extends Struct.CollectionTypeSchema {
   collectionName: 'party_types';
   info: {
@@ -832,6 +938,132 @@ export interface ApiPartyTypePartyType extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPdfSettingPdfSetting extends Struct.SingleTypeSchema {
+  collectionName: 'pdf_settings';
+  info: {
+    description: 'Configura\u00E7\u00F5es centralizadas para gera\u00E7\u00E3o de PDFs de or\u00E7amentos';
+    displayName: 'PDF Settings';
+    pluralName: 'pdf-settings';
+    singularName: 'pdf-setting';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    backgroundImage: Schema.Attribute.Media;
+    backgroundOpacity: Schema.Attribute.Decimal &
+      Schema.Attribute.DefaultTo<0.15>;
+    cellPadding: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<8>;
+    colorAccent: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'#3b82f6'>;
+    colorBorder: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'#d1d5db'>;
+    colorPrimary: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'#1f2937'>;
+    colorSecondary: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'#f3f4f6'>;
+    colorText: Schema.Attribute.String & Schema.Attribute.DefaultTo<'#374151'>;
+    colorTotal: Schema.Attribute.String & Schema.Attribute.DefaultTo<'#111827'>;
+    companyAddress: Schema.Attribute.Text;
+    companyBoxEnabled: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    companyDescription: Schema.Attribute.Text;
+    companyEmail: Schema.Attribute.Email &
+      Schema.Attribute.DefaultTo<'contato@cheffdanielabosing.com.br'>;
+    companyName: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Cheff Daniela Bosing'>;
+    companyPhone: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'(11) 99999-9999'>;
+    companyRegistration: Schema.Attribute.String;
+    companyWebsite: Schema.Attribute.String;
+    coverImage: Schema.Attribute.Media;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currencySymbol: Schema.Attribute.String & Schema.Attribute.DefaultTo<'R$'>;
+    disclaimerText: Schema.Attribute.Text;
+    enableDebugMode: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    fontBody: Schema.Attribute.Enumeration<
+      ['Helvetica', 'Times-Roman', 'Courier']
+    > &
+      Schema.Attribute.DefaultTo<'Helvetica'>;
+    fontBodySize: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<10>;
+    fontSmall: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<8>;
+    fontSubtitle: Schema.Attribute.Enumeration<
+      ['Helvetica', 'Times-Roman', 'Courier']
+    > &
+      Schema.Attribute.DefaultTo<'Helvetica'>;
+    fontSubtitleSize: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<12>;
+    fontTitle: Schema.Attribute.Enumeration<
+      ['Helvetica', 'Times-Roman', 'Courier']
+    > &
+      Schema.Attribute.DefaultTo<'Helvetica'>;
+    fontTitleSize: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<24>;
+    footerImage: Schema.Attribute.Media;
+    footerText: Schema.Attribute.Text &
+      Schema.Attribute.DefaultTo<'Documento gerado automaticamente pelo sistema de or\u00E7amentos'>;
+    headerImage: Schema.Attribute.Media;
+    headerImageHeight: Schema.Attribute.Integer &
+      Schema.Attribute.DefaultTo<150>;
+    headerSubtitle: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Este documento cont\u00E9m nosso or\u00E7amento profissional'>;
+    headerTitle: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'OR\u00C7AMENTO DE NEGOCIA\u00C7\u00C3O'>;
+    includeBackground: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    includeCover: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    includeFooter: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    includeSignature: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    labelTotal: Schema.Attribute.String & Schema.Attribute.DefaultTo<'TOTAL:'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::pdf-setting.pdf-setting'
+    > &
+      Schema.Attribute.Private;
+    logo: Schema.Attribute.Media;
+    logoHeight: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<80>;
+    logoWidth: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<80>;
+    notesContent: Schema.Attribute.Text &
+      Schema.Attribute.DefaultTo<'Este \u00E9 um or\u00E7amento de negocia\u00E7\u00E3o. Os valores e itens listados acima s\u00E3o nossos valores finais para este pedido.'>;
+    pageMargin: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<40>;
+    pageSize: Schema.Attribute.Enumeration<['A4', 'Letter']> &
+      Schema.Attribute.DefaultTo<'A4'>;
+    publishedAt: Schema.Attribute.DateTime;
+    sectionTitleClient: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'DADOS DO CLIENTE'>;
+    sectionTitleItems: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'ITENS DO PEDIDO'>;
+    sectionTitleNotes: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'OBSERVA\u00C7\u00D5ES'>;
+    showDocumentNumber: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    showGenerationDate: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    showGenerationTime: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    signatureImage: Schema.Attribute.Media;
+    tableHeaderItem: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Item'>;
+    tableHeaderQuantity: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Qtd'>;
+    tableHeaderTotal: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Total'>;
+    tableHeaderUnitPrice: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Pre\u00E7o Unit.'>;
+    tableStriped: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    thanksText: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Obrigado por sua confian\u00E7a!'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    warrantyText: Schema.Attribute.String;
   };
 }
 
@@ -953,6 +1185,45 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPushSubscriptionPushSubscription
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'push_subscriptions';
+  info: {
+    displayName: 'Push Subscription';
+    pluralName: 'push-subscriptions';
+    singularName: 'push-subscription';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    auth: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    createdByRoute: Schema.Attribute.String;
+    endpoint: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::push-subscription.push-subscription'
+    > &
+      Schema.Attribute.Private;
+    p256dh: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    userAgent: Schema.Attribute.String;
   };
 }
 
@@ -1582,10 +1853,14 @@ declare module '@strapi/strapi' {
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::inventory-item.inventory-item': ApiInventoryItemInventoryItem;
       'api::invoice.invoice': ApiInvoiceInvoice;
+      'api::order-event.order-event': ApiOrderEventOrderEvent;
+      'api::order-item.order-item': ApiOrderItemOrderItem;
       'api::party-type.party-type': ApiPartyTypePartyType;
+      'api::pdf-setting.pdf-setting': ApiPdfSettingPdfSetting;
       'api::product-group.product-group': ApiProductGroupProductGroup;
       'api::product-variant.product-variant': ApiProductVariantProductVariant;
       'api::product.product': ApiProductProduct;
+      'api::push-subscription.push-subscription': ApiPushSubscriptionPushSubscription;
       'api::tenant.tenant': ApiTenantTenant;
       'api::transaction.transaction': ApiTransactionTransaction;
       'plugin::content-releases.release': PluginContentReleasesRelease;

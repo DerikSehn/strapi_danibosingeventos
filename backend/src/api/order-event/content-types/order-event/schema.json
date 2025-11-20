@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "order_events",
+  "info": {
+    "singularName": "order-event",
+    "pluralName": "order-events",
+    "displayName": "OrderEvent",
+    "description": "Timeline events for orders/budgets"
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "budget": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::budget.budget"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "created",
+        "status_changed",
+        "date_changed",
+        "note_added",
+        "item_added",
+        "item_updated",
+        "cost_recalculated"
+      ]
+    },
+    "payload": { "type": "json" }
+  }
+}

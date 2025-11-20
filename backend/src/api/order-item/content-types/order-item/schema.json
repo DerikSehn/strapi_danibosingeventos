@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "order_items",
+  "info": {
+    "singularName": "order-item",
+    "pluralName": "order-items",
+    "displayName": "Order Item",
+    "description": "Items for a direct order with quantity and pricing"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "quantity": { "type": "integer", "required": true },
+    "unit_price": { "type": "decimal" },
+  "unit_cost": { "type": "decimal" },
+    "total_item_price": { "type": "decimal" },
+    "item_name": { "type": "string" },
+    "budget": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::budget.budget",
+      "inversedBy": "order_items"
+    },
+    "product_variant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-variant.product-variant"
+    }
+  }
+}

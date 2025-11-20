@@ -28,6 +28,7 @@ export interface OrderPayload {
     contactPhone: string;
     contactEmail?: string;
     orderDetailsNotes?: string;
+  eventDate?: string; // ISO date or yyyy-mm-dd
     orderItems: OrderPayloadItem[];
   };
 }
@@ -117,6 +118,7 @@ export interface FormValues {
     numberOfPeople?: number;
     eventDuration: number;
     eventDetails: string;
+  eventDate?: string;
     contactName: string;
     contactPhone: string;
     contactEmail: string;

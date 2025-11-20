@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "push_subscriptions",
+  "info": {
+    "singularName": "push-subscription",
+    "pluralName": "push-subscriptions",
+    "displayName": "Push Subscription"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "endpoint": { "type": "string", "required": true, "unique": true },
+    "p256dh": { "type": "string", "required": true },
+    "auth": { "type": "string", "required": true },
+    "userAgent": { "type": "string" },
+    "createdByRoute": { "type": "string" },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}
