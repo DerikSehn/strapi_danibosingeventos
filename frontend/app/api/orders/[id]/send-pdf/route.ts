@@ -19,7 +19,7 @@ export async function POST(
       );
     }
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:1337/api';
+    const backendUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337/api';
     const url = `${backendUrl}/budget/${id}/send-pdf`;
 
     const response = await fetch(url, {
