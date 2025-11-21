@@ -14,7 +14,7 @@ export async function fetchBackend<T>(
   const { method = 'GET', body, requireAuth = false, returnNextResponse = false } = options
 
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337/api'
+    const backendUrl = (process.env.NEXT_PUBLIC_STRAPI_URL + '/api') || 'http://localhost:1337/api'
     const endpointPath = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
     const fullUrl = `${backendUrl}${endpointPath}`
     const url = new URL(fullUrl)

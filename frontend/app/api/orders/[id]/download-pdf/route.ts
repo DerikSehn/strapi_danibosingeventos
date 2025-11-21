@@ -19,7 +19,7 @@ export async function GET(
       );
     }
 
-    const backendUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337/api';
+    const backendUrl = (process.env.NEXT_PUBLIC_STRAPI_URL + '/api') || 'http://localhost:1337/api';
     const url = `${backendUrl}/budget/${id}/download-pdf`;
 
     const response = await fetch(url, {
