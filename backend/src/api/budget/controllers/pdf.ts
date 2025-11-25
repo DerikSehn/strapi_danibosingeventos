@@ -4,10 +4,10 @@
 
 import { factories } from '@strapi/strapi';
 import { sendOrderQuote } from '../services/send-order-quote';
-import { generateQuotePDF } from '../services/generate-quote-pdf';
-import { sendQuotePDFEmail } from '../services/send-quote-pdf-email';
+import { generateQuotePDF, OrderWithPdfPopulate } from '../services/generate-quote-pdf';
+import { orderPdfSelect, sendQuotePDFEmail } from '../services/send-quote-pdf-email';
 import { recordOrderEvent } from '../../order-event/services/record-event';
-
+import { getBudgetFilename } from '../services/filename-helper';
 
 export default factories.createCoreController(
   'api::budget.budget',
@@ -113,15 +113,9 @@ export default factories.createCoreController(
 
         // Fetch order
         const docId = String(id);
-        const order: any = await strapi.documents('api::budget.budget').findFirst({
+        const order = await strapi.documents('api::budget.budget').findFirst({
           filters: { documentId: docId },
-          populate: {
-            order_items: {
-              populate: {
-                product_variant: true,
-              },
-            },
-          },
+          populate: orderPdfSelect
         });
 
         if (!order) {
@@ -140,9 +134,11 @@ export default factories.createCoreController(
           bufferSize: pdfBuffer.length,
         });
 
+        const filename = await getBudgetFilename(strapi, id, order);
+
         // Send as attachment
         ctx.set('Content-Type', 'application/pdf');
-        ctx.set('Content-Disposition', `attachment; filename="orcamento-${docId}.pdf"`);
+        ctx.set('Content-Disposition', `attachment; filename="${filename}"`);
         ctx.body = pdfBuffer;
       } catch (error) {
         strapi.log.error('[Download Quote PDF] Error:', error);
@@ -196,15 +192,9 @@ export default factories.createCoreController(
 
         // Fetch order
         const docId = String(id);
-        const order: any = await strapi.documents('api::budget.budget').findFirst({
+        const order: OrderWithPdfPopulate = await strapi.documents('api::budget.budget').findFirst({
           filters: { documentId: docId },
-          populate: {
-            order_items: {
-              populate: {
-                product_variant: true,
-              },
-            },
-          },
+          populate: orderPdfSelect
         });
 
         if (!order) {

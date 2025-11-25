@@ -48,3 +48,21 @@ export function generateWhatsAppLink({
   const whatsappLink = `https://wa.me/${cleanedCountryCode}${cleanedPhoneNumber}?text=${encodedMessage}`;
   return whatsappLink;
 }
+
+
+export function formatCurrency(value: number, locale = 'pt-BR', currency = 'BRL') {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  }).format(value);
+}
+
+export function getFilenameFromContentDisposition(header: string | null): string | null {
+  if (!header) return null;
+  const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+  const matches = filenameRegex.exec(header);
+  if (matches != null && matches[1]) {
+    return matches[1].replace(/['"]/g, '');
+  }
+  return null;
+}

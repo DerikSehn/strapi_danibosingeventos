@@ -34,5 +34,14 @@ export default {
       handler: 'calculate.getSummary',
       config: { auth: {} },
     },
+    {
+      method: 'GET',
+      path: '/orders/:orderId/available-variants',
+      handler: 'calculate.getAvailableVariants',
+      config: {
+        policies: [],
+        auth: false,
+      },
+    },
   ],
 };

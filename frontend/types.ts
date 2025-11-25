@@ -147,3 +147,13 @@ export interface OrderFinishProps {
     isLoading: boolean; // May be derived from orderResult as well
     error?: string | null;
 }
+
+export interface StrapiImageProps {
+  documentId: string;
+  name: string;
+  url: string;
+}
+
+export interface ProductVariant extends PureProductVariant {
+      image?: StrapiImageProps
+    };

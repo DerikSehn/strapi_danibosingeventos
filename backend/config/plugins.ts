@@ -1,6 +1,7 @@
 export default ({ env }) => ({
   email: {
     config: {
+      "duplicate-button": true,
       provider: 'nodemailer',
       providerOptions: {
         host: env('SMTP_HOST', 'smtp.gmail.com'),

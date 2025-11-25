@@ -111,7 +111,7 @@ export function EventDatePicker({ defaultValue, name = "eventDate", disabledDate
             {/* Time and summary (right) */}
             <div className=" flex gap-3 justify-between">
 
-                <div className="rounded-lg border p-3 bg-gray-50">
+                <div className="rounded-lg  p-3 bg-gray-50">
                     <div className="text-xs uppercase text-gray-600">{tile.month}</div>
                     <div className="text-3xl font-bold leading-none">{tile.day ?? '-'}</div>
                     <div className="text-xs text-gray-500">{tile.weekday}</div>

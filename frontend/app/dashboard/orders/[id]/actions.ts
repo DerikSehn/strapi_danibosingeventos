@@ -1,16 +1,30 @@
+/**
+ * Server Actions - Wrapper legado para compatibilidade
+ * Redireciona para os novos actions em lib/api/orders/actions
+ *
+ * DEPRECATED: Use os novos actions em lib/api/orders/actions diretamente
+ */
+
 "use server";
 
-import { fetchBackend } from "@/lib/fetch";
-import { revalidatePath } from "next/cache";
+import {
+  updateOrder as updateOrderNew,
+  confirmOrderStatus as confirmStatusNew,
+  updateOrderItem as updateItemNew,
+  removeOrderItem as removeItemNew,
+  addOrderItems as addItemsNew,
+} from "@/lib/api/orders/actions";
 
+/**
+ * @deprecated Use updateOrder diretamente
+ */
 export async function saveOrderChanges(formData: FormData) {
   try {
     const id = formData.get("id") as string;
     if (!id) throw new Error("ID do pedido não fornecido");
 
-    const payload: any = { data: {} };
+    const payload: any = {};
 
-    // Campos que podem ser salvos
     const fields = [
       "customerName",
       "customerEmail",
@@ -23,80 +37,83 @@ export async function saveOrderChanges(formData: FormData) {
       "internalNotes",
       "totalPrice",
       "total_cost_price",
-      "eventDate"
+      "eventDate",
     ];
 
     for (const field of fields) {
       const value = formData.get(field);
       if (value !== null && value !== undefined && value !== "") {
         if (field === "totalPrice" || field === "total_cost_price") {
-          payload.data[field] = Number(value);
-        } else if (field === "eventDate") {
-          // Preserve local time chosen by the user: build an ISO string for the local time
-          // eventDate format comes as YYYY-MM-DDTHH:mm (no timezone)
-          const eventDateStr = value as string;
-          const [ymd, hm] = eventDateStr.split('T');
-          const [y, m, d] = (ymd || '').split('-').map(n => parseInt(n, 10));
-          const [hh, mm] = (hm || '').split(':').map(n => parseInt(n, 10));
-          if (y && m && d && !isNaN(hh) && !isNaN(mm)) {
-            const local = new Date(y, m - 1, d, hh, mm, 0, 0);
-            // Encode as ISO string so Strapi gets DateTime; this will be UTC but decodifiable to the same local time
-            payload.data.eventDate = local.toISOString();
-          }
+          payload[field] = Number(value);
         } else {
-          payload.data[field] = value;
+          payload[field] = value;
         }
       }
     }
 
-    const data = await fetchBackend(`/orders/${id}`, {}, {
-      method: 'PUT',
-      body: payload,
-      requireAuth: false
-    });
-
-    revalidatePath(`/dashboard/orders/${id}`);
-    return { success: true };
+    return await updateOrderNew(id, payload);
   } catch (error: any) {
     return { success: false, error: error.message };
   }
 }
 
+/**
+ * @deprecated Use confirmOrderStatus diretamente
+ */
 export async function confirmOrderStatus(formData: FormData) {
   try {
     const id = formData.get("id") as string;
-    const status = formData.get("status") as string;
-
     if (!id) throw new Error("ID do pedido não fornecido");
-    if (!status) throw new Error("Status não fornecido");
 
-    const payload = {
-      data: {
-        status: status === "confirmado" ? "confirmado" : "pendente"
-      }
-    };
+    return await confirmStatusNew(id);
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
 
-    const data = await fetchBackend(`/orders/${id}`, {}, {
-      method: 'PUT',
-      body: payload,
-      requireAuth: false
-    });
+/**
+ * @deprecated Use updateOrderItem diretamente
+ */
+export async function updateOrderItem(formData: FormData) {
+  try {
+    const orderId = formData.get("orderId") as string;
+    const itemId = formData.get("itemId") as string;
+    const quantity = formData.get("quantity") as string;
 
-    // If status changed to "confirmado", send the quote email
-    if (status === "confirmado") {
-      try {
-        await fetchBackend(`/budget/${id}/send-quote`, {}, {
-          method: 'POST',
-          requireAuth: false
-        });
-      } catch (quoteError) {
-        console.warn('Failed to send quote email:', quoteError);
-        // Don't fail the entire operation if quote sending fails
-      }
+    return await updateItemNew(orderId, itemId, Number(quantity));
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * @deprecated Use removeOrderItem diretamente
+ */
+export async function removeOrderItem(formData: FormData) {
+  try {
+    const orderId = formData.get("orderId") as string;
+    const itemId = formData.get("itemId") as string;
+
+    return await removeItemNew(orderId, itemId);
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * @deprecated Use addOrderItems diretamente
+ */
+export async function addOrderItems(formData: FormData) {
+  try {
+    const orderId = formData.get("orderId") as string;
+    const itemsJSON = formData.get("items") as string;
+
+    if (!orderId || !itemsJSON) {
+      throw new Error("Dados inválidos fornecidos");
     }
 
-    revalidatePath(`/dashboard/orders/${id}`);
-    return { success: true };
+    const items = JSON.parse(itemsJSON);
+    return await addItemsNew(orderId, items);
   } catch (error: any) {
     return { success: false, error: error.message };
   }

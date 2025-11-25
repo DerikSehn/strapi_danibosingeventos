@@ -14,6 +14,7 @@ interface ProductListWithVariantsProps {
 const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ products }) => {
     // Get selected items from the meal items store
     const { selectedItems } = useMealItemsStore();
+    const selectedItemIds = selectedItems.map(item => item.id);
 
     return (
         <Accordion type="multiple" defaultValue={products.map((_, id) => `product-${id}`)} className="border-none shadow-none">
@@ -21,8 +22,8 @@ const ProductListWithVariants: React.FC<ProductListWithVariantsProps> = ({ produ
                 // Filter selected items from the current product
                 const selectedItemsFromCategory = product.product_variants
                     ?.filter((variant: ApiProductVariantProductVariant['attributes']) =>
-                        selectedItems.some((item) => item.id === variant.id)
-                    );
+                        selectedItemIds.includes(variant.id)
+                    ) ?? [];
                 const hasSelectedItems = selectedItemsFromCategory.length > 0;
 
                 // Define class constants

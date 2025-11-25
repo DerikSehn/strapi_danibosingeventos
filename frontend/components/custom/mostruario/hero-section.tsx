@@ -68,7 +68,7 @@ export function HeroSection({ totalProducts }: Readonly<HeroSectionProps>) {
                 </p>
 
                 {/* Stats Section */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto lg:pt-10">
+                {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto lg:pt-10">
                     <div className="text-center">
                         <div className="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-2xl ring-2 ring-amber-400/30">
                             <Utensils className="w-8 h-8 text-white" />
@@ -97,7 +97,7 @@ export function HeroSection({ totalProducts }: Readonly<HeroSectionProps>) {
                         <div className="text-5xl font-rustic text-amber-200">5.0</div>
                         <div className="text-xl text-amber-100/80 font-food">Avaliação</div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </motion.section>
     );

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Mail, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getFilenameFromContentDisposition } from "@/lib/utils";
 
 export function QuoteActionButtons({
   orderId,
@@ -27,11 +28,14 @@ export function QuoteActionButtons({
         throw new Error('Falha ao baixar PDF');
       }
 
+      const contentDisposition = response.headers.get('Content-Disposition');
+      const filename = getFilenameFromContentDisposition(contentDisposition) || `orcamento-${orderId}.pdf`;
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `orcamento-${orderId}.pdf`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

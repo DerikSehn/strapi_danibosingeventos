@@ -9,22 +9,24 @@ import {
   DollarSign, 
   Calendar,
   TrendingUp,
-  Package
+  Package,
+  CheckCircle
 } from 'lucide-react';
 import PushToggle from '@/components/providers/push-toggle';
 import { Link } from 'next-view-transitions';
+import OrderDetailButton from '@/components/orders/order-detail-button';
 
 type DashboardResponse = {
   ok: boolean;
   data?: {
     stats: {
       totalOrders: number;
-      totalQuotes: number;
+      confirmedOrders: number;
       eventsScheduled: number;
       receita30: number;
     };
     recentActivity: Array<{
-      id: string | number;
+      id: string;
       type: string;
       description: string;
       time: string;
@@ -87,12 +89,12 @@ export default function DashboardPage() {
         bgColor: 'bg-green-100',
       },
       {
-        title: 'Orçamentos',
-        value: s ? String(s.totalQuotes) : '—',
-        description: 'Orçamentos gerados',
-        icon: Users,
-        color: 'text-purple-600',
-        bgColor: 'bg-purple-100',
+        title: 'Pedidos Confirmados',
+        value: s ? String(s.confirmedOrders) : '—',
+        description: 'Pedidos confirmados',
+        icon: CheckCircle,
+        color: 'text-emerald-600',
+        bgColor: 'bg-emerald-100',
       },
       {
         title: 'Eventos Agendados',
@@ -109,15 +111,24 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Olá, {user?.username || 'visitante'}! 👋
-        </h1>
-        <p className="mt-1 text-sm text-gray-600">
-          Aqui está um resumo do seu negócio hoje.
-        </p>
-        <div className="mt-3">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Olá, {user?.username}! 👋
+          </h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Aqui está um resumo do seu negócio hoje.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 flex-shrink-0">
           <PushToggle />
+          <Link 
+            href="/encomenda" 
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            Novo Pedido
+          </Link>
         </div>
       </div>
 
@@ -183,6 +194,9 @@ export default function DashboardPage() {
                     {new Date(activity.time).toLocaleString('pt-BR')}
                   </p>
                 </div>
+                <OrderDetailButton
+                  orderId={activity.id}
+                />
               </div>
             ))}
           </CardContent>
@@ -224,19 +238,19 @@ export default function DashboardPage() {
                 <span className="text-gray-400">→</span>
               </Link>
 
-              <Link href="/dashboard/customers" className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              <Link href="/dashboard/orders" className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="flex items-center space-x-3">
                   <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
                     <Users className="h-4 w-4 text-purple-600" />
                   </div>
                   <span className="text-sm font-medium text-gray-900">
-                    Gerenciar Clientes
+                    Gerenciar Pedidos
                   </span>
                 </div>
                 <span className="text-gray-400">→</span>
               </Link>
 
-              <Link href="/dashboard/reports" className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              <Link href="/dashboard/finances" className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="flex items-center space-x-3">
                   <div className="h-8 w-8 bg-yellow-100 rounded-full flex items-center justify-center">
                     <DollarSign className="h-4 w-4 text-yellow-600" />

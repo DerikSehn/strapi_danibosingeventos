@@ -2,29 +2,149 @@ import PDFDocument from 'pdfkit';
 import { Core } from '@strapi/strapi';
 import { fetchBusinessContact } from './fetch-items';
 import axios from 'axios';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
+
+
 
 /**
- * Helper: Download image from URL to Buffer
+ * Type for Order with populated relations matching orderPdfSelect
  */
-async function downloadImage(url: string): Promise<Buffer> {
+export interface OrderWithPdfPopulate {
+  id: string | number;
+  documentId: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  totalPrice?: number;
+  eventDate?: string | Date;
+  eventDetails?: string;
+  internalNotes?: string;
+  order_items?: Array<{
+    id: string | number;
+    documentId?: string;
+    quantity?: number;
+    unit_price?: number;
+    total_item_price?: number;
+    item_name?: string;
+    product_variant?: {
+      id: string | number;
+      documentId?: string;
+      title?: string;
+      price?: number;
+      image?: {
+        id: string | number;
+        documentId?: string;
+        url: string;
+        name?: string;
+      };
+      product?: {
+        id: string | number;
+        documentId?: string;
+        title?: string;
+        category?: {
+          id: string | number;
+          documentId?: string;
+          title?: string;
+        };
+      };
+    };
+  }>;
+}
+
+/**
+ * Helper: Get full Strapi URL
+ */
+function getStrapiURL(): string {
+  return process.env.STRAPI_URL || process.env.STRAPI_API_URL || 'http://localhost:1337';
+}
+
+/**
+ * Helper: Convert Strapi media URL to full URL
+ */
+function getStrapiMedia(url: string | null | undefined): string | null {
   if (!url) return null;
+  if (url.startsWith('data:')) return url;
+  if (url.startsWith('http') || url.startsWith('//')) return url;
+  return `${getStrapiURL()}${url}`;
+}
+
+/**
+ * Helper: Download image and save to temp directory
+ */
+async function downloadImageToTemp(url: string, tempDir: string): Promise<string | null> {
+  if (!url) {
+    return null;
+  }
   try {
-    // Handle both full URLs and local paths
-    const fullUrl = url.startsWith('http') ? url : `http://localhost:1337${url}`;
-    const response = await axios.get(fullUrl, { responseType: 'arraybuffer' });
-    return Buffer.from(response.data);
+    const fullUrl = getStrapiMedia(url);
+    
+    if (!fullUrl) {
+      return null;
+    }
+
+    const response = await axios.get(fullUrl, { 
+      responseType: 'arraybuffer', 
+      timeout: 8000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0'
+      }
+    });
+
+
+    // Create temp directory if not exists
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+
+    // Generate unique filename
+    const filename = `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
+    const filepath = path.join(tempDir, filename);
+
+    // Write to disk
+    fs.writeFileSync(filepath, Buffer.from(response.data));
+    
+    return filepath;
   } catch (error) {
-    console.warn(`⚠️ Falha ao baixar imagem: ${url}`, error.message);
+    console.warn(`⚠️ Falha ao baixar imagem ${url}:`, error.message);
+    console.error(`🔍 DEBUG: Stack trace:`, error.stack);
     return null;
   }
 }
 
 /**
- * Helper: Get image dimensions
+ * Helper: Cleanup temporary directory
  */
-function getImageDimensions(buffer: Buffer): { width: number; height: number } {
-  // PDFKit will handle dimensions automatically, return defaults
-  return { width: 600, height: 400 };
+function cleanupTempDirectory(tempDir: string): void {
+  try {
+    if (fs.existsSync(tempDir)) {
+      const files = fs.readdirSync(tempDir);
+      for (const file of files) {
+        const filepath = path.join(tempDir, file);
+        fs.unlinkSync(filepath);
+      }
+      fs.rmdirSync(tempDir);
+    }
+  } catch (error) {
+    console.warn(`⚠️ Erro ao limpar diretório temporário:`, error.message);
+  }
+}
+
+/**
+ * Helper: Group items by category
+ */
+function groupItemsByCategory(items: OrderWithPdfPopulate['order_items']): Map<string, any[]> {
+  const grouped = new Map<string, any[]>();
+  items.forEach((item) => {
+    const categoryName = item.product_variant?.product?.category.title || 'Sem Categoria';
+    if (!grouped.has(categoryName)) {
+      grouped.set(categoryName, []);
+    }
+    grouped.get(categoryName)!.push(item);
+  });
+  
+  return grouped;
 }
 
 /**
@@ -37,9 +157,12 @@ export async function generateQuotePDF({
   strapi,
 }: {
   orderId?: string | number;
-  order: any;
+  order: OrderWithPdfPopulate;
   strapi: Core.Strapi;
 }): Promise<Buffer> {
+  // Create temp directory for all PDF images
+  const tempDir = path.join(os.tmpdir(), `strapi-pdf-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+  
   return new Promise(async (resolve, reject) => {
     try {
       // Fetch PDF Settings and images using documents API (Strapi v5)
@@ -67,9 +190,13 @@ export async function generateQuotePDF({
       
       const pdfSettings = pdfSettingsDoc;
 
-      const coverImageBuffer = await downloadImage(coverImageUrl);
-      const backgroundImageBuffer = await downloadImage(backgroundImageUrl);
-      const logoBuffer = await downloadImage(logoUrl);
+      // Download images to temp directory instead of buffer
+      
+      const coverImagePath = await downloadImageToTemp(coverImageUrl, tempDir);
+      
+      const backgroundImagePath = await downloadImageToTemp(backgroundImageUrl, tempDir);
+      
+      const logoPath = await downloadImageToTemp(logoUrl, tempDir);
 
       // Extract colors and settings
       const colors = {
@@ -111,13 +238,15 @@ export async function generateQuotePDF({
       doc.on('error', reject);
       doc.on('end', () => {
         const pdfBuffer = Buffer.concat(chunks);
+        // Cleanup temp directory after PDF is generated
+        cleanupTempDirectory(tempDir);
         resolve(pdfBuffer);
       });
 
       // Page 1: Cover (if image exists, always show it regardless of setting)
-      if (coverImageBuffer) {
+      if (coverImagePath && fs.existsSync(coverImagePath)) {
         try {
-          doc.image(coverImageBuffer, 0, 0, { width: doc.page.width, height: doc.page.height });
+          doc.image(coverImagePath, 0, 0, { width: doc.page.width, height: doc.page.height });
           doc.addPage();
         } catch (error) {
           console.warn('⚠️ Erro ao adicionar capa:', error.message);
@@ -126,9 +255,9 @@ export async function generateQuotePDF({
 
       // Helper: Apply background image on current page (full bleed, no margins)
       const applyBackground = (pageDoc: any) => {
-        if (pdfSettings.includeBackground && backgroundImageBuffer) {
+        if (pdfSettings.includeBackground && backgroundImagePath && fs.existsSync(backgroundImagePath)) {
           try {
-            pageDoc.image(backgroundImageBuffer, 0, 0, {
+            pageDoc.image(backgroundImagePath, 0, 0, {
               width: pageDoc.page.width,
               height: pageDoc.page.height,
               opacity: pdfSettings.backgroundOpacity || 0.15,
@@ -156,7 +285,7 @@ export async function generateQuotePDF({
 
       // Client info section with background box
       const clientBoxTop = doc.y;
-      const clientBoxHeight = 90;
+      const clientBoxHeight = 130;
       
       // Draw background box
       doc
@@ -197,95 +326,243 @@ export async function generateQuotePDF({
       doc.text(`Telefone: ${order.customerPhone || '-'}`, contentMarginLeft + 12, detailsY + 15);
       doc.text(`Email: ${order.customerEmail || '-'}`, contentMarginLeft + 12, detailsY + 30);
       
-      if (order.eventDetails) {
-        doc.fontSize(9).text(`Detalhes: ${order.eventDetails}`, contentMarginLeft + 12, detailsY + 45, { width: contentWidth - 50 });
+      // Add event date if available
+      if (order.eventDate) {
+        const eventDate = new Date(order.eventDate);
+        const formattedDate = eventDate.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        doc.text(`Evento: ${formattedDate}`, contentMarginLeft + 12, detailsY + 45);
       }
       
-      doc.y = clientBoxTop + clientBoxHeight + 10;
+      if (order.eventDetails) {
+        const detailsLineY = order.eventDate ? detailsY + 60 : detailsY + 45;
+        doc.fontSize(9).text(`Detalhes: ${order.eventDetails}`, contentMarginLeft + 12, detailsLineY, { width: contentWidth - 50 });
+      }
+      
+      doc.y = clientBoxTop + clientBoxHeight + 20;
 
-      // Items table
+      // Items Grid Section - Modern Design
       doc
         .fontSize(fonts.subtitleSize)
         .font('Helvetica-Bold')
         .fillColor(colors.primary)
-        .text(content.sectionItems, { underline: true })
+        .text(content.sectionItems, contentMarginLeft, doc.y)
         .moveDown(0.5);
 
-      // Table header
-      const tableTop = doc.y;
-      const col1X = contentMarginLeft + 10;
-      const col2X = contentMarginLeft + 250;
-      const col3X = contentMarginLeft + 330;
-      const col4X = contentMarginLeft + 410;
-      const cellHeight = 20;
-      const headerHeight = 25;
-      const tableWidth = contentWidth - 20;
-
-      // Header background
-      doc
-        .fillColor(colors.secondary)
-        .rect(contentMarginLeft, tableTop, tableWidth, headerHeight)
-        .fill();
-
-      doc
-        .fillColor(colors.total)
-        .fontSize(10)
-        .font('Helvetica-Bold');
-
-      doc.text(pdfSettings.tableHeaderItem || 'Item', col1X, tableTop + 5, { width: 240 });
-      doc.text(pdfSettings.tableHeaderQuantity || 'Qtd', col2X, tableTop + 5, { width: 70, align: 'center' });
-      doc.text(pdfSettings.tableHeaderUnitPrice || 'Preço Unit.', col3X, tableTop + 5, { width: 60, align: 'right' });
-      doc.text(pdfSettings.tableHeaderTotal || 'Total', col4X, tableTop + 5, { width: 55, align: 'right' });
-
-      let tableY = tableTop + headerHeight;
-
-      // Table rows
+      // Group items by category
       const items = Array.isArray(order.order_items) ? order.order_items : [];
-      let totalSum = 0;
+      
+      const groupedItems = groupItemsByCategory(items);
+      
+      // Pre-download all images to temp directory
+      const allItemsWithImages = await Promise.all(
+        items.map(async (item, idx) => {
+          const imageUrl = item.product_variant?.image?.url;
+          
+          const imagePath = imageUrl ? await downloadImageToTemp(imageUrl, tempDir) : null;
+          
+          return {
+            ...item,
+            imagePath,
+          };
+        })
+      );
 
-      items.forEach((item: any, index: number) => {
-        const itemName = item.item_name || item.product_variant?.title || 'Item';
-        const quantity = Number(item.quantity || 0);
-        const unitPrice = Number(item.unit_price || 0);
-        const itemTotal = Number(item.total_item_price || 0);
-        totalSum += itemTotal;
-
-        // Alternate row background (if striped enabled)
-        if (pdfSettings.tableStriped && index % 2 === 0) {
-          doc
-            .fillColor(colors.secondary)
-            .rect(contentMarginLeft, tableY, tableWidth, cellHeight)
-            .fill();
+      // Render each category with modern grid layout
+      for (const [categoryName, categoryItems] of groupedItems) {
+        // Check if we need a new page for this category
+        if (doc.y > doc.page.height - 180) {
+          doc.addPage();
+          applyBackground(doc);
+          doc.y = contentMarginTop;
         }
 
+        // Category header with underline
         doc
-          .fillColor(colors.text)
-          .fontSize(9)
-          .font('Helvetica')
-          .text(itemName, col1X, tableY + 4, { width: 240 });
+          .fontSize(12)
+          .font('Helvetica-Bold')
+          .fillColor(colors.accent)
+          .text(categoryName, contentMarginLeft)
+          .moveDown(0.2);
 
-        doc.text(quantity.toString(), col2X, tableY + 4, { width: 70, align: 'center' });
-        doc.text(`${content.currencySymbol} ${unitPrice.toFixed(2)}`, col3X, tableY + 4, { width: 60, align: 'right' });
-        doc.text(`${content.currencySymbol} ${itemTotal.toFixed(2)}`, col4X, tableY + 4, { width: 55, align: 'right' });
+        // Add subtle line under category
+        const lineY = doc.y - 2;
+        doc
+          .strokeColor(colors.accent)
+          .lineWidth(1.5)
+          .moveTo(contentMarginLeft, lineY)
+          .lineTo(contentMarginLeft + contentWidth - 20, lineY)
+          .stroke();
 
-        tableY += cellHeight;
-      });
+        doc.moveDown(0.5);
 
-      // Total row
-      const totalRowY = tableY;
+        // Grid parameters - 3 items per row
+        const gridItemsPerRow = 3;
+        const gridItemWidth = (contentWidth - 20) / gridItemsPerRow;
+        const gridItemHeight = 100; // Item card height
+        const gridGutter = 8;
+        const imageHeight = 60;
+        const imagePadding = 5;
+
+        let gridX = contentMarginLeft;
+        let gridY = doc.y;
+        let itemCount = 0;
+
+        // Get items for this category with images
+        const categoryItemsWithImages = allItemsWithImages.filter(
+          (item) => (item.product_variant?.product.category?.title || 'Sem Categoria') === categoryName
+        );
+
+      
+
+
+        for (const itemWithImage of categoryItemsWithImages) {
+          // Check if we need a new row
+          if (itemCount > 0 && itemCount % gridItemsPerRow === 0) {
+            gridY += gridItemHeight + gridGutter;
+            gridX = contentMarginLeft;
+
+            // Check if we need a new page
+            if (gridY > doc.page.height - 120) {
+              doc.addPage();
+              applyBackground(doc);
+              gridY = contentMarginTop;
+              gridX = contentMarginLeft;
+            }
+          }
+
+          const itemName = itemWithImage.item_name || itemWithImage.product_variant?.title || 'Item';
+          const quantity = Number(itemWithImage.quantity || 0);
+
+          // Draw item card background (light gray)
+          doc
+            .fillColor('#f9fafb')
+            .rect(gridX, gridY, gridItemWidth - gridGutter, gridItemHeight)
+            .fill();
+
+          // Draw item card border
+          doc
+            .strokeColor(colors.border)
+            .lineWidth(0.5)
+            .rect(gridX, gridY, gridItemWidth - gridGutter, gridItemHeight)
+            .stroke();
+
+          // Image area with border
+          const imageX = gridX + imagePadding;
+          const imageY = gridY + imagePadding;
+          const imageWidth = gridItemWidth - gridGutter - imagePadding * 2;
+
+          // Draw image background placeholder
+          doc
+            .fillColor('#e5e7eb')
+            .rect(imageX, imageY, imageWidth, imageHeight)
+            .fill();
+
+          // Render image if available
+          const imagePath = itemWithImage.imagePath;
+          const imageExists = imagePath ? fs.existsSync(imagePath) : false;
+          
+          if (imagePath && imageExists) {
+            try {
+              // PDFKit image method - draw image from file path
+              doc.image(imagePath, imageX, imageY, {
+                width: imageWidth,
+                height: imageHeight,
+                fit: [imageWidth, imageHeight],
+                align: 'center',
+                valign: 'center',
+              });
+            } catch (imgError) {
+              console.warn(`⚠️ Erro ao renderizar imagem de ${itemName}:`, imgError.message);
+              console.error(`🔍 DEBUG: Stack trace:`, imgError.stack);
+              // Draw "No Image" text
+              doc
+                .fontSize(8)
+                .font('Helvetica')
+                .fillColor('#9ca3af')
+                .text('Sem Imagem', imageX, imageY + imageHeight / 2 - 4, {
+                  width: imageWidth,
+                  align: 'center',
+                });
+            }
+          } else {
+            // No image placeholder
+            doc
+              .fontSize(8)
+              .font('Helvetica')
+              .fillColor('#9ca3af')
+              .text('Sem Imagem', imageX, imageY + imageHeight / 2 - 4, {
+                width: imageWidth,
+                align: 'center',
+              });
+          }
+
+          // Item name text
+          const textY = imageY + imageHeight + 6;
+          doc
+            .fontSize(9)
+            .font('Helvetica-Bold')
+            .fillColor(colors.text)
+            .text(itemName, gridX + imagePadding, textY, {
+              width: gridItemWidth - gridGutter - imagePadding * 2,
+              align: 'center',
+              ellipsis: true,
+              height: 16,
+            });
+
+          // Quantity display (only if it's an order type)
+          if (order.order_items && order.order_items.length > 0) {
+            const qtyY = textY + 16;
+            doc
+              .fontSize(10)
+              .font('Helvetica-Bold')
+              .fillColor(colors.accent)
+              .text(`Qtd: ${quantity}`, gridX + imagePadding, qtyY, {
+                width: gridItemWidth - gridGutter - imagePadding * 2,
+                align: 'center',
+              });
+          }
+
+          // Move to next grid position
+          gridX += gridItemWidth;
+          itemCount++;
+        }
+
+        // Move doc position after grid
+        doc.y = gridY + gridItemHeight + 15;
+      }
+
+      // Check if we need a new page for total section
+      if (doc.y > doc.page.height - 120) {
+        doc.addPage();
+        applyBackground(doc);
+        doc.y = contentMarginTop;
+      }
+
+      // Total summary box - Modern style
+      const totalBoxTop = doc.y;
+      const totalBoxHeight = 60;
+      const totalBoxWidth = contentWidth - 20;
+
+      // Main total box with gradient effect (using rect fill)
       doc
         .fillColor(colors.total)
-        .rect(contentMarginLeft, totalRowY, tableWidth, headerHeight)
+        .rect(contentMarginLeft, totalBoxTop, totalBoxWidth, totalBoxHeight)
         .fill();
 
+      // Total label and value
       doc
-        .fillColor('#ffffff')
         .fontSize(11)
-        .font('Helvetica-Bold')
-        .text(pdfSettings.labelTotal || 'TOTAL:', col1X, totalRowY + 5, { width: 240 })
-        .text(`${content.currencySymbol} ${totalSum.toFixed(2)}`, col4X, totalRowY + 5, { width: 55, align: 'right' });
+        .font('Helvetica')
+        .fillColor('#d1d5db')
+        .text('TOTAL DA ENCOMENDA:', contentMarginLeft + 15, totalBoxTop + 10);
 
-      doc.moveDown(1.5);
+      doc
+        .fontSize(18)
+        .font('Helvetica-Bold')
+        .fillColor('#ffffff')
+        .text(`${content.currencySymbol} ${order.totalPrice.toFixed(2)}`, contentMarginLeft + 15, totalBoxTop + 28);
+
+      doc.y = totalBoxTop + totalBoxHeight + 15;
 
       // Notes section with background box
       const notesBoxTop = doc.y;
@@ -340,6 +617,26 @@ export async function generateQuotePDF({
 
       // Signature section (if enabled)
       if (pdfSettings.includeSignature) {
+        // Add logo on signature page if available
+        if (logoPath && fs.existsSync(logoPath)) {
+          try {
+            const logoWidth = 80;
+            const logoHeight = 80;
+            const logoX = (doc.page.width - logoWidth) / 2;
+            doc.image(logoPath, logoX, doc.y, {
+              width: logoWidth,
+              height: logoHeight,
+              fit: [logoWidth, logoHeight],
+              align: 'center',
+              valign: 'top',
+            });
+            doc.moveDown(4.5);
+          } catch (error) {
+            console.warn('⚠️ Erro ao adicionar logo:', error.message);
+          }
+        }
+
+        // Signature line
         doc
           .fontSize(fonts.smallSize)
           .font('Helvetica')
@@ -347,21 +644,6 @@ export async function generateQuotePDF({
           .text('_' + '_'.repeat(50), { align: 'center' })
           .moveDown(0.3)
           .text('Assinatura Autorizada', { align: 'center' });
-
-        // Add logo on signature page if available
-        if (logoBuffer) {
-          try {
-            const logoTop = doc.y + 20;
-            doc.image(logoBuffer, 250, logoTop, {
-              width: 100,
-              height: 100,
-            });
-          } catch (error) {
-            console.warn('⚠️ Erro ao adicionar logo na assinatura:', error.message);
-          }
-        }
-
-        doc.moveDown(5);
       }
 
       // Footer
@@ -375,6 +657,11 @@ export async function generateQuotePDF({
       // Finalize PDF
       doc.end();
     } catch (error) {
+      console.error(`🔍 DEBUG: ===== ERRO NA GERAÇÃO DE PDF =====`);
+      console.error(`🔍 DEBUG: ${error.message}`);
+      console.error(`🔍 DEBUG: Stack trace:`, error.stack);
+      // Cleanup temp directory on error
+      cleanupTempDirectory(tempDir);
       reject(error);
     }
   });

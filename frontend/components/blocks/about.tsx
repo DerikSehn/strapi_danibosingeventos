@@ -68,7 +68,7 @@ export default function AboutSection({ heading, subHeading, features }: Readonly
                     <p className="text-2xl font-light italic text-primary-600">
                         "A dificuldade é você quem define"
                     </p>
-                    <p className="mt-2 text-xl font-rustic">- Cheff Daniela Bosing</p>
+                    <p className="mt-2 text-xl font-food">- Cheff Daniela Bosing</p>
                 </footer>
             </div>
         </div>

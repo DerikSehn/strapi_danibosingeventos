@@ -17,7 +17,7 @@ const heroVariants = {
 
 export function CallToActionSection() {
     return (
-        <motion.section 
+        <motion.section
             className="py-20 bg-gradient-to-r from-neutral-800 to-neutral-700 relative overflow-hidden"
             initial="hidden"
             whileInView="visible"
@@ -47,8 +47,9 @@ export function CallToActionSection() {
                         <h2 className="text-4xl md:text-5xl font-food text-amber-200 relative">
                             Pronto para Criar Seu Evento?
                         </h2>
-                    </div>                    <p className="text-xl text-amber-100/80 font-rustic mb-10 leading-relaxed">
-                        Gostou do que viu em nosso mostruário? Crie um orçamento personalizado 
+                    </div>                    
+                    <p className="text-xl text-amber-100/80 font-food mb-10 leading-relaxed">
+                        Gostou do que viu em nosso cardápio? Crie um orçamento personalizado
                         para sua festa com os pratos que mais despertaram seu interesse. Nossa equipe está pronta para tornar sua celebração inesquecível.
                     </p>
 
@@ -60,7 +61,7 @@ export function CallToActionSection() {
                             <ChefHat className="w-5 h-5 mr-2" />
                             Criar Orçamento de Festa
                         </a>
-                        
+
                         <a
                             href="/encomenda"
                             className="inline-flex items-center justify-center px-8 py-4 border-2 border-amber-500 text-amber-300 hover:bg-amber-500/10 hover:border-amber-400 font-food text-xl rounded-xl transition-all duration-300"

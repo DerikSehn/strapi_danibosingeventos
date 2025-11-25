@@ -9,9 +9,10 @@ import { sendBudgetEmail } from '../services/send-email';
 import { sendOrderMail } from '../../order/services/send-order-email';
 import { sendOrderQuote } from '../services/send-order-quote';
 import { generateQuotePDF } from '../services/generate-quote-pdf';
-import { sendQuotePDFEmail } from '../services/send-quote-pdf-email';
+import { orderPdfSelect, sendQuotePDFEmail } from '../services/send-quote-pdf-email';
 import { configureWebPush, sendWebPushNotification } from '../../push-subscription/services/push-service';
 import { recordOrderEvent } from '../../order-event/services/record-event';
+import { getBudgetFilename } from '../services/filename-helper';
 
 // Helper to match and compute totals for order items
 function matchAndSummarize(orderItems: Array<{ id: string | number; quantity: number }>, selectedItemsDetails: any[]) {
@@ -167,7 +168,7 @@ async function fetchVariantsByIds(strapi: any, ids: Array<string | number>): Pro
     if (map[id]) return; // already have string doc variant
     try {
       const pv = await strapi.documents('api::product-variant.product-variant').findFirst({
-        filters: { $or: [ { documentId: typeof id === 'string' ? id : undefined }, { id: typeof id === 'number' ? id : -1 } ] },
+        filters: { $or: [{ documentId: typeof id === 'string' ? id : undefined }, { id: typeof id === 'number' ? id : -1 }] },
       });
       if (pv) { map[id] = pv; }
     } catch { /* ignore */ }
@@ -203,7 +204,7 @@ async function persistOrderItems(strapi: any, budgetId: string | number, detaile
   await Promise.all(detailedItems.map(async (d) => {
     try {
       const pv = await strapi.documents('api::product-variant.product-variant').findFirst({
-        filters: { $or: [ { documentId: d.itemId }, { id: typeof d.itemId === 'number' ? d.itemId : -1 } ] },
+        filters: { $or: [{ documentId: d.itemId }, { id: typeof d.itemId === 'number' ? d.itemId : -1 }] },
       });
       await strapi.documents('api::order-item.order-item').create({
         data: {
@@ -211,7 +212,7 @@ async function persistOrderItems(strapi: any, budgetId: string | number, detaile
           product_variant: pv?.documentId || pv?.id,
           quantity: d.quantity,
           unit_price: d.itemPrice,
-            // use precomputed map or fallback 50%
+          // use precomputed map or fallback 50%
           unit_cost: itemCostMap[d.itemId] ?? (Number(d.itemPrice) * 0.5),
           total_item_price: d.totalItemPrice,
           item_name: d.itemName,
@@ -277,9 +278,9 @@ export default factories.createCoreController(
                 },
               },
             },
-       
+
           },
-           // order_events: { sort: 'createdAt:desc', page: 1, pageSize: 1 },  page, pageSize,
+          // order_events: { sort: 'createdAt:desc', page: 1, pageSize: 1 },  page, pageSize,
         });
         // Ensure total_cost_price is present (computed) in the payload
         const withCosts = Array.isArray(data)
@@ -292,10 +293,10 @@ export default factories.createCoreController(
               if (!d?.eventDate) return null;
               try {
                 const today = new Date();
-                today.setHours(0,0,0,0);
+                today.setHours(0, 0, 0, 0);
                 const ev = new Date(d.eventDate);
                 if (isNaN(ev.getTime())) return null;
-                ev.setHours(0,0,0,0);
+                ev.setHours(0, 0, 0, 0);
                 const diffMs = ev.getTime() - today.getTime();
                 return Math.round(diffMs / 86400000);
               } catch { return null; }
@@ -396,11 +397,11 @@ export default factories.createCoreController(
     async updateOrder(ctx) {
       try {
         const id = ctx.params.id;
-        
+
         // Capture pre-change state for event tracking
-        const before = await strapi.documents('api::budget.budget').findFirst({ 
-          filters: { documentId: id }, 
-          select: ['status', 'eventDate'] 
+        const before = await strapi.documents('api::budget.budget').findFirst({
+          filters: { documentId: id },
+          select: ['status', 'eventDate']
         });
         if (!before) return ctx.notFound();
 
@@ -441,13 +442,13 @@ export default factories.createCoreController(
         if (typeof note !== 'string' || !note.trim()) {
           return ctx.badRequest('Note text required');
         }
-  const doc: any = await strapi.documents('api::budget.budget').findFirst({ filters: { documentId: id }, select: ['internalNotes'] });
+        const doc: any = await strapi.documents('api::budget.budget').findFirst({ filters: { documentId: id }, select: ['internalNotes'] });
         if (!doc) return ctx.notFound();
         const timestamp = new Date().toISOString();
         const header = `[${timestamp}]`;
-  const updatedNotes = doc?.internalNotes ? `${doc.internalNotes}\n${header} ${note}` : `${header} ${note}`;
-  await (strapi as any).documents('api::budget.budget').update({ documentId: id, data: { internalNotes: updatedNotes } });
-        try { await recordOrderEvent(strapi, id, 'note_added', { snippet: note.slice(0,140) }); } catch {}
+        const updatedNotes = doc?.internalNotes ? `${doc.internalNotes}\n${header} ${note}` : `${header} ${note}`;
+        await (strapi as any).documents('api::budget.budget').update({ documentId: id, data: { internalNotes: updatedNotes } });
+        try { await recordOrderEvent(strapi, id, 'note_added', { snippet: note.slice(0, 140) }); } catch { }
         return ctx.send({ ok: true });
       } catch (e) { return ctx.throw(500, e); }
     },
@@ -459,12 +460,12 @@ export default factories.createCoreController(
         }
 
         // Counts
-        const [totalOrders, totalQuotes, eventsScheduled] = await Promise.all([
+        const [totalOrders, confirmedOrders, eventsScheduled] = await Promise.all([
           strapi.documents('api::budget.budget').count({
             filters: { party_type: { id: { $null: true } } },
           }) as unknown as Promise<number>,
           strapi.documents('api::budget.budget').count({
-            filters: { party_type: { id: { $notNull: true } } },
+            filters: { status: 'confirmado' },
           }) as unknown as Promise<number>,
           strapi.documents('api::budget.budget').count({
             filters: { eventDate: { $gte: new Date().toISOString() } },
@@ -512,7 +513,7 @@ export default factories.createCoreController(
         return ctx.send({
           ok: true,
           data: {
-            stats: { totalOrders, totalQuotes, eventsScheduled, receita30 },
+            stats: { totalOrders, confirmedOrders, eventsScheduled, receita30 },
             recentActivity,
           },
         });
@@ -654,7 +655,7 @@ export default factories.createCoreController(
           ? selectedItemsDetails.map((v: any) => v?.documentId || v?.id).filter(Boolean)
           : [];
 
-  const newBudget = await strapi.documents('api::budget.budget').create({
+        const newBudget = await strapi.documents('api::budget.budget').create({
           data: {
             partyType,
             eventDetails,
@@ -666,8 +667,8 @@ export default factories.createCoreController(
             ...(variantIds.length ? { product_variants: variantIds } : {}),
             ...budgetCalculation,
           },
-  }); strapi.log.debug('New budget created:', newBudget);
-  try { await recordOrderEvent(strapi, newBudget?.documentId || newBudget?.id, 'created', {}); } catch {}
+        }); strapi.log.debug('New budget created:', newBudget);
+        try { await recordOrderEvent(strapi, newBudget?.documentId || newBudget?.id, 'created', {}); } catch { }
 
         // Create derived order_items with computed quantities so they show in dashboard
         try {
@@ -683,24 +684,24 @@ export default factories.createCoreController(
 
         strapi.log.info('[Budget Calculate] Starting budget email send process');
         try {
-          await sendBudgetEmail({
-            name: contactInfo.name,
-            phone: contactInfo.phone,
-            eventDetails,
-            numberOfPeople,
-            totalPrice: budgetCalculation.totalPrice,
-            selectedItemsDetails,
-            partyTypeDetails,
-            waiterPrice: budgetCalculation.waiterPrice,
-            numberOfWaiters: budgetCalculation.numberOfWaiters,
-
-            totalItemPrice: budgetCalculation.totalItemPrice,
-            extraHours: budgetCalculation.extraHours,
-            extraHourPrice: budgetCalculation.extraHourPrice,
-
-            strapi,
-          });
-          strapi.log.info('[Budget Calculate] Budget email sent successfully');
+          // ❌ DESATIVADO: Envio de emails foi descontinuado
+          // Apenas admins têm acesso aos preços
+          // await sendBudgetEmail({
+          //   name: contactInfo.name,
+          //   phone: contactInfo.phone,
+          //   eventDetails,
+          //   numberOfPeople,
+          //   totalPrice: budgetCalculation.totalPrice,
+          //   selectedItemsDetails,
+          //   partyTypeDetails,
+          //   waiterPrice: budgetCalculation.waiterPrice,
+          //   numberOfWaiters: budgetCalculation.numberOfWaiters,
+          //   totalItemPrice: budgetCalculation.totalItemPrice,
+          //   extraHours: budgetCalculation.extraHours,
+          //   extraHourPrice: budgetCalculation.extraHourPrice,
+          //   strapi,
+          // });
+          strapi.log.info('[Budget Calculate] Budget email send disabled');
         } catch (emailError) {
           strapi.log.error('[Budget Calculate] Error sending budget email:', emailError);
           // We still return the budget result even if email fails
@@ -819,7 +820,7 @@ export default factories.createCoreController(
     async createOrder(ctx) {
       try {
         // debug logs removed
-  const { contactName, contactPhone, contactEmail, orderDetailsNotes, eventDate, orderItems, internalNotes, deliveryAddress, deliveryCity, deliveryZip, source_channel } = ctx.request.body.data;
+        const { contactName, contactPhone, contactEmail, orderDetailsNotes, eventDate, orderItems, internalNotes, deliveryAddress, deliveryCity, deliveryZip, source_channel } = ctx.request.body.data;
         const validationError = validateCreateOrderPayload(ctx.request.body.data);
         if (validationError) {
           return ctx.badRequest(validationError);
@@ -828,10 +829,10 @@ export default factories.createCoreController(
         const resolved = await resolveAndSummarizeOrderItems(strapi, orderItems);
         if (resolved.error) {
           // differentiate notFound vs badRequest heuristically
-            if (resolved.error.startsWith('None of the provided')) {
-              return ctx.notFound(resolved.error);
-            }
-            return ctx.badRequest(resolved.error);
+          if (resolved.error.startsWith('None of the provided')) {
+            return ctx.notFound(resolved.error);
+          }
+          return ctx.badRequest(resolved.error);
         }
         const { selectedItemsDetails, calculatedTotalItemsPrice, detailedOrderItemsForEmail } = resolved as any;
 
@@ -847,7 +848,7 @@ export default factories.createCoreController(
           : [];
 
         // Compute total cost price from product variant cost or default 50% of unit price when missing
-  const { totalCost, itemCostMap } = await computeOrderCostAndUnitCostMap(strapi, detailedOrderItemsForEmail);
+        const { totalCost, itemCostMap } = await computeOrderCostAndUnitCostMap(strapi, detailedOrderItemsForEmail);
 
         // Try to attach the "encomenda" party-type (by caption) for classification
         let encomendaPartyTypeId: string | number | null = null;
@@ -859,7 +860,7 @@ export default factories.createCoreController(
           if (encomenda) encomendaPartyTypeId = encomenda.documentId || encomenda.id;
         } catch { /* ignore lookup failure */ }
 
-  const newBudget = await strapi.documents('api::budget.budget').create({
+        const newBudget = await strapi.documents('api::budget.budget').create({
           data: {
             partyType: encomendaPartyTypeId, // if null, stays a direct order logically
             eventDetails: orderDetailsNotes,
@@ -878,11 +879,11 @@ export default factories.createCoreController(
             ...(variantIds.length ? { product_variants: variantIds } : {}),
           },
         });
-  try { await recordOrderEvent(strapi, newBudget?.documentId || newBudget?.id, 'created', {}); } catch {}
+        try { await recordOrderEvent(strapi, newBudget?.documentId || newBudget?.id, 'created', {}); } catch { }
         strapi.log.debug('[Budget/createOrder] New budget created:', newBudget);
 
-  // Persist order item rows with quantities and pricing (extracted helper)
-  await persistOrderItems(strapi, newBudget?.documentId || newBudget?.id, detailedOrderItemsForEmail, itemCostMap);
+        // Persist order item rows with quantities and pricing (extracted helper)
+        await persistOrderItems(strapi, newBudget?.documentId || newBudget?.id, detailedOrderItemsForEmail, itemCostMap);
 
         await sendOrderMail({
           name: contactName,
@@ -1064,23 +1065,24 @@ export default factories.createCoreController(
         const extraHourPrice = 0;
         const totalPrice = totalItemPrice + mockPartyType.price + waiterPrice;
 
-        await sendBudgetEmail({
-          name,
-          phone,
-          eventDetails: eventDetails ?? 'Email de teste - funcionalidade de envio',
-          numberOfPeople,
-          totalPrice,
-          selectedItemsDetails: mockSelectedItems,
-          partyTypeDetails: mockPartyType,
-          waiterPrice: 0,
-          numberOfWaiters: 0,
-          totalItemPrice,
-          extraHours,
-          extraHourPrice,
-          strapi,
-        });
+        // ❌ DESATIVADO: Envio de emails foi descontinuado
+        // await sendBudgetEmail({
+        //   name,
+        //   phone,
+        //   eventDetails: eventDetails ?? 'Email de teste - funcionalidade de envio',
+        //   numberOfPeople,
+        //   totalPrice,
+        //   selectedItemsDetails: mockSelectedItems,
+        //   partyTypeDetails: mockPartyType,
+        //   waiterPrice: 0,
+        //   numberOfWaiters: 0,
+        //   totalItemPrice,
+        //   extraHours,
+        //   extraHourPrice,
+        //   strapi,
+        // });
 
-        strapi.log.info('[Test Email] Test email sent successfully');
+        strapi.log.info('[Test Email] Test email send disabled');
 
         return ctx.send({
           success: true,
@@ -1138,20 +1140,28 @@ export default factories.createCoreController(
     async sendOrderQuote(ctx) {
       try {
         const { id } = ctx.params;
-        
+
         if (!id) {
           return ctx.badRequest('Order ID is required');
         }
 
         strapi.log.info('[Send Order Quote] Received request for order:', { id });
 
-        const result = await sendOrderQuote({
+        // ❌ DESATIVADO: Envio de emails foi descontinuado
+        // Apenas admins têm acesso aos preços
+        // const result = await sendOrderQuote({
+        //   orderId: id,
+        //   strapi,
+        // });
+
+        const result = {
+          success: false,
+          message: 'Email sending has been disabled. Only admins can access pricing information.',
           orderId: id,
-          strapi,
-        });
+        };
 
         try {
-          await recordOrderEvent(strapi, id, 'quote_sent', { timestamp: new Date().toISOString() });
+          await recordOrderEvent(strapi, id, 'quote_send_attempted', { timestamp: new Date().toISOString(), disabled: true });
         } catch (eventError) {
           strapi.log.warn('[Send Order Quote] Failed to record event:', eventError);
         }
@@ -1191,7 +1201,7 @@ export default factories.createCoreController(
     async downloadQuotePDF(ctx) {
       try {
         const { id } = ctx.params;
-        
+
         if (!id) {
           return ctx.badRequest('Order ID is required');
         }
@@ -1227,9 +1237,11 @@ export default factories.createCoreController(
           bufferSize: pdfBuffer.length,
         });
 
+        const filename = await getBudgetFilename(strapi, id);
+
         // Send as attachment
         ctx.set('Content-Type', 'application/pdf');
-        ctx.set('Content-Disposition', `attachment; filename="orcamento-${docId}.pdf"`);
+        ctx.set('Content-Disposition', `attachment; filename="${filename}"`);
         ctx.body = pdfBuffer;
       } catch (error) {
         strapi.log.error('[Download Quote PDF] Error:', error);
@@ -1274,7 +1286,7 @@ export default factories.createCoreController(
     async sendQuotePDF(ctx) {
       try {
         const { id } = ctx.params;
-        
+
         if (!id) {
           return ctx.badRequest('Order ID is required');
         }
@@ -1283,17 +1295,10 @@ export default factories.createCoreController(
 
         // Fetch order
         const docId = String(id);
-        const order: any = await strapi.documents('api::budget.budget').findFirst({
+        const order = await strapi.documents('api::budget.budget').findFirst({
           filters: { documentId: docId },
-          populate: {
-            order_items: {
-              populate: {
-                product_variant: true,
-              },
-            },
-          },
+          populate: orderPdfSelect
         });
-
         if (!order) {
           return ctx.notFound('Order not found');
         }
@@ -1319,6 +1324,88 @@ export default factories.createCoreController(
       } catch (error) {
         strapi.log.error('[Send Quote PDF] Error:', error);
         return ctx.throw(500, error.message || 'Failed to send PDF');
+      }
+    },
+
+    /**
+     * Get available product variants for an order (excluding those already in the order)
+     * Endpoint: GET /api/orders/:orderId/available-variants
+     * Query params: page, limit, q (search)
+     */
+    async getAvailableVariants(ctx) {
+      try {
+        const { orderId } = ctx.params;
+        const pageParam = ctx.query.page as string | undefined;
+        const limitParam = ctx.query.limit as string | undefined;
+        const qParam = ctx.query.q as string | undefined;
+
+        const page = pageParam ? parseInt(pageParam) : 1;
+        const limit = limitParam ? parseInt(limitParam) : 12;
+        const q = qParam || '';
+
+        if (!orderId) {
+          return ctx.badRequest('Order ID is required');
+        }
+
+        // Get all product variant IDs from order_items for this order using Documents API
+        const orderItems = await strapi.documents('api::order-item.order-item').findMany({
+          filters: {
+            budget: {
+              documentId: orderId
+            },
+          },
+          populate: ['product_variant']
+        });
+
+        // Extract documentIds safely
+        const usedVariantIds = Array.isArray(orderItems)
+          ? orderItems
+            .map((oi: any) => oi?.product_variant?.documentId)
+            .filter((id: any) => typeof id === 'string')
+          : [];
+
+        const filters: any = {
+          ...(q ? { title: { $containsi: q } } : {})
+        };
+
+        // Only apply $notIn if we have IDs to exclude
+        if (usedVariantIds.length > 0) {
+          filters.documentId = { $notIn: usedVariantIds };
+        }
+
+        const available = await strapi.documents('api::product-variant.product-variant').findMany({
+          filters,
+          pagination: {
+            page,
+            pageSize: limit,
+          },
+          populate: ['image']
+        });
+
+
+
+        // Get total count for pagination
+        const total = await strapi.documents('api::product-variant.product-variant').count({
+          filters,
+        });
+
+        const pageCount = Math.ceil(total / limit);
+
+
+        return ctx.send({
+          data: available,
+          meta: {
+            total,
+            page,
+            limit,
+            pageCount,
+            hasNext: page < pageCount,
+            hasPrev: page > 1,
+          },
+        });
+      } catch (error) {
+        strapi.log.error('[getAvailableVariants] Error:', error);
+        return ctx.throw(500, error.message || 'Failed to fetch available variants');
       }
     },
   }),

@@ -18,14 +18,6 @@ export default function PushToggle() {
     if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
     setLoading(true);
     try {
-      // only for logged-in users
-      const me = await fetch('/api/users/me', { cache: 'no-store' });
-      if (!me.ok) {
-        console.warn('[PushToggle] /api/users/me returned', me.status);
-        alert('Faça login para ativar as notificações.');
-        return;
-      }
-
       const reg = await navigator.serviceWorker.register('/sw.js');
       await navigator.serviceWorker.ready;
 

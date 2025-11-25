@@ -27,7 +27,7 @@ const colors = {
 		900: '#ffeed5',
 	},
 	white: {
-		DEFAULT: '#fff0db',
+		DEFAULT: '#fffcf8',
 		100: '#5f3700',
 		200: '#be6f00',
 		300: '#ffa11e',

@@ -1,51 +1,39 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Link } from 'next-view-transitions';
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ApproveSwitch } from '@/components/orders/approve-switch';
 import { EventDatePicker } from '@/components/orders/event-date-picker';
 import { QuoteActionButtons } from '@/components/orders/quote-action-buttons';
+import { BudgetSection } from '@/components/orders/budget-section';
+import { OrderStepper } from '@/components/orders/order-stepper';
+import { FormCard, FormField, FormRow } from '@/components/orders/form-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import OrderTimeline from '@/components/orders/order-timeline';
 import { Button } from "@/components/ui/button";
-import { Loader2, Save, Clock, Check } from "lucide-react";
+import OrderTimeline from '@/components/orders/order-timeline';
+import { OrderItemsTable } from '@/components/orders/order-items-table';
 import { StrapiImage } from '@/components/strapi-image';
 import { useDebouncedCallback } from "@/lib/hooks/use-debounce";
-import { saveOrderChanges, confirmOrderStatus } from "./actions";
-
-interface Order {
-  id?: string | number;
-  documentId?: string;
-  createdAt?: string;
-  customerName?: string;
-  customerEmail?: string;
-  customerPhone?: string;
-  internalNotes?: string;
-  deliveryAddress?: string;
-  deliveryCity?: string;
-  deliveryZip?: string;
-  source_channel?: string;
-  eventDetails?: string;
-  totalPrice?: number;
-  total_cost_price?: number;
-  eventDate?: string;
-  status?: string;
-  blockedEventDates?: string[];
-  order_events?: any[];
-  order_items?: any[];
-  product_variants?: any[];
-}
+import { useOrderItems } from "@/lib/hooks/use-order-items";
+import {
+  useUpdateOrderMutation,
+  useConfirmOrderStatusMutation,
+} from "@/lib/hooks/use-order-mutations";
+import {
+  useUpdateItemMutation,
+  useRemoveItemMutation,
+  useAddItemsMutation,
+} from "@/lib/hooks/use-item-mutations";
+import type { Order, UpdateOrderPayload } from "@/lib/api/orders/types";
 
 interface OrderDetailClientProps {
   initialOrder: Order;
 }
 
 export function OrderDetailClient({ initialOrder }: OrderDetailClientProps) {
-  const queryClient = useQueryClient();
-  const formRef = useRef<HTMLFormElement>(null);
-
   // Local state for form fields - initialize with initialOrder
   const [formData, setFormData] = useState({
     customerName: initialOrder.customerName || '',
@@ -61,6 +49,9 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps) {
     total_cost_price: Number(initialOrder.total_cost_price ?? 0),
   });
 
+  // Track validation errors
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
   const { data: order, isLoading } = useQuery({
     queryKey: ['order', initialOrder.documentId || initialOrder.id],
     queryFn: async () => {
@@ -70,83 +61,88 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps) {
       return result.data as Order;
     },
     initialData: initialOrder,
-    staleTime: 10000, // 10 seconds
+    staleTime: Infinity,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
+  const orderId = order?.documentId || order?.id;
+
+  // Hook para gerenciar itens de forma desacoplada
+  const { 
+    items: orderItems, 
+    updateItemsCache,
+  } = useOrderItems({
+    orderId,
+    initialItems: order?.order_items || [],
+  });
+
+  // Callback para atualizar items após mutação bem-sucedida
+  const handleItemsUpdated = () => {
+    // Items são gerenciados localmente, sem refetch de order
+  };
+
+  // Use order mutation hooks (apenas para aba de detalhes)
+  const updateMutation = useUpdateOrderMutation(orderId!);
+  const confirmMutation = useConfirmOrderStatusMutation(orderId!);
+
+  // Use item mutation hooks (separados, sem invalidar order)
+  const updateItemMutation = useUpdateItemMutation(orderId!, handleItemsUpdated);
+  const removeItemMutation = useRemoveItemMutation(orderId!, handleItemsUpdated);
+  const addItemsMutation = useAddItemsMutation(orderId!, handleItemsUpdated);
 
   // Debounced callback para salvar mudanças automaticamente
-  const debouncedSave = useDebouncedCallback(async (formData: any) => {
-    try {
-      const formDataObj = new FormData();
-      formDataObj.append('id', formData.id);
-
-      // Adicionar apenas campos que mudaram
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key !== 'id' && value !== null && value !== undefined && value !== "") {
-          formDataObj.append(key, String(value));
-        }
-      });
-
-      const result = await saveOrderChanges(formDataObj);
-      if (result.success) {
-        toast.success('Atualizações salvas automaticamente');
-        queryClient.invalidateQueries({ queryKey: ['order', order?.documentId || order?.id] });
-      } else {
-        toast.error(result.error || "Erro ao salvar alterações");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao salvar alterações");
+  const debouncedSave = useDebouncedCallback(async (fieldsToUpdate: Record<string, any>) => {
+    if (orderId) {
+      updateMutation.mutate(fieldsToUpdate);
     }
   }, 2000);
 
-  const saveMutation = useMutation({
-    mutationFn: async (formData: any) => {
-      const formDataObj = new FormData();
-      formDataObj.append('id', formData.id);
-
-      // Adicionar apenas campos que mudaram
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key !== 'id' && value !== null && value !== undefined && value !== "") {
-          formDataObj.append(key, String(value));
-        }
-      });
-
-      return await saveOrderChanges(formDataObj);
-    },
-    onSuccess: () => {
-        toast.success('Atualizações salvas automaticamente')
-        queryClient.invalidateQueries({ queryKey: ['order', order?.documentId || order?.id] });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Erro ao salvar alterações");
-    },
-  });
-
-  const confirmMutation = useMutation({
-    mutationFn: async (formData: any) => {
-      const formDataObj = new FormData();
-      formDataObj.append('id', formData.id);
-      formDataObj.append('status', formData.status);
-
-      return await confirmOrderStatus(formDataObj);
-    },
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success("Status atualizado com sucesso!");
-        queryClient.invalidateQueries({ queryKey: ['order', order?.documentId || order?.id] });
-      } else {
-        toast.error(result.error || "Erro ao atualizar status");
-      }
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Erro ao atualizar status");
-    },
-  });
-
   const handleFieldChange = (field: string, value: any) => {
-    const newFormData = { ...formData, [field]: value, id: order?.documentId || order?.id };
+    const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
-    debouncedSave(newFormData);
+    
+    // Validar source_channel
+    if (field === 'source_channel') {
+      const channel = String(value).trim();
+      if (channel === '') {
+        setFieldErrors(prev => ({ ...prev, source_channel: 'Canal de origem é obrigatório' }));
+        return; // Não fazer save automático
+      } else {
+        setFieldErrors(prev => {
+          const next = { ...prev };
+          delete next.source_channel;
+          return next;
+        });
+      }
+    }
+    
+    // Validar email
+    if (field === 'customerEmail') {
+      const email = String(value).trim();
+      if (email && !isValidEmail(email)) {
+        setFieldErrors(prev => ({ ...prev, customerEmail: 'Email inválido' }));
+        return; // Não fazer save automático
+      } else {
+        setFieldErrors(prev => {
+          const next = { ...prev };
+          delete next.customerEmail;
+          return next;
+        });
+      }
+    }
+    
+    // Não fazer save automático para eventDate - deixar explícito apenas
+    if (field !== 'eventDate') {
+      debouncedSave(newFormData);
+    }
+  };
+
+  // Validação simples de email
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const createChangeHandler = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -188,312 +184,234 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps) {
   const disabledDates: string[] = Array.isArray(order.blockedEventDates) ? order.blockedEventDates : [];
   const events = Array.isArray(order.order_events) ? order.order_events : [];
 
+  // Calcular totais dos itens
+  const { itemsTotal, itemsPriceTotal, itemsCostTotal } = (() => {
+    if (Array.isArray(orderItems) && orderItems.length > 0) {
+      return orderItems.reduce(
+        (acc: any, oi: any) => {
+          const itemTotal = Number(oi.total_item_price ?? 0);
+          const unitPrice = Number(oi.unit_price ?? oi.product_variant?.price ?? 0);
+          const qty = Number(oi.quantity ?? 0);
+          
+          // Se houver cost_price, usa; senão, usa 50% do preço
+          const costPrice = Number(oi.product_variant?.cost_price ?? 0);
+          const itemCost = (costPrice > 0 ? costPrice : unitPrice * 0.5) * qty;
+          
+          return {
+            itemsTotal: acc.itemsTotal + itemTotal,
+            itemsPriceTotal: acc.itemsPriceTotal + (unitPrice * qty),
+            itemsCostTotal: acc.itemsCostTotal + itemCost,
+          };
+        },
+        { itemsTotal: 0, itemsPriceTotal: 0, itemsCostTotal: 0 }
+      );
+    }
+    return { itemsTotal: 0, itemsPriceTotal: 0, itemsCostTotal: 0 };
+  })();
+
+
+
   return (
-    <div className="space-y-6 lg:min-w-[1120px]">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Pedido {displayId}</h1>
-          <p className="text-sm text-gray-600">Criado em {createdAt}</p>
+    <div className="space-y-4 sm:space-y-6 px-3 sm:px-0 lg:min-w-[1120px]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl sm:text-2xl font-bold truncate">Pedido {displayId}</h1>
+          <p className="text-xs sm:text-sm text-gray-600 truncate">Criado em {createdAt}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+          <Link className="text-blue-600 text-sm text-center sm:text-left px-2 sm:px-0 py-2 sm:py-0 rounded sm:rounded-none bg-blue-50 sm:bg-transparent" href="/dashboard/orders">Voltar</Link>
           <QuoteActionButtons orderId={docId} customerEmail={customerEmail} />
-          <Link className="text-blue-600" href="/dashboard/orders">Voltar</Link>
         </div>
       </div>
 
-      <form ref={formRef} className="grid gap-6">
-        {/* Bento grid using Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          <div className='flex flex-col md:col-span-7 gap-6'>
-            <Card className='h-full'>
-              <CardHeader>
-                <CardTitle>Cliente</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-3">
-                <div>
-                  <label htmlFor="customerName" className="block text-sm font-medium mb-1">Nome</label>
-                  <input
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+          <OrderStepper currentStatus={order?.status as any} />
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="details" className="space-y-4">
+        <TabsList className="w-full md:w-auto">
+          <TabsTrigger value="details">Detalhes</TabsTrigger>
+          <TabsTrigger value="items">Itens ({orderItems?.length || 0})</TabsTrigger>
+          <TabsTrigger value="timeline">Histórico</TabsTrigger>
+        </TabsList>
+
+        {/* ABA 1: DETALHES */}
+        <TabsContent value="details" className="space-y-6">
+          <form className="grid gap-6">
+            {/* Bento grid using Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              {/* Left Column: Cliente + Orçamento */}
+              <div className='flex flex-col md:col-span-7 gap-6'>
+                {/* Cliente Card */}
+                <FormCard 
+                  title="Cliente" 
+                  subtitle="Informações de contato e entrega"
+                >
+                  <FormField
+                    label="Nome"
                     id="customerName"
-                    name="customerName"
-                    type="text"
                     value={formData.customerName}
                     onChange={createChangeHandler('customerName')}
-                    className="border rounded px-3 py-2 w-full"
                   />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label htmlFor="customerPhone" className="block text-sm font-medium mb-1">Celular</label>
-                    <input
+                  
+                  <FormRow cols={2}>
+                    <FormField
+                      label="Celular"
                       id="customerPhone"
-                      name="customerPhone"
                       type="tel"
                       value={formData.customerPhone}
                       onChange={createChangeHandler('customerPhone')}
-                      className="border rounded px-3 py-2 w-full"
                     />
-                  </div>
-                  <div>
-                    <label htmlFor="customerEmail" className="block text-sm font-medium mb-1">Email</label>
-                    <input
+                    <FormField
+                      label="Email"
                       id="customerEmail"
-                      name="customerEmail"
                       type="email"
                       value={formData.customerEmail}
                       onChange={createChangeHandler('customerEmail')}
-                      className="border rounded px-3 py-2 w-full"
+                      error={fieldErrors.customerEmail}
                     />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label htmlFor="deliveryAddress" className="block text-sm font-medium mb-1">Endereço</label>
-                    <textarea
-                      id="deliveryAddress"
-                      name="deliveryAddress"
-                      value={formData.deliveryAddress}
-                      onChange={createChangeHandler('deliveryAddress')}
-                      className="border rounded px-3 py-2 w-full min-h-[70px]"
+                  </FormRow>
+
+                  <FormField
+                    label="Endereço de Entrega"
+                    id="deliveryAddress"
+                    type="textarea"
+                    minHeight="70px"
+                    value={formData.deliveryAddress}
+                    onChange={createChangeHandler('deliveryAddress')}
+                  />
+
+                  <FormRow cols={3}>
+                    <FormField
+                      label="Cidade"
+                      id="deliveryCity"
+                      value={formData.deliveryCity}
+                      onChange={createChangeHandler('deliveryCity')}
                     />
-                  </div>
-                  <div className="space-y-3">
-                    <div>
-                      <label htmlFor="deliveryCity" className="block text-sm font-medium mb-1">Cidade</label>
-                      <input
-                        id="deliveryCity"
-                        name="deliveryCity"
-                        type="text"
-                        value={formData.deliveryCity}
-                        onChange={createChangeHandler('deliveryCity')}
-                        className="border rounded px-3 py-2 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="deliveryZip" className="block text-sm font-medium mb-1">CEP</label>
-                      <input
-                        id="deliveryZip"
-                        name="deliveryZip"
-                        type="text"
-                        value={formData.deliveryZip}
-                        onChange={createChangeHandler('deliveryZip')}
-                        className="border rounded px-3 py-2 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="source_channel" className="block text-sm font-medium mb-1">Canal</label>
-                      <select
-                        id="source_channel"
-                        name="source_channel"
-                        value={formData.source_channel}
-                        onChange={createChangeHandler('source_channel')}
-                        className="border rounded px-3 py-2 w-full text-sm"
-                      >
-                        <option value="">—</option>
-                        <option value="site">Site</option>
-                        <option value="whatsapp">WhatsApp</option>
-                        <option value="presencial">Presencial</option>
-                        <option value="outro">Outro</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Orçamento</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label htmlFor="totalPrice" className="block text-sm font-medium mb-1">Total (R$)</label>
-                      <input
-                        id="totalPrice"
-                        type="number"
-                        step="0.01"
-                        name="totalPrice"
-                        value={formData.totalPrice}
-                        onChange={createChangeHandler('totalPrice')}
-                        className="border rounded px-3 py-2 w-full"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="total_cost_price" className="block text-sm font-medium mb-1">Custo do Evento (R$)</label>
-                      <input
-                        id="total_cost_price"
-                        type="number"
-                        step="0.01"
-                        name="total_cost_price"
-                        value={formData.total_cost_price}
-                        onChange={createChangeHandler('total_cost_price')}
-                        className="border rounded px-3 py-2 w-full"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
-                    <div className="flex flex-col">
-                      <div className="block text-sm font-medium ">Lucro estimado</div>
-                      <div className="text-lg font-medium bg-green-100 mt-1 h-[42px] border rounded p-2 flex items-center">
-                        {(() => {
-                          const lucro = (formData.totalPrice - formData.total_cost_price) || 0;
-                          return lucro.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                        })()}
-                      </div>
-                    </div>
-                    <div className="flex flex-col">
-                      <div className="block text-sm font-medium ">Margem (%)</div>
-                      <div className="text-lg font-medium bg-blue-50 mt-1 h-[42px] border rounded p-2 flex items-center">
-                        {(() => {
-                          const total = formData.totalPrice || 0;
-                          if (!total) return '—';
-                          const lucro = (total - formData.total_cost_price);
-                          const perc = (lucro / total) * 100;
-                          return perc.toFixed(1) + '%';
-                        })()}
-                      </div>
-                    </div>
-                    <div className="pt-1">
-                      <ApproveSwitch
-                        defaultChecked={order.status === 'confirmado'}
-                        isLoading={confirmMutation.isPending}
-                        onStatusChange={(status) => {
-                          confirmMutation.mutateAsync({ id: order?.documentId || order?.id, status });
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <Card className='relative md:col-span-5 min-w-96'>
-            <CardHeader>
-              <CardTitle>Data do Evento</CardTitle>
-            </CardHeader>
-            <CardContent >
-              <EventDatePicker defaultValue={eventDateStr} name="eventDate" disabledDates={disabledDates} onValueChange={handleDateChange} />
-            </CardContent>
-          </Card>
-          <Card className='md:col-span-8'>
-            <CardHeader>
-              <CardTitle>Itens do Pedido</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {(() => {
-                if (Array.isArray(order.order_items) && order.order_items.length > 0) {
-                  return (
-                    <div className="grid grid-cols-1 gap-3">
-                      {order.order_items.map((oi: any) => {
-                        const pv = oi.product_variant || {};
-                        const title = pv.title || oi.item_name || 'Item';
-                        const price = Number(oi.unit_price ?? pv.price ?? 0);
-                        const qty = Number(oi.quantity ?? 0);
-                        const total = Number(oi.total_item_price ?? price * qty);
-                        const img = pv?.image?.url;
-                        return (
-                          <div key={oi.id || pv.documentId || pv.id} className="border-b pb-3 last:border-b-0">
-                            <div className="flex flex-row items-center space-x-3">
-                              <div className="flex-grow min-w-0">
-                                <h4 className="text-sm font-medium text-neutral-800 truncate">{title}</h4>
-                                <p className="text-xs text-neutral-600">R$ {price.toFixed(2)}</p>
-                                <p className="text-xs text-neutral-700">Quantidade: {qty}</p>
-                                <p className="text-xs text-neutral-700">Subtotal: R$ {total.toFixed(2)}</p>
-                              </div>
-                              {img && (
-                                <div className="relative w-14 h-12 sm:w-20 sm:h-20 flex-shrink-0">
-                                  <StrapiImage src={img} alt={title} fill className="object-cover" />
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                }
-                if (Array.isArray(order.product_variants) && order.product_variants.length > 0) {
-                  return (
-                    <div className="grid grid-cols-1 gap-3">
-                      {order.product_variants.map((pv: any) => {
-                        const title = pv?.title || 'Item';
-                        const price = Number(pv?.price ?? 0);
-                        const img = pv?.image?.url;
-                        return (
-                          <div key={pv.documentId || pv.id} className="border-b pb-3 last:border-b-0">
-                            <div className="flex flex-row items-center space-x-3">
-                              <div className="flex-grow min-w-0">
-                                <h4 className="text-sm font-medium text-neutral-800 truncate">{title}</h4>
-                                <p className="text-xs text-neutral-600">R$ {price.toFixed(2)}</p>
-                                <p className="text-xs text-neutral-700">Quantidade: -</p>
-                                <p className="text-xs text-neutral-700">Subtotal: -</p>
-                              </div>
-                              {img && (
-                                <div className="relative w-14 h-12 sm:w-20 sm:h-20 flex-shrink-0">
-                                  <StrapiImage src={img} alt={title} fill className="object-cover" />
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                }
-                return <p className="text-sm text-gray-500">Nenhum item vinculado.</p>;
-              })()}
-            </CardContent>
-          </Card>
-          {/* Detalhes à direita (cols 2-3) na mesma linha */}
-          <Card className="md:col-span-4 h-min">
-            <CardHeader>
-              <CardTitle>Detalhes do Evento</CardTitle>
-            </CardHeader>
-            <CardContent >
-              <label htmlFor="eventDetails" className="block text-sm font-medium mb-1">Detalhes</label>
-              <textarea
-                id="eventDetails"
-                name="eventDetails"
-                value={formData.eventDetails}
-                onChange={createChangeHandler('eventDetails')}
-                className="border rounded px-3 py-2 w-full min-h-[120px]"
-              />
-              <div className="mt-4">
-                <label htmlFor="internalNotes" className="block text-sm font-medium mb-1">Notas Internas</label>
-                <textarea
-                  id="internalNotes"
-                  name="internalNotes"
-                  value={formData.internalNotes}
-                  onChange={createChangeHandler('internalNotes')}
-                  placeholder="Visível apenas internamente"
-                  className="border rounded px-3 py-2 w-full min-h-[100px] bg-yellow-50"
+                    <FormField
+                      label="CEP"
+                      id="deliveryZip"
+                      value={formData.deliveryZip}
+                      onChange={createChangeHandler('deliveryZip')}
+                    />
+                    <FormField
+                      label="Canal"
+                      id="source_channel"
+                      type="select"
+                      value={formData.source_channel}
+                      onChange={createChangeHandler('source_channel')}
+                      error={fieldErrors.source_channel}
+                    >
+                      <option value="">—</option>
+                      <option value="site">Site</option>
+                      <option value="whatsapp">WhatsApp</option>
+                      <option value="presencial">Presencial</option>
+                      <option value="outro">Outro</option>
+                    </FormField>
+                  </FormRow>
+                </FormCard>
+
+                {/* Budget Section */}
+                <BudgetSection
+                  totalPrice={formData.totalPrice}
+                  total_cost_price={formData.total_cost_price}
+                  onTotalPriceChange={(value) => handleFieldChange('totalPrice', value)}
+                  onCostPriceChange={(value) => handleFieldChange('total_cost_price', value)}
+                  status={order?.status}
+                  isLoadingConfirm={confirmMutation.isPending}
+                  onStatusChange={() => {
+                    confirmMutation.mutate();
+                  }}
+                  itemsTotal={itemsTotal}
+                  minTotalPrice={itemsPriceTotal}
+                  minCostPrice={itemsCostTotal}
+                  maxCostPrice={formData.totalPrice}
                 />
               </div>
+
+              {/* Right Column: Calendário + Detalhes */}
+              <div className='flex flex-col md:col-span-5 gap-6'>
+                <FormCard 
+                  title="Calendário de Evento" 
+                  subtitle="Selecione a data do evento"
+                  headerClassName="border-b"
+                >
+                  <EventDatePicker 
+                    defaultValue={eventDateStr} 
+                    name="eventDate" 
+                    disabledDates={disabledDates} 
+                    onValueChange={handleDateChange} 
+                  />
+                </FormCard>
+
+                <FormCard 
+                  title="Detalhes do Evento" 
+                  subtitle="Notas e informações adicionais"
+                  className="h-min"
+                >
+                  <FormField
+                    label="Descrição do Evento"
+                    id="eventDetails"
+                    type="textarea"
+                    minHeight="100px"
+                    value={formData.eventDetails}
+                    onChange={createChangeHandler('eventDetails')}
+                  />
+                  <FormField
+                    label="Notas Internas"
+                    id="internalNotes"
+                    type="textarea"
+                    minHeight="80px"
+                    placeholder="Visível apenas internamente"
+                    value={formData.internalNotes}
+                    onChange={createChangeHandler('internalNotes')}
+                    className="bg-yellow-50"
+                  />
+                </FormCard>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Link className="px-4 py-2 rounded border inline-flex items-center" href="/dashboard/orders">Voltar</Link>
+            </div>
+          </form>
+        </TabsContent>
+
+        {/* ABA 2: ITENS */}
+        <TabsContent value="items" className="space-y-4">
+          <Card>
+            <CardContent className="pt-6">
+              <OrderItemsTable
+                items={orderItems || []}
+                orderId={String(orderId)}
+                onQuantityChange={(itemId, newQuantity) => {
+                  updateItemMutation.mutate({ itemId, quantity: newQuantity });
+                }}
+                onItemRemove={(itemId) => {
+                  removeItemMutation.mutate(itemId);
+                }}
+                onItemsAdd={(newItems) => {
+                  addItemsMutation.mutate(newItems);
+                }}
+                isQuantityLoading={updateItemMutation.isPending}
+                isRemoveLoading={removeItemMutation.isPending}
+                isAddLoading={addItemsMutation.isPending}
+              />
             </CardContent>
           </Card>
-        </div>
+        </TabsContent>
 
-        <div className="flex gap-2">
-          <Button
-            type="submit"
-            disabled={saveMutation.isPending}
-            className="px-4 py-2"
-          >
-            {saveMutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Salvando...
-              </>
-            ) : (
-              'Salvar'
-            )}
-          </Button>
-          <Link className="px-4 py-2 rounded border inline-flex items-center" href="/dashboard/orders">Cancelar</Link>
-        </div>
-      </form>
-
-      {/* Timeline */}
-      <OrderTimeline events={events} />
+        {/* ABA 3: HISTÓRICO */}
+        <TabsContent value="timeline" className="space-y-4">
+          <Card>
+            <CardContent className="pt-6">
+              <OrderTimeline events={events} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

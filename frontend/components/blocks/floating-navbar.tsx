@@ -1,10 +1,11 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { motion, useMotionValueEvent, useScroll, AnimatePresence } from "framer-motion";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 /**
  * Represents a floating navigation bar component.
@@ -39,6 +40,7 @@ export const FloatingNavBar = ({
 
     const [visible, setVisible] = useState(true);
     const [isAtTop, setIsAtTop] = useState(true);   
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 
     useMotionValueEvent(scrollYProgress, "change", (current) => {
@@ -84,9 +86,9 @@ export const FloatingNavBar = ({
                 className,
             )}
         >
-            <div className=" md:block relative max-w-20 md:max-w-[200px]  h-[72px] w-1/2">
+            <Link href="/" className=" md:block relative max-w-20 md:max-w-[200px]  h-[72px] w-1/2">
                 <Image src="/logo.png" alt="logo" fill className="object-contain object-center" />
-            </div>
+            </Link>
             <div className="hidden sm:flex justify-end gap-6">
                 {navItems.map((navItem: any, idx: number) => (
                     <Link

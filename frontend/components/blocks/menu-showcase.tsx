@@ -72,7 +72,7 @@ export default function MenuShowcase() {
                             <Utensils className="w-8 h-8 text-white" />
                         </div>
                         <h3 className="text-xl font-food text-amber-200 mb-2">Pratos Exclusivos</h3>
-                        <p className="text-amber-100/80 font-rustic">Receitas únicas desenvolvidas especialmente para eventos</p>
+                        <p className="text-amber-100/80 font-food">Receitas únicas desenvolvidas especialmente para eventos</p>
                     </motion.div>
 
                     <motion.div
@@ -84,7 +84,7 @@ export default function MenuShowcase() {
                             <Star className="w-8 h-8 text-white" />
                         </div>
                         <h3 className="text-xl font-food text-amber-200 mb-2">Qualidade Premium</h3>
-                        <p className="text-amber-100/80 font-rustic">Ingredientes selecionados e preparo artesanal</p>
+                        <p className="text-amber-100/80 font-food">Ingredientes selecionados e preparo artesanal</p>
                     </motion.div>
 
                     <motion.div
@@ -96,7 +96,7 @@ export default function MenuShowcase() {
                             <ChefHat className="w-8 h-8 text-white" />
                         </div>
                         <h3 className="text-xl font-food text-amber-200 mb-2">Chef Especialista</h3>
-                        <p className="text-amber-100/80 font-rustic">Experiência culinária de alto nível</p>
+                        <p className="text-amber-100/80 font-food">Experiência culinária de alto nível</p>
                     </motion.div>
                 </div>
 
@@ -109,7 +109,7 @@ export default function MenuShowcase() {
                 >                    <div className="bg-neutral-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-amber-500/20 max-w-2xl mx-auto ring-1 ring-amber-400/10">
                         <h3 className="text-3xl md:text-4xl font-food text-amber-200 mb-4">
                             Conheça Nossos Produtos
-                        </h3>                        <p className="text-amber-100/80 font-rustic mb-8 text-lg">
+                        </h3>                        <p className="text-amber-100/80 font-food mb-8 text-lg">
                             Explore nosso mostruário completo de pratos e descubra as opções perfeitas
                             para criar um orçamento personalizado para seu próximo evento especial.
                         </p>

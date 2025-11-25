@@ -14,9 +14,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Pedidos', href: '/dashboard/orders', icon: Home },

@@ -3,17 +3,24 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function ApproveSwitch({
   defaultChecked,
   name = "status",
   isLoading = false,
-  onStatusChange
+  approvedText,
+  disapprovedText,
+  onStatusChange,
+  disabled = false,
 }: Readonly<{
   defaultChecked?: boolean;
   name?: string;
   isLoading?: boolean;
   onStatusChange?: (status: string) => void;
+  approvedText?: string;
+  disapprovedText?: string;
+  disabled?: boolean;
 }>) {
   const [checked, setChecked] = useState(!!defaultChecked);
 
@@ -28,12 +35,11 @@ export function ApproveSwitch({
   };
 
   return (
-    <div className="flex items-center px-1 mt-5">
      <Button 
-       className="h-[42px]" 
-       variant={'outline'} 
+       className={cn("h-full text-lg font-food", disabled && "opacity-50 cursor-not-allowed") }
+       variant={'default'} 
        onClick={handleClick}
-       disabled={isLoading}
+       disabled={isLoading || disabled}
      >
        {isLoading ? (
          <>
@@ -41,10 +47,9 @@ export function ApproveSwitch({
            Enviando orçamento...
          </>
        ) : (
-         checked ? 'Desmarcar' : 'Confirmar'
+         checked ? disapprovedText || 'Desmarcar Orçamento' : approvedText || 'Confirmar Orçamento'
        )}
      </Button>
-    </div>
   );
 }
 
