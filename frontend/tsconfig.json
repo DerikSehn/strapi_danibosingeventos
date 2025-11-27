@@ -25,7 +25,8 @@
       "@/hooks/*": ["hooks/*"],
       "@/styles/*": ["styles/*"],
       "@/utils/*": ["utils/*"],
-      "@/types": ["types.ts"]
+      "@/types": ["types.ts"],
+      "@/data/*": ["data/*"]
     }
     
   },

@@ -16,6 +16,7 @@ interface ProductSelectionModalProps {
   readonly confirmButtonText?: string;
   readonly cancelButtonText?: string;
   readonly orderId?: string;
+  readonly columnsMobile?: number;
 }
 
 export default function ProductSelectionModal({
@@ -28,6 +29,7 @@ export default function ProductSelectionModal({
   confirmButtonText = "Confirmar",
   cancelButtonText = "Cancelar",
   orderId,
+  columnsMobile = 2,
 }: ProductSelectionModalProps) {
 
   const [selected, setSelected] = useState<any[]>([])
@@ -58,6 +60,7 @@ export default function ProductSelectionModal({
           <ProductSelectionList
             onItemsChange={setSelected}
             orderId={orderId}
+            columnsMobile={columnsMobile}
           />
         </div>
 

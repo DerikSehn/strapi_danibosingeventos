@@ -3,7 +3,8 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Calendar } from 'lucide-react';
 import OrderDetailButton from '@/components/orders/order-detail-button';
-
+import { DeleteOrderButton } from './delete-order-button';
+ 
 export type Order = {
   id?: string;
   documentId?: string;
@@ -98,7 +99,12 @@ export const orderColumns: ColumnDef<Order, any>[] = [
     cell: ({ row }) => {
       const o = row.original;
       const id = (o.documentId || o.id) as string;
-      return <OrderDetailButton orderId={id} />;
+      return (
+        <div className="flex items-center justify-end gap-2">
+          <OrderDetailButton orderId={id} />
+          <DeleteOrderButton orderId={id} />
+        </div>
+      );
     },
   },
 ];

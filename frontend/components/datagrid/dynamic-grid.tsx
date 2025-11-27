@@ -40,10 +40,10 @@ export interface DynamicGridConfig<T> {
   skeletonRows?: number
 }
 
-export interface DynamicGridProps<T> extends Omit<DynamicGridConfig<T>, 'queryKey' | 'apiEndpoint' | 'renderItem'> {
+export interface DynamicGridProps<T> extends Omit<DynamicGridConfig<T>, `queryKey` | `apiEndpoint` | `renderItem`> {
   gridId: string
-  apiEndpoint: DynamicGridConfig<T>['apiEndpoint']
-  renderItem: DynamicGridConfig<T>['renderItem']
+  apiEndpoint: DynamicGridConfig<T>[`apiEndpoint`]
+  renderItem: DynamicGridConfig<T>[`renderItem`]
   onDataResponse?: (data: PaginatedResponse<T>) => void
 }
 
@@ -52,19 +52,20 @@ export function DynamicGrid<T extends Record<string, unknown>>({
   apiEndpoint,
   renderItem,
   defaultLimit = 12,
-  searchPlaceholder = 'Buscar...',
-  emptyMessage = 'Nenhum item encontrado.',
+  searchPlaceholder = `Buscar...`,
+  emptyMessage = `Nenhum item encontrado.`,
   enableSearch = true,
   additionalParams = {},
   columns = 4,
-  gap = 'gap-4',
+  columnsMobile = 1,
+  gap = `gap-4`,
   skeletonRows = 12,
   onDataResponse,
 }: Readonly<DynamicGridProps<T>>) {
   const [page, setPage] = React.useState(1)
   const [limit, setLimit] = React.useState(defaultLimit)
-  const [searchQuery, setSearchQuery] = React.useState('')
-  const [debouncedSearch, setDebouncedSearch] = React.useState('')
+  const [searchQuery, setSearchQuery] = React.useState(``)
+  const [debouncedSearch, setDebouncedSearch] = React.useState(``)
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -109,26 +110,26 @@ export function DynamicGrid<T extends Record<string, unknown>>({
   }
 
   const handleClearSearch = () => {
-    setSearchQuery('')
+    setSearchQuery(``)
   }
 
   // Determinar classes do grid baseado no columns prop
   const getGridClasses = () => {
-    if (typeof columns === 'number') {
+    if (typeof columns === `number`) {
       const colMap: Record<number, string> = {
-        1: 'grid-cols-1',
-        2: 'grid-cols-1 sm:grid-cols-2',
-        3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-        4: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
-        5: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
-        6: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6',
+        1: `grid-cols-${columnsMobile}`,
+        2: `grid-cols-${columnsMobile} sm:grid-cols-2`,
+        3: `grid-cols-${columnsMobile} sm:grid-cols-2 lg:grid-cols-3`,
+        4: `grid-cols-${columnsMobile} sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4`,
+        5: `grid-cols-${columnsMobile} sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5`,
+        6: `grid-cols-${columnsMobile} sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6`,
       }
-      return colMap[columns] || 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+      return colMap[columns] || `grid-cols-${columnsMobile} sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4`
     }
 
     // Se for objeto com breakpoints
     const { sm = 1, md = 2, lg = 3, xl = 4 } = columns
-    return `grid-cols-1 sm:grid-cols-${sm} md:grid-cols-${md} lg:grid-cols-${lg} xl:grid-cols-${xl}`
+    return `grid-cols-${columnsMobile} sm:grid-cols-${sm} md:grid-cols-${md} lg:grid-cols-${lg} xl:grid-cols-${xl}`
   }
 
   return (
@@ -164,7 +165,7 @@ export function DynamicGrid<T extends Record<string, unknown>>({
             disabled={query.isFetching}
             className="flex items-center gap-2"
           >
-            <RefreshCw className={`h-4 w-4 ${query.isFetching ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${query.isFetching ? `animate-spin` : ``}`} />
             Atualizar
           </Button>
         </div>
@@ -228,7 +229,7 @@ export function DynamicGrid<T extends Record<string, unknown>>({
                       return (
                         <Button
                           key={pageNum}
-                          variant={pageNum === page ? 'default' : 'outline'}
+                          variant={pageNum === page ? `default` : `outline`}
                           size="sm"
                           onClick={() => handlePageChange(pageNum)}
                         >

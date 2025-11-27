@@ -184,30 +184,6 @@ export function BudgetInput({
               disabled ? 'text-gray-400 cursor-not-allowed' : isValid ? 'text-gray-900' : 'text-red-700'
             )}
           />
-
-          <AnimatePresence mode="wait">
-            {!isValid ? (
-              <motion.div
-                key="error"
-                initial={{ scale: 0, rotate: -90 }}
-                animate={{ scale: 1, rotate: 0 }}
-                exit={{ scale: 0, rotate: 90 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-              >
-                <AlertCircle className="w-5 h-5 text-red-500 ml-2" />
-              </motion.div>
-            ) : value > 0 ? (
-              <motion.div
-                key="check"
-                initial={{ scale: 0, rotate: -90 }}
-                animate={{ scale: 1, rotate: 0 }}
-                exit={{ scale: 0, rotate: 90 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-              >
-                <Check className="w-5 h-5 text-emerald-500 ml-2" />
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
         </div>
       </motion.div>
 

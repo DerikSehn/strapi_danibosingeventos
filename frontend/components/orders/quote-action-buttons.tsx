@@ -1,20 +1,30 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Download, Mail, Loader2 } from "lucide-react";
+import { Download, Mail, Loader2, MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { getFilenameFromContentDisposition } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export function QuoteActionButtons({
   orderId,
   customerEmail,
+  layout = "default",
 }: Readonly<{
   orderId: string | number;
   customerEmail?: string;
+  layout?: "default" | "mobile";
 }>) {
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [sendLoading, setSendLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleDownloadPDF = async () => {
     try {
@@ -42,6 +52,7 @@ export function QuoteActionButtons({
       document.body.removeChild(a);
 
       toast.success('PDF baixado com sucesso!');
+      setOpen(false);
     } catch (error: any) {
       toast.error(error.message || 'Erro ao baixar PDF');
     } finally {
@@ -69,12 +80,59 @@ export function QuoteActionButtons({
 
       const data = await response.json();
       toast.success(data.message || 'PDF enviado com sucesso!');
+      setOpen(false);
     } catch (error: any) {
       toast.error(error.message || 'Erro ao enviar PDF');
     } finally {
       setSendLoading(false);
     }
   };
+
+  if (layout === "mobile") {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <button className="h-full w-full flex items-center justify-center">
+            <MoreVertical className="h-5 w-5 text-white" />
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ações do Pedido</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-4">
+            <Button
+              onClick={handleDownloadPDF}
+              disabled={downloadLoading}
+              variant="outline"
+              className="w-full justify-start h-12 text-lg"
+            >
+              {downloadLoading ? (
+                <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+              ) : (
+                <Download className="w-5 h-5 mr-3" />
+              )}
+              Baixar PDF
+            </Button>
+
+            <Button
+              onClick={handleSendPDF}
+              disabled={sendLoading || !customerEmail}
+              variant="outline"
+              className="w-full justify-start h-12 text-lg"
+            >
+              {sendLoading ? (
+                <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+              ) : (
+                <Mail className="w-5 h-5 mr-3" />
+              )}
+              Enviar por Email
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <div className="flex gap-2">

@@ -12,6 +12,7 @@ import {
   updateOrder,
   confirmOrderStatus,
 } from "@/lib/api/orders/actions";
+import { deleteOrderAction } from "@/data/actions/orders-actions";
 import type { UpdateOrderPayload } from "@/lib/api/orders/types";
 
 /**
@@ -60,6 +61,30 @@ export function useConfirmOrderStatusMutation(orderId: string | number) {
     },
     onError: (error: any) => {
       toast.error(error.message || "Erro ao confirmar pedido");
+    },
+  });
+}
+
+/**
+ * Hook para excluir um pedido
+ * ✅ Invalida cache da lista de orders
+ */
+export function useDeleteOrderMutation(onSuccess?: () => void) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (orderId: string) => deleteOrderAction(orderId),
+    onSuccess: (result) => {
+      if (result.ok) {
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+        toast.success("Pedido excluído com sucesso");
+        onSuccess?.();
+      } else {
+        toast.error(result.error || "Erro ao excluir pedido");
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Erro ao excluir pedido");
     },
   });
 }

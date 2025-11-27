@@ -46,5 +46,15 @@ export default {
       handler: 'api::budget.calculate.addInternalNote',
       config: { auth: {} },
     },
+
+    {
+      method: 'DELETE',
+      path: '/orders/:id',
+      handler: 'api::budget.calculate.deleteOrder',
+      config: {
+        policies: [],
+        auth: false,
+      },
+    },
   ],
 };

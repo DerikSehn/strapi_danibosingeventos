@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Link } from 'next-view-transitions';
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Package, User, Calendar, MapPin, ChevronLeft, Eye, EyeOff, MoreVertical, Clock } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ApproveSwitch } from '@/components/orders/approve-switch';
 import { EventDatePicker } from '@/components/orders/event-date-picker';
@@ -88,9 +88,9 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps) {
   const confirmMutation = useConfirmOrderStatusMutation(orderId!);
 
   // Use item mutation hooks (separados, sem invalidar order)
-  const updateItemMutation = useUpdateItemMutation(orderId!, handleItemsUpdated);
-  const removeItemMutation = useRemoveItemMutation(orderId!, handleItemsUpdated);
-  const addItemsMutation = useAddItemsMutation(orderId!, handleItemsUpdated);
+  // const updateItemMutation = useUpdateItemMutation(orderId!, handleItemsUpdated);
+  // const removeItemMutation = useRemoveItemMutation(orderId!, handleItemsUpdated);
+  // const addItemsMutation = useAddItemsMutation(orderId!, handleItemsUpdated);
 
   // Debounced callback para salvar mudanças automaticamente
   const debouncedSave = useDebouncedCallback(async (fieldsToUpdate: Record<string, any>) => {
@@ -211,41 +211,122 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps) {
 
 
 
+  const [showValues, setShowValues] = useState(true);
+
   return (
-    <div className="space-y-4 sm:space-y-6 px-3 sm:px-0 lg:min-w-[1120px]">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
-        <div className="min-w-0 flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold truncate">Pedido {displayId}</h1>
-          <p className="text-xs sm:text-sm text-gray-600 truncate">Criado em {createdAt}</p>
+    <div className="space-y-4 sm:space-y-6 px-3 sm:px-0 lg:min-w-[1120px] pb-24 md:pb-0">
+      {/* Mobile Header - Nubank Style */}
+      <div className="md:hidden bg-primary-500 text-white pt-8 pb-6 px-6 -mx-3 -mt-4 mb-6 rounded-b-[2rem] shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+          <Package size={120} />
         </div>
-        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-          <Link className="text-blue-600 text-sm text-center sm:text-left px-2 sm:px-0 py-2 sm:py-0 rounded sm:rounded-none bg-blue-50 sm:bg-transparent" href="/dashboard/orders">Voltar</Link>
-          <QuoteActionButtons orderId={docId} customerEmail={customerEmail} />
+        
+        <div className="relative z-10">
+          {/* Top Row: Back & Actions */}
+          <div className="flex justify-between items-start mb-6">
+            <Link href="/dashboard/orders" className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm hover:bg-white/30 transition-colors">
+              <ChevronLeft className="h-6 w-6 text-white" />
+            </Link>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowValues(!showValues)}
+                className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm hover:bg-white/30 transition-colors"
+              >
+                {showValues ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+              </button>
+              <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm hover:bg-white/30 transition-colors">
+                 <QuoteActionButtons orderId={docId} customerEmail={customerEmail} layout="mobile" />
+              </div>
+            </div>
+          </div>
+
+          {/* Order Info */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-secondary-100 text-sm font-medium">Pedido #{displayId}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                order?.status === 'confirmado' ? 'bg-green-400/20 text-green-100' : 'bg-yellow-400/20 text-yellow-100'
+              }`}>
+                {order?.status || 'Pendente'}
+              </span>
+            </div>
+            <h1 className="text-xl font-bold truncate">{customerName || 'Cliente sem nome'}</h1>
+          </div>
+
+          {/* Total Value */}
+          <div className="mb-6">
+            <p className="text-secondary-100 text-sm mb-1">Valor Total</p>
+            <h2 className="text-3xl font-bold tracking-tight">
+              {showValues 
+                ? formData.totalPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                : 'R$ ••••'
+              }
+            </h2>
+          </div>
+
+          {/* Date & Time Block (Mobile Only) */}
+          <div className="flex gap-3">
+              {/* Date Card */}
+              <div className="flex-1 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-3 flex flex-col justify-center items-center text-center relative overflow-hidden">
+                {(() => {
+                   const dateObj = eventDateStr ? new Date(eventDateStr.split('T')[0] + 'T12:00:00') : null;
+                   if (!dateObj) return <span className="text-white/60 text-xs">Sem data</span>;
+                   return (
+                     <>
+                       <div className="text-[10px] uppercase text-white/80 font-medium tracking-wide">{dateObj.toLocaleString("pt-BR", { month: "short" }).toUpperCase()}.</div>
+                       <div className="text-3xl font-bold leading-none my-1 text-white">{dateObj.getDate()}</div>
+                       <div className="text-[10px] text-white/80 lowercase">{dateObj.toLocaleString("pt-BR", { weekday: "short" })}.</div>
+                     </>
+                   );
+                })()}
+              </div>
+
+              {/* Time Card */}
+              <div className="flex-1 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-3 flex flex-col items-center justify-center gap-1">
+                 <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center mb-1">
+                    <Clock className="h-4 w-4 text-white" />
+                 </div>
+                 <div className="text-xl font-bold text-white tracking-tighter">
+                   {eventDateStr && eventDateStr.includes('T') ? eventDateStr.split('T')[1].substring(0, 5) : '18:00'}
+                 </div>
+              </div>
+           </div>
         </div>
       </div>
 
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
-        <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
-          <OrderStepper currentStatus={order?.status as any} />
-        </CardContent>
-      </Card>
+      {/* Desktop Header */}
+      <div className="hidden md:block mb-6">
+        <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold truncate">Pedido {displayId}</h1>
+              <p className="text-sm text-gray-600 truncate">Criado em {createdAt}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link className="text-blue-600 text-sm hover:underline" href="/dashboard/orders">Voltar</Link>
+              <QuoteActionButtons orderId={docId} customerEmail={customerEmail} />
+            </div>
+        </div>
+          
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-none shadow-sm">
+            <CardContent className="pt-4 px-6">
+              <OrderStepper currentStatus={order?.status as any} />
+            </CardContent>
+        </Card>
+      </div>
 
       <Tabs defaultValue="details" className="space-y-4">
-        <TabsList className="w-full md:w-auto">
-          <TabsTrigger value="details">Detalhes</TabsTrigger>
-          <TabsTrigger value="items">Itens ({orderItems?.length || 0})</TabsTrigger>
-          <TabsTrigger value="timeline">Histórico</TabsTrigger>
+        <TabsList className="grid grid-cols-2 md:flex h-auto bg-gray-100/50 p-1 gap-1">
+          <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Detalhes</TabsTrigger>
+          <TabsTrigger value="budget" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Orçamento</TabsTrigger>
+          <TabsTrigger value="calendar" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Calendário</TabsTrigger>
+          <TabsTrigger value="items" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Itens ({orderItems?.length || 0})</TabsTrigger>
+          <TabsTrigger value="timeline" className="col-span-2 md:col-span-1 data-[state=active]:bg-white data-[state=active]:shadow-sm">Histórico</TabsTrigger>
         </TabsList>
 
-        {/* ABA 1: DETALHES */}
+        {/* ABA 1: DETALHES (CLIENTE) */}
         <TabsContent value="details" className="space-y-6">
           <form className="grid gap-6">
-            {/* Bento grid using Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-              {/* Left Column: Cliente + Orçamento */}
-              <div className='flex flex-col md:col-span-7 gap-6'>
-                {/* Cliente Card */}
-                <FormCard 
+             <FormCard 
                   title="Cliente" 
                   subtitle="Informações de contato e entrega"
                 >
@@ -312,27 +393,31 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps) {
                     </FormField>
                   </FormRow>
                 </FormCard>
+          </form>
+        </TabsContent>
 
-                {/* Budget Section */}
-                <BudgetSection
-                  totalPrice={formData.totalPrice}
-                  total_cost_price={formData.total_cost_price}
-                  onTotalPriceChange={(value) => handleFieldChange('totalPrice', value)}
-                  onCostPriceChange={(value) => handleFieldChange('total_cost_price', value)}
-                  status={order?.status}
-                  isLoadingConfirm={confirmMutation.isPending}
-                  onStatusChange={() => {
-                    confirmMutation.mutate();
-                  }}
-                  itemsTotal={itemsTotal}
-                  minTotalPrice={itemsPriceTotal}
-                  minCostPrice={itemsCostTotal}
-                  maxCostPrice={formData.totalPrice}
-                />
-              </div>
+        {/* ABA 2: ORÇAMENTO */}
+        <TabsContent value="budget" className="space-y-6">
+           <BudgetSection
+              totalPrice={formData.totalPrice}
+              total_cost_price={formData.total_cost_price}
+              onTotalPriceChange={(value) => handleFieldChange('totalPrice', value)}
+              onCostPriceChange={(value) => handleFieldChange('total_cost_price', value)}
+              status={order?.status}
+              isLoadingConfirm={confirmMutation.isPending}
+              onStatusChange={() => {
+                confirmMutation.mutate();
+              }}
+              itemsTotal={itemsTotal}
+              minTotalPrice={itemsPriceTotal}
+              minCostPrice={itemsCostTotal}
+              maxCostPrice={formData.totalPrice}
+            />
+        </TabsContent>
 
-              {/* Right Column: Calendário + Detalhes */}
-              <div className='flex flex-col md:col-span-5 gap-6'>
+        {/* ABA 3: CALENDÁRIO */}
+        <TabsContent value="calendar" className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
                 <FormCard 
                   title="Calendário de Evento" 
                   subtitle="Selecione a data do evento"
@@ -370,34 +455,16 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps) {
                     className="bg-yellow-50"
                   />
                 </FormCard>
-              </div>
             </div>
-
-            <div className="flex gap-2">
-              <Link className="px-4 py-2 rounded border inline-flex items-center" href="/dashboard/orders">Voltar</Link>
-            </div>
-          </form>
         </TabsContent>
 
         {/* ABA 2: ITENS */}
         <TabsContent value="items" className="space-y-4">
-          <Card>
-            <CardContent className="pt-6">
+          <Card className="border-none shadow-none md:border md:shadow-sm">
+            <CardContent className="p-0 md:pt-6 md:px-6">
               <OrderItemsTable
                 items={orderItems || []}
                 orderId={String(orderId)}
-                onQuantityChange={(itemId, newQuantity) => {
-                  updateItemMutation.mutate({ itemId, quantity: newQuantity });
-                }}
-                onItemRemove={(itemId) => {
-                  removeItemMutation.mutate(itemId);
-                }}
-                onItemsAdd={(newItems) => {
-                  addItemsMutation.mutate(newItems);
-                }}
-                isQuantityLoading={updateItemMutation.isPending}
-                isRemoveLoading={removeItemMutation.isPending}
-                isAddLoading={addItemsMutation.isPending}
               />
             </CardContent>
           </Card>
@@ -405,8 +472,8 @@ export function OrderDetailClient({ initialOrder }: OrderDetailClientProps) {
 
         {/* ABA 3: HISTÓRICO */}
         <TabsContent value="timeline" className="space-y-4">
-          <Card>
-            <CardContent className="pt-6">
+          <Card className="border-none shadow-none md:border md:shadow-sm">
+            <CardContent className="p-0 md:pt-6 md:px-6">
               <OrderTimeline events={events} />
             </CardContent>
           </Card>

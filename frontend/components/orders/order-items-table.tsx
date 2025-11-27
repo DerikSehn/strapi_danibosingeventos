@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,36 +14,43 @@ import {
 import ProductSelectionModal from "@/components/meaplan/product-selection-modal";
 import { OrderItem } from "@/lib/api/orders/types";
 import { ProductVariant } from "@/types";
-
+import {
+  useUpdateItemMutation,
+  useRemoveItemMutation,
+  useAddItemsMutation,
+} from "@/lib/hooks/use-item-mutations";
+import ConfirmDeleteModal from "@/components/ui/confirm-delete-modal";
 
 interface OrderItemsTableProps {
   items: OrderItem[];
   orderId: string;
-  onQuantityChange?: (itemId: string, newQuantity: number) => void;
-  onItemRemove?: (itemId: string) => void;
-  onItemsAdd?: (items: ProductVariant[]) => void;
-  isQuantityLoading?: boolean;
-  isRemoveLoading?: boolean;
-  isAddLoading?: boolean;
 }
 
 export function OrderItemsTable({
   items,
   orderId,
-  onQuantityChange,
-  onItemRemove,
-  onItemsAdd,
-  isQuantityLoading = false,
-  isRemoveLoading = false,
-  isAddLoading = false,
 }: OrderItemsTableProps) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [editingQuantityId, setEditingQuantityId] = useState<string | null>(null);
   const [editingQuantityValue, setEditingQuantityValue] = useState<string>("");
 
+  // Mutations
+  const updateItemMutation = useUpdateItemMutation(orderId);
+  const removeItemMutation = useRemoveItemMutation(orderId, () => {
+    setDeleteModalOpen(false);
+    setItemToDelete(null);
+  });
+  const addItemsMutation = useAddItemsMutation(orderId);
+
+  const isAddLoading = addItemsMutation.isPending;
+  const isRemoveLoading = removeItemMutation.isPending;
+  const isQuantityLoading = updateItemMutation.isPending;
+
   const handleConfirmAdd = (items: ProductVariant[]) => {
     if (items.length > 0) {
-      onItemsAdd?.(items);
+      addItemsMutation.mutate(items);
       setModalOpen(false);
     }
   };
@@ -52,13 +59,10 @@ export function OrderItemsTable({
     setModalOpen(false);
   };
 
-
-
   const handleStartEdit = (itemId: string, currentQuantity: number) => {
     setEditingQuantityId(itemId);
     setEditingQuantityValue(String(currentQuantity));
   };
-
 
   const handleConfirmQuantity = (itemId: string) => {
     if (!editingQuantityValue) {
@@ -66,17 +70,15 @@ export function OrderItemsTable({
         return;
     }
     const newQuantity = Math.max(1, parseInt(editingQuantityValue) || 1);
-    onQuantityChange?.(itemId, newQuantity);
+    updateItemMutation.mutate({ itemId, quantity: newQuantity });
     setEditingQuantityId(null);
     setEditingQuantityValue("");
   };
-
 
   const handleCancelEdit = () => {
     setEditingQuantityId(null);
     setEditingQuantityValue("");
   };
-
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, itemId: string) => {
     if (e.key === "Enter") {
@@ -86,15 +88,22 @@ export function OrderItemsTable({
     }
   };
 
-  const handleRemoveItem = (itemId: string) => {
-      onItemRemove?.(itemId);
+  const handleRemoveClick = (itemId: string) => {
+    setItemToDelete(itemId);
+    setDeleteModalOpen(true);
+  };
 
+  const handleConfirmRemove = () => {
+    if (itemToDelete) {
+      removeItemMutation.mutate(itemToDelete);
+    }
   };
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    onQuantityChange?.(itemId, newQuantity);
+    updateItemMutation.mutate({ itemId, quantity: newQuantity });
   };
+
 
   const allItems = items.map((item) => ({
     id: String(item.id || item.documentId || ""),
@@ -131,7 +140,7 @@ export function OrderItemsTable({
         </Button>
       </div>
 
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg overflow-hidden hidden md:block">
         <Table>
           <TableHeader className="bg-gray-50">
             <TableRow>
@@ -210,11 +219,11 @@ export function OrderItemsTable({
                   </TableCell>
                   <TableCell className="text-right">
                     <button
-                      onClick={() => handleRemoveItem(item.id)}
+                      onClick={() => handleRemoveClick(item.id)}
                       disabled={isRemoveLoading}
                       className="p-1 hover:bg-red-100 text-red-600 rounded disabled:opacity-50"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      {isRemoveLoading && itemToDelete === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                     </button>
                   </TableCell>
                 </TableRow>
@@ -222,6 +231,63 @@ export function OrderItemsTable({
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile List View */}
+      <div className="md:hidden space-y-4">
+        {allItems.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 border rounded-lg bg-gray-50">
+            Nenhum item adicionado
+          </div>
+        ) : (
+          allItems.map((item) => (
+            <div key={item.id} className="bg-white border rounded-lg p-4 shadow-sm space-y-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="font-medium text-gray-900">{item.title}</h4>
+                  <p className="text-sm text-gray-500">Unit: R$ {item.price.toFixed(2)}</p>
+                </div>
+                <button
+                  onClick={() => handleRemoveClick(item.id)}
+                  disabled={isRemoveLoading}
+                  className="p-2 text-red-600 hover:bg-red-50 rounded-full"
+                >
+                  {isRemoveLoading && itemToDelete === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                </button>
+              </div>
+              
+              <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleQuantityChange(item.id, item.quantity - 10)}
+                    disabled={item.quantity <= 10 || isQuantityLoading}
+                  >
+                    <span className="text-xs font-bold">-10</span>
+                  </Button>
+                  
+                  <span className="w-12 text-center font-semibold">{item.quantity}</span>
+                  
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleQuantityChange(item.id, item.quantity + 10)}
+                    disabled={isQuantityLoading}
+                  >
+                    <span className="text-xs font-bold">+10</span>
+                  </Button>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">Total</p>
+                  <p className="font-bold text-gray-900">R$ {item.total.toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       <ProductSelectionModal
@@ -234,6 +300,7 @@ export function OrderItemsTable({
         confirmButtonText="Adicionar"
         cancelButtonText="Cancelar"
         orderId={orderId}
+        columnsMobile={1}
       />
     </div>
   );

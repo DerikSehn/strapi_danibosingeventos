@@ -21,9 +21,10 @@ interface ProductVariant extends Record<string, unknown> {
 interface ProductSelectionListProps {
   onItemsChange: (items: ProductVariant[]) => void;
   orderId?: string;
+  columnsMobile?: number;
 }
 
-export default function ProductSelectionList({ onItemsChange, orderId }: ProductSelectionListProps) {
+export default function ProductSelectionList({ onItemsChange, orderId, columnsMobile = 2 }: ProductSelectionListProps) {
   const apiEndpoint = React.useCallback(async (params: {
     page?: number;
     limit?: number;
@@ -151,6 +152,7 @@ export default function ProductSelectionList({ onItemsChange, orderId }: Product
         );
       }}
       columns={4}
+      columnsMobile={columnsMobile}
       defaultLimit={12}
       searchPlaceholder="Buscar produtos..."
       emptyMessage="Nenhum produto encontrado"

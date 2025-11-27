@@ -1408,6 +1408,41 @@ export default factories.createCoreController(
         return ctx.throw(500, error.message || 'Failed to fetch available variants');
       }
     },
+
+    async deleteOrder(ctx) {
+      try {
+        const { id } = ctx.params;
+        if (!id) return ctx.badRequest('Order ID is required');
+
+        // Check if order exists
+        const order = await strapi.documents('api::budget.budget').findFirst({
+          filters: { documentId: id },
+        });
+
+        if (!order) return ctx.notFound('Order not found');
+
+        // Delete related order items first (optional but cleaner if no cascade)
+        const items = await strapi.documents('api::order-item.order-item').findMany({
+          filters: { budget: { documentId: id } },
+        });
+        
+        if (Array.isArray(items) && items.length > 0) {
+             await Promise.all(items.map(item => 
+                 strapi.documents('api::order-item.order-item').delete({ documentId: item.documentId })
+             ));
+        }
+
+        // Delete the order
+        await strapi.documents('api::budget.budget').delete({
+          documentId: id,
+        });
+
+        return ctx.send({ ok: true, message: 'Order deleted successfully' });
+      } catch (error) {
+        strapi.log.error('[deleteOrder] Error:', error);
+        return ctx.throw(500, error.message || 'Failed to delete order');
+      }
+    },
   }),
 );
 

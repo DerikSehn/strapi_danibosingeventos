@@ -108,7 +108,7 @@ export default function OrderForm({ formValues, updateFormValues, isLoading, sho
                 )}
             </div>
 
-            <div className="mb-4">
+            {/* <div className="mb-4">
                 <GastronomyInput
                     variant="chef"
                     label="Email (opcional)"
@@ -123,7 +123,7 @@ export default function OrderForm({ formValues, updateFormValues, isLoading, sho
                 {getFieldError('contactEmail') && (
                     <p className="text-red-500 text-sm mt-1">{getFieldError('contactEmail')}</p>
                 )}
-            </div>
+            </div> */}
 
             {!!formValues.numberOfPeople && (
                 <div className="mb-4">
