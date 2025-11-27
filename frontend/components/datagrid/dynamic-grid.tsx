@@ -44,7 +44,8 @@ export interface DynamicGridProps<T> extends Omit<DynamicGridConfig<T>, `queryKe
   gridId: string
   apiEndpoint: DynamicGridConfig<T>[`apiEndpoint`]
   renderItem: DynamicGridConfig<T>[`renderItem`]
-  onDataResponse?: (data: PaginatedResponse<T>) => void
+  onDataResponse?: (data: PaginatedResponse<T>) => void;
+  columnsMobile?: number;
 }
 
 export function DynamicGrid<T extends Record<string, unknown>>({
