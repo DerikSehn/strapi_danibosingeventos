@@ -149,23 +149,6 @@ export interface SectionFeaturesSection extends Struct.ComponentSchema {
   };
 }
 
-export interface SectionHeroSection extends Struct.ComponentSchema {
-  collectionName: 'components_section_hero_sections';
-  info: {
-    description: '';
-    displayName: 'Hero Section';
-  };
-  attributes: {
-    backgroundImage: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    button: Schema.Attribute.Component<'button.cta-button', true>;
-    description: Schema.Attribute.Text;
-    heroImage: Schema.Attribute.Media<'images' | 'files' | 'videos', true>;
-    title: Schema.Attribute.String;
-  };
-}
-
 export interface SectionGalleryItem extends Struct.ComponentSchema {
   collectionName: 'components_section_gallery_items';
   info: {
@@ -192,6 +175,23 @@ export interface SectionGallerySection extends Struct.ComponentSchema {
     description: Schema.Attribute.RichText;
     items: Schema.Attribute.Component<'section.gallery-item', true>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SectionHeroSection extends Struct.ComponentSchema {
+  collectionName: 'components_section_hero_sections';
+  info: {
+    description: '';
+    displayName: 'Hero Section';
+  };
+  attributes: {
+    backgroundImage: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    button: Schema.Attribute.Component<'button.cta-button', true>;
+    description: Schema.Attribute.Text;
+    heroImage: Schema.Attribute.Media<'images' | 'files' | 'videos', true>;
+    title: Schema.Attribute.String;
   };
 }
 

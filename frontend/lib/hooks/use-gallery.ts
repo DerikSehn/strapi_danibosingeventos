@@ -111,9 +111,7 @@ export function useUpdateGalleryPage(onSuccess?: () => void) {
 
   return useMutation({
     mutationFn: async (payload: Partial<GalleryPageData>) => {
-      const baseUrl = getStrapiURL();
-      
-      const response = await fetch(`${baseUrl}/api/gallery-page`, {
+      const response = await fetch("/api/gallery-page", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -146,11 +144,10 @@ export function useUpdateGalleryPage(onSuccess?: () => void) {
 export function useUploadGalleryImage(onSuccess?: (file: any) => void) {
   return useMutation({
     mutationFn: async (file: File) => {
-      const baseUrl = getStrapiURL();
       const formData = new FormData();
       formData.append("files", file);
 
-      const response = await fetch(`${baseUrl}/api/upload`, {
+      const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
@@ -180,9 +177,7 @@ export function useDeleteGalleryImage(onSuccess?: () => void) {
 
   return useMutation({
     mutationFn: async (imageId: number | string) => {
-      const baseUrl = getStrapiURL();
-      
-      const response = await fetch(`${baseUrl}/api/upload/files/${imageId}`, {
+      const response = await fetch(`/api/upload/files/${imageId}`, {
         method: "DELETE",
       });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,6 +23,7 @@ import {
   Images,
   Loader2,
   GripVertical,
+  ArrowUpRightFromSquare,
 } from "lucide-react";
 import {
   Dialog,
@@ -33,12 +34,19 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import {
+  FileUploader,
+  FileUploaderContent,
+  FileUploaderItem,
+  FileInput,
+} from "@/components/uilayouts/file-upload";
+import { Link } from "next-view-transitions";
 
 export default function GalleryManagementPage() {
   const { data: galleryPage, isLoading, refetch } = useGalleryPage();
   const updateGalleryPage = useUpdateGalleryPage(() => refetch());
   const uploadImage = useUploadGalleryImage();
-  
+
   const [editingSection, setEditingSection] = useState<number | null>(null);
   const [isAddingItem, setIsAddingItem] = useState<number | null>(null);
   const [newItem, setNewItem] = useState<Partial<GalleryItem>>({
@@ -47,7 +55,6 @@ export default function GalleryManagementPage() {
     category: "",
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddSection = async () => {
     if (!galleryPage) return;
@@ -61,7 +68,7 @@ export default function GalleryManagementPage() {
     };
 
     const updatedBlocks = [...(galleryPage.blocks || []), newSection];
-    
+
     await updateGalleryPage.mutateAsync({ blocks: updatedBlocks } as any);
   };
 
@@ -81,7 +88,7 @@ export default function GalleryManagementPage() {
 
   const handleDeleteSection = async (sectionIndex: number) => {
     if (!galleryPage) return;
-    
+
     if (!confirm("Tem certeza que deseja remover esta seção?")) return;
 
     const updatedBlocks = galleryPage.blocks.filter((_, index) => index !== sectionIndex);
@@ -138,7 +145,7 @@ export default function GalleryManagementPage() {
 
   const handleDeleteItem = async (sectionIndex: number, itemIndex: number) => {
     if (!galleryPage) return;
-    
+
     if (!confirm("Tem certeza que deseja remover esta imagem?")) return;
 
     const updatedBlocks = galleryPage.blocks.map((block, index) => {
@@ -152,17 +159,6 @@ export default function GalleryManagementPage() {
     });
 
     await updateGalleryPage.mutateAsync({ blocks: updatedBlocks } as any);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        toast.error("Por favor, selecione um arquivo de imagem");
-        return;
-      }
-      setSelectedImage(file);
-    }
   };
 
   if (isLoading) {
@@ -190,14 +186,28 @@ export default function GalleryManagementPage() {
             Adicione, edite e remova fotos da galeria de eventos
           </p>
         </div>
-        <Button
-          onClick={handleAddSection}
-          className="bg-orange-500 hover:bg-orange-600"
-          disabled={updateGalleryPage.isPending}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nova Seção
-        </Button>
+        <div className="actions flex items-center gap-2">
+          <Link
+            href={'/gallery'}
+            className=""
+          >
+            <Button
+            variant={'outline'}
+          >
+            Ver Galeria
+            <ArrowUpRightFromSquare className="w-4 h-4 mr-2" />
+          </Button>
+            
+          </Link>
+          <Button
+            onClick={handleAddSection}
+            className="bg-orange-500 hover:bg-orange-600"
+            disabled={updateGalleryPage.isPending}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Nova Seção
+          </Button>
+        </div>
       </div>
 
       {/* Gallery Sections */}
@@ -381,43 +391,42 @@ export default function GalleryManagementPage() {
                         </div>
                         <div>
                           <Label>Imagem *</Label>
-                          <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="hidden"
-                          />
-                          <div
-                            onClick={() => fileInputRef.current?.click()}
-                            className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-orange-500 hover:bg-orange-50 transition-colors"
+                          <FileUploader
+                            value={selectedImage ? [selectedImage] : null}
+                            onValueChange={(files) => {
+                              if (files && files.length > 0) {
+                                setSelectedImage(files[0]);
+                              } else {
+                                setSelectedImage(null);
+                              }
+                            }}
+                            dropzoneOptions={{
+                              maxFiles: 1,
+                              maxSize: 1024 * 1024 * 4,
+                              multiple: false,
+                              accept: {
+                                "image/*": [".png", ".jpg", ".jpeg", ".webp"],
+                              },
+                            }}
+                            className="relative bg-background rounded-lg p-2"
                           >
-                            {selectedImage ? (
-                              <div className="flex items-center justify-center gap-2">
-                                <span className="text-sm text-gray-700">
-                                  {selectedImage.name}
-                                </span>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedImage(null);
-                                  }}
-                                >
-                                  <X className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <>
-                                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                            <FileInput className="outline-dashed outline-1 outline-gray-300">
+                              <div className="flex items-center justify-center flex-col pt-3 pb-4 w-full">
+                                <Upload className="w-8 h-8 text-gray-400 mb-2" />
                                 <p className="text-sm text-gray-600">
-                                  Clique para selecionar uma imagem
+                                  Clique ou arraste para selecionar uma imagem
                                 </p>
-                              </>
-                            )}
-                          </div>
+                              </div>
+                            </FileInput>
+                            <FileUploaderContent>
+                              {selectedImage && (
+                                <FileUploaderItem index={0}>
+                                  <Images className="h-4 w-4 stroke-current" />
+                                  <span>{selectedImage.name}</span>
+                                </FileUploaderItem>
+                              )}
+                            </FileUploaderContent>
+                          </FileUploader>
                         </div>
                         <div className="flex justify-end gap-2">
                           <Button
