@@ -1,0 +1,32 @@
+{
+  "kind": "singleType",
+  "collectionName": "order_pages",
+  "info": {
+    "singularName": "order-page",
+    "pluralName": "order-pages",
+    "displayName": "Order Page",
+    "description": "Configuration for the main order page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "shareTitle": {
+      "type": "string",
+      "default": "Encomendas à pronta-entrega"
+    },
+    "shareDescription": {
+      "type": "text",
+      "default": "Desfrute de nosso cardápio também a la carte"
+    },
+    "shareImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  }
+}
