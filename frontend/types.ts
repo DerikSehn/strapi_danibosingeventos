@@ -157,3 +157,59 @@ export interface StrapiImageProps {
 export interface ProductVariant extends PureProductVariant {
       image?: StrapiImageProps
     };
+export interface ApiPartyTypeProps {
+  id: number;
+  documentId: string;
+  title: string;
+  description: string;
+  caption: string;
+  price: number;
+  duration: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  backgroundImage: ApiStrapiImageProps;
+}
+
+export interface ApiStrapiImageProps {
+  id: number;
+  documentId: string;
+  name: string;
+  alternativeText: null;
+  caption: null;
+  width: number;
+  height: number;
+  formats: Formats;
+  hash: string;
+  ext: string;
+  mime: string;
+  size: number;
+  url: string;
+  previewUrl: null;
+  provider: string;
+  provider_metadata: null;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+interface Formats {
+  thumbnail: Thumbnail;
+  medium: Thumbnail;
+  small: Thumbnail;
+  large: Thumbnail;
+}
+
+interface Thumbnail {
+  name: string;
+  hash: string;
+  ext: string;
+  mime: string;
+  path: null;
+  width: number;
+  height: number;
+  size: number;
+  sizeInBytes: number;
+  url: string;
+}
+

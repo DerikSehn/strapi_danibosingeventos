@@ -933,6 +933,39 @@ export interface ApiOrderItemOrderItem extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiOrderPageOrderPage extends Struct.SingleTypeSchema {
+  collectionName: 'order_pages';
+  info: {
+    description: 'Configuration for the main order page';
+    displayName: 'Order Page';
+    pluralName: 'order-pages';
+    singularName: 'order-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::order-page.order-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    shareDescription: Schema.Attribute.Text &
+      Schema.Attribute.DefaultTo<'Desfrute de nosso card\u00E1pio tamb\u00E9m a la carte'>;
+    shareImage: Schema.Attribute.Media<'images'>;
+    shareTitle: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Encomendas \u00E0 pronta-entrega'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPartyTypePartyType extends Struct.CollectionTypeSchema {
   collectionName: 'party_types';
   info: {
@@ -1889,6 +1922,7 @@ declare module '@strapi/strapi' {
       'api::invoice.invoice': ApiInvoiceInvoice;
       'api::order-event.order-event': ApiOrderEventOrderEvent;
       'api::order-item.order-item': ApiOrderItemOrderItem;
+      'api::order-page.order-page': ApiOrderPageOrderPage;
       'api::party-type.party-type': ApiPartyTypePartyType;
       'api::pdf-setting.pdf-setting': ApiPdfSettingPdfSetting;
       'api::product-group.product-group': ApiProductGroupProductGroup;
