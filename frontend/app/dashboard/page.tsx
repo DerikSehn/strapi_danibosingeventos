@@ -17,13 +17,15 @@ import {
   Plus,
   FileText,
   Settings,
-  Bell
+  Bell,
+  Share
 } from 'lucide-react';
 import PushToggle from '@/components/providers/push-toggle';
 import { Link } from 'next-view-transitions';
 import OrderDetailButton from '@/components/orders/order-detail-button';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ShareOrderButton } from '@/components/dashboard/share-order-button';
 
 type DashboardResponse = {
   ok: boolean;
@@ -45,6 +47,23 @@ type DashboardResponse = {
   };
   error?: string;
 };
+
+type QuickActionsProps = (
+  | {
+      label: string;
+      icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+      color: string;
+      href: string;
+      component?: never;
+    }
+  | {
+      component: React.ReactNode;
+      label?: never;
+      icon?: never;
+      color?: never;
+      href?: never;
+    }
+)[];
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -91,7 +110,10 @@ export default function DashboardPage() {
 
   const recentActivity = (data?.recentActivity ?? []).slice(0, 10);
 
-  const quickActions = [
+  const quickActions: QuickActionsProps = [
+    {
+      component: <ShareOrderButton key="share-btn" />
+    },
     {
       label: 'Novo Pedido',
       icon: Plus,
@@ -171,20 +193,29 @@ export default function DashboardPage() {
         {/* Quick Actions - Horizontal Scroll */}
         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
           <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-hide">
-            {quickActions.map((action) => (
-              <Link 
-                key={action.label} 
-                href={action.href}
-                className="flex flex-col items-center gap-2 min-w-[72px]"
-              >
-                <div className={cn("h-14 w-14 rounded-full flex items-center justify-center transition-transform active:scale-95", action.color)}>
-                  <action.icon className="h-6 w-6" />
-                </div>
-                <span className="text-xs font-medium text-gray-600 text-center leading-tight">
-                  {action.label}
-                </span>
-              </Link>
-            ))}
+            {quickActions.map((action, index) => {
+              if (action.component) {
+                return action.component;
+              }
+              
+              // Type guard to ensure href, label, icon, color exist
+              if (!action.href || !action.label || !action.icon) return null;
+
+              return (
+                <Link 
+                  key={action.label} 
+                  href={action.href}
+                  className="flex flex-col items-center gap-2 min-w-[72px]"
+                >
+                  <div className={cn("h-14 w-14 rounded-full flex items-center justify-center transition-transform active:scale-95", action.color)}>
+                    <action.icon className="h-6 w-6" />
+                  </div>
+                  <span className="text-xs font-medium text-gray-600 text-center leading-tight">
+                    {action.label}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
 
