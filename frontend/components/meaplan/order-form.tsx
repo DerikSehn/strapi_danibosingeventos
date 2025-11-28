@@ -8,6 +8,7 @@ import { MenuCard } from "../custom/menu-card";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "../ui/alert";
 import { PhoneInput } from "../ui/phone-input";
+import { SpeedometerInput } from "../ui/speedometer-input";
 
 
 interface OrderFormProps {
@@ -126,20 +127,17 @@ export default function OrderForm({ formValues, updateFormValues, isLoading, sho
             </div> */}
 
             {!!formValues.numberOfPeople && (
-                <div className="mb-4">
-                    <GastronomyInput
-                        variant="chef"
-                        label="Número de Pessoas"
-                        id="numberOfPeople"
-                        type="range"
-                        min="20"
-                        max="300"
-                        step="5"
-                        value={formValues.numberOfPeople}
-                        onChange={(e) => updateFormValues({ numberOfPeople: Number(e.target.value) })}
-                        disabled={isLoading}
+                <div className="mb-8 px-2">
+                    <label className="block text-xl font-medium mb-6 text-gray-700 text-center">Quantos convidados?</label>
+                    <SpeedometerInput
+                        value={formValues.numberOfPeople ?? 20}
+                        min={10}
+                        max={300}
+                        step={5}
+                        label="Pessoas"
+                        onChange={(val) => updateFormValues({ numberOfPeople: val })}
+                        className="mt-4"
                     />
-                    <span className="text-sm text-gray-600">{formValues.numberOfPeople} pessoas</span>
                 </div>
             )}
 
