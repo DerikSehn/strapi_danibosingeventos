@@ -11,7 +11,8 @@ import {
   Menu,
   X,
   ChefHat,
-  Package
+  Package,
+  Images
 } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 import { usePathname } from 'next/navigation';
@@ -21,6 +22,7 @@ import { cn } from '@/lib/utils';
 const navigation = [
   { name: 'Início', href: '/dashboard', icon: Home },
   { name: 'Pedidos', href: '/dashboard/orders', icon: Package },
+  { name: 'Galeria', href: '/dashboard/gallery', icon: Images },
   { name: 'Perfil', href: '/dashboard/profile', icon: User },
   { name: 'Ajustes', href: '/dashboard/settings', icon: Settings },
 ];
