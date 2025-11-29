@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_section_gallery_items",
+  "info": {
+    "displayName": "Gallery Item",
+    "icon": "image",
+    "description": "Individual gallery item with image, title, and description"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "category": {
+      "type": "string"
+    }
+  }
+}

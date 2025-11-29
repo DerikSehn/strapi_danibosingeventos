@@ -3,7 +3,7 @@ import MaybeFooter from "@/components/blocks/maybe-footer";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { NotificationProvider } from "@/components/providers/notification-provider";
 import { LenisProvider } from "@/components/providers/lenis-provider";
-import { ChefHat, Contact, HomeIcon, InfoIcon } from "lucide-react";
+import { ChefHat, Contact, HomeIcon, Images, InfoIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
 import localFont from "next/font/local";
@@ -37,6 +37,7 @@ export default function RootLayout({
   const navItems = [
     { name: "Início", link: "/", icon: <HomeIcon /> },
     { name: "Cardápio", link: "/mostruario", icon: <ChefHat /> },
+    { name: "Galeria", link: "/gallery", icon: <Images /> },
     { name: "Sobre", link: "/about", icon: <InfoIcon /> },
     { name: "Contato", link: "/contact", icon: <Contact /> },
   ]

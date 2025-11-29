@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_section_gallery_sections",
+  "info": {
+    "displayName": "Gallery Section",
+    "icon": "grid",
+    "description": "A section containing gallery items organized by event/category"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "section.gallery-item"
+    }
+  }
+}

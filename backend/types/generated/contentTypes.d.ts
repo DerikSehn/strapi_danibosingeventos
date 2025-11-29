@@ -705,6 +705,39 @@ export interface ApiFinanceUserFinanceUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiGalleryPageGalleryPage extends Struct.SingleTypeSchema {
+  collectionName: 'gallery_pages';
+  info: {
+    description: 'Gallery page with event photos and categories';
+    displayName: 'Gallery Page';
+    pluralName: 'gallery-pages';
+    singularName: 'gallery-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    blocks: Schema.Attribute.DynamicZone<
+      ['section.hero-section', 'section.gallery-section']
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gallery-page.gallery-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
   collectionName: 'home_pages';
   info: {
@@ -894,6 +927,39 @@ export interface ApiOrderItemOrderItem extends Struct.CollectionTypeSchema {
     total_item_price: Schema.Attribute.Decimal;
     unit_cost: Schema.Attribute.Decimal;
     unit_price: Schema.Attribute.Decimal;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiOrderPageOrderPage extends Struct.SingleTypeSchema {
+  collectionName: 'order_pages';
+  info: {
+    description: 'Configuration for the main order page';
+    displayName: 'Order Page';
+    pluralName: 'order-pages';
+    singularName: 'order-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::order-page.order-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    shareDescription: Schema.Attribute.Text &
+      Schema.Attribute.DefaultTo<'Desfrute de nosso card\u00E1pio tamb\u00E9m a la carte'>;
+    shareImage: Schema.Attribute.Media<'images'>;
+    shareTitle: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Encomendas \u00E0 pronta-entrega'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1850,11 +1916,13 @@ declare module '@strapi/strapi' {
       'api::event.event': ApiEventEvent;
       'api::finance-category.finance-category': ApiFinanceCategoryFinanceCategory;
       'api::finance-user.finance-user': ApiFinanceUserFinanceUser;
+      'api::gallery-page.gallery-page': ApiGalleryPageGalleryPage;
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::inventory-item.inventory-item': ApiInventoryItemInventoryItem;
       'api::invoice.invoice': ApiInvoiceInvoice;
       'api::order-event.order-event': ApiOrderEventOrderEvent;
       'api::order-item.order-item': ApiOrderItemOrderItem;
+      'api::order-page.order-page': ApiOrderPageOrderPage;
       'api::party-type.party-type': ApiPartyTypePartyType;
       'api::pdf-setting.pdf-setting': ApiPdfSettingPdfSetting;
       'api::product-group.product-group': ApiProductGroupProductGroup;

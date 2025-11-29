@@ -1,6 +1,7 @@
 import Features from "@/components/blocks/features";
 import Hero from "@/components/blocks/hero";
 import MenuShowcase from "@/components/blocks/menu-showcase";
+import GalleryPreview from "@/components/blocks/gallery-preview";
 import { getStrapiData } from "@/lib/utils";
 import qs from 'qs';
 import React from "react";
@@ -48,6 +49,7 @@ export default async function HomePage() {
           <React.Fragment key={block.__component}>
             {React.createElement(components[block.__component], { ...block, key: block.__component })}
             <MenuShowcase />
+            <GalleryPreview />
           </React.Fragment>
         );
       }

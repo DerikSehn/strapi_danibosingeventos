@@ -149,6 +149,35 @@ export interface SectionFeaturesSection extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionGalleryItem extends Struct.ComponentSchema {
+  collectionName: 'components_section_gallery_items';
+  info: {
+    description: 'Individual gallery item with image, title, and description';
+    displayName: 'Gallery Item';
+    icon: 'image';
+  };
+  attributes: {
+    category: Schema.Attribute.String;
+    description: Schema.Attribute.RichText;
+    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SectionGallerySection extends Struct.ComponentSchema {
+  collectionName: 'components_section_gallery_sections';
+  info: {
+    description: 'A section containing gallery items organized by event/category';
+    displayName: 'Gallery Section';
+    icon: 'grid';
+  };
+  attributes: {
+    description: Schema.Attribute.RichText;
+    items: Schema.Attribute.Component<'section.gallery-item', true>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SectionHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_section_hero_sections';
   info: {
@@ -179,6 +208,8 @@ declare module '@strapi/strapi' {
       'section.contact-section': SectionContactSection;
       'section.feature': SectionFeature;
       'section.features-section': SectionFeaturesSection;
+      'section.gallery-item': SectionGalleryItem;
+      'section.gallery-section': SectionGallerySection;
       'section.hero-section': SectionHeroSection;
     }
   }
